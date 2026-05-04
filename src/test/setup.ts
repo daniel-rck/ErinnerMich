@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom/vitest'
+import 'fake-indexeddb/auto'
 import { afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
+import { _resetDBForTests } from '../lib/db'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -17,6 +19,14 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-afterEach(() => {
+afterEach(async () => {
   cleanup()
+  await _resetDBForTests()
+  await new Promise<void>((resolve, reject) => {
+    const req = indexedDB.deleteDatabase('erinnermich')
+    req.onsuccess = () => resolve()
+    req.onerror = () => reject(req.error ?? new Error('deleteDatabase failed'))
+    req.onblocked = () => resolve()
+  })
+  window.localStorage.clear()
 })
