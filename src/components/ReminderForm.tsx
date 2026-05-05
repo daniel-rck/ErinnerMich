@@ -9,6 +9,11 @@ import type {
 import { createReminder, updateReminder } from '../lib/db/reminders'
 import { formatSchedule } from '../lib/format'
 import type { Template } from '../lib/templates'
+import { ensureNotificationPermission } from '../lib/notifications/permission'
+import {
+  readSettings,
+  writeNotificationOnboardingDone,
+} from '../lib/db/settings'
 
 const WEEKDAY_OPTIONS: { value: Weekday; label: string }[] = [
   { value: 'MON', label: 'Mo' },
@@ -92,6 +97,10 @@ export function ReminderForm({
           streakSensitive: kind === 'habit',
           active: true,
         })
+        if (!readSettings().notificationOnboardingDone) {
+          const result = await ensureNotificationPermission()
+          if (result === 'granted') writeNotificationOnboardingDone(true)
+        }
         onSaved(created)
       }
     } catch (err) {

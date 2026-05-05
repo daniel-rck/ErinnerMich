@@ -1,7 +1,7 @@
 # ErinnerMich — Roadmap
 
 > Lebendiges Dokument. Jede Phase wird in einer eigenen PR umgesetzt.
-> Stand: Phase 0 abgeschlossen.
+> Stand: Phase 0–4 abgeschlossen.
 
 ## Naming
 
@@ -242,7 +242,7 @@ Inventory-Threshold-Crossing.
 - Refill-Flow: `Inventory` zurücksetzen, `lastRefillAt` updaten
 - Dark-Mode persistent in `localStorage`
 
-### Phase 4 — Notifications
+### Phase 4 — Notifications ✅
 
 - `Notification.requestPermission()` erst beim Speichern des ersten aktiven Reminders
 - `src/lib/notifications/triggers.ts`: Notification Triggers API (`showTrigger` mit

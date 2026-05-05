@@ -7,10 +7,12 @@ import { AllPage } from './pages/All'
 import { SettingsPage } from './pages/Settings'
 import { NewReminderPage } from './pages/NewReminder'
 import { EditReminderPage } from './pages/EditReminder'
+import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstrap'
 
 export function App() {
   return (
     <ThemeProvider>
+      <NotificationsBootstrap />
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
