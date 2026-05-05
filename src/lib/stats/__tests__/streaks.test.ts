@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   currentStreak,
+  currentStreakWithFreeze,
   longestStreak,
   streakStats,
   successfulDayKeys,
@@ -94,5 +95,46 @@ describe('streakStats', () => {
       longest: 3,
       totalSuccessfulDays: 5,
     })
+  })
+})
+
+describe('currentStreakWithFreeze', () => {
+  it('rettet eine 1-Tag-Lücke mit dem Monatsbudget', () => {
+    const events = [event(0), event(1), event(3), event(4), event(5)]
+    const { length, freezesUsed } = currentStreakWithFreeze(events, {
+      today: TODAY,
+    })
+    expect(length).toBe(5)
+    expect(freezesUsed).toBe(1)
+  })
+
+  it('limitiert Freezes auf das Monatsbudget', () => {
+    // Lücken an Tag 2 und 4, aber nur 1 Freeze pro Monat im Mai → bricht
+    const events = [event(0), event(1), event(3), event(5)]
+    const { length, freezesUsed } = currentStreakWithFreeze(events, {
+      today: TODAY,
+    })
+    expect(length).toBe(3)
+    expect(freezesUsed).toBe(1)
+  })
+
+  it('respektiert ein höheres Budget', () => {
+    const events = [event(0), event(1), event(3), event(5)]
+    const { length, freezesUsed } = currentStreakWithFreeze(events, {
+      today: TODAY,
+      freezePerMonth: 2,
+    })
+    expect(length).toBe(4)
+    expect(freezesUsed).toBe(2)
+  })
+
+  it('returnt Null-Streak ohne aktuellen Treffer', () => {
+    const events = [event(3), event(4), event(5)]
+    const { length, freezesUsed } = currentStreakWithFreeze(events, {
+      today: TODAY,
+    })
+    // Tag 0 + 1 fehlen, keine Freezes mehr → 0
+    expect(length).toBe(0)
+    expect(freezesUsed).toBe(0)
   })
 })
