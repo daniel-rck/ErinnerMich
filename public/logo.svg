@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ErinnerMich Logo">
+  <rect width="512" height="512" rx="96" fill="#7c3aed"/>
+  <g fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 144v128l80 48"/>
+    <circle cx="256" cy="272" r="144"/>
+    <path d="M168 96l-40 40"/>
+    <path d="M344 96l40 40"/>
+  </g>
+</svg>
