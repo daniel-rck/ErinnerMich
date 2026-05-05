@@ -46,12 +46,20 @@ export async function getReminder(id: string): Promise<Reminder | undefined> {
 export async function listReminders(filter?: {
   kind?: ReminderKind
   activeOnly?: boolean
+  includeArchived?: boolean
 }): Promise<Reminder[]> {
   const db = await getDB()
   const all = filter?.kind
     ? await db.getAllFromIndex('reminders', 'byKind', filter.kind)
     : await db.getAll('reminders')
-  return filter?.activeOnly ? all.filter((r) => r.active) : all
+  let filtered = all
+  if (!filter?.includeArchived) {
+    filtered = filtered.filter((r) => r.archivedAt == null)
+  }
+  if (filter?.activeOnly) {
+    filtered = filtered.filter((r) => r.active)
+  }
+  return filtered
 }
 
 export async function deleteReminder(id: string): Promise<void> {
@@ -78,4 +86,12 @@ export async function setReminderActive(
   active: boolean,
 ): Promise<void> {
   await updateReminder(id, { active })
+}
+
+export async function archiveReminder(id: string): Promise<void> {
+  await updateReminder(id, { archivedAt: Date.now(), active: false })
+}
+
+export async function restoreReminder(id: string): Promise<void> {
+  await updateReminder(id, { archivedAt: undefined, active: true })
 }

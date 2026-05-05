@@ -1,22 +1,47 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useReminders } from '../lib/hooks/useReminders'
-import { deleteReminder, setReminderActive } from '../lib/db/reminders'
+import {
+  archiveReminder,
+  deleteReminder,
+  restoreReminder,
+  setReminderActive,
+} from '../lib/db/reminders'
 import { formatSchedule } from '../lib/format'
+import { useToast } from '../components/ui/Toast'
 import type { Reminder, ReminderKind } from '../lib/types'
 
 type Filter = 'all' | ReminderKind
 
+const DELETE_GRACE_MS = 5500
+
 export function AllPage() {
   const navigate = useNavigate()
+  const toast = useToast()
   const [filter, setFilter] = useState<Filter>('all')
   const { reminders, loading } = useReminders({
     kind: filter === 'all' ? undefined : filter,
   })
 
   async function handleDelete(reminder: Reminder) {
-    if (!confirm(`„${reminder.title}“ wirklich löschen?`)) return
-    await deleteReminder(reminder.id)
+    await archiveReminder(reminder.id)
+    let cancelled = false
+    const timer = setTimeout(() => {
+      if (cancelled) return
+      void deleteReminder(reminder.id)
+    }, DELETE_GRACE_MS)
+    toast.show({
+      variant: 'success',
+      message: `„${reminder.title}" gelöscht`,
+      action: {
+        label: 'Rückgängig',
+        onClick: () => {
+          cancelled = true
+          clearTimeout(timer)
+          void restoreReminder(reminder.id)
+        },
+      },
+    })
   }
 
   return (
