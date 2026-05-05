@@ -1,9 +1,9 @@
 # ErinnerMich — Roadmap
 
 > Lebendiges Dokument. Jede Phase wird in einer eigenen PR umgesetzt.
-> Stand: Phase 0–4 abgeschlossen, Phase 5 Kern (Streaks, Stats-Page,
-> Reminder-Detail, Heatmap) eingebaut. Streak-Freeze + Habit↔Mood-Korrelation
-> als Follow-up offen.
+> Stand: Phase 0–4 abgeschlossen, Phase 5 Kern + Phase 6 Polish (Export/Import,
+> Quick-Snooze, Keyboard-Shortcuts, A11y) eingebaut. Streak-Freeze,
+> Habit↔Mood-Korrelation und Druckansicht (PrintWeek) als Follow-up offen.
 
 ## Naming
 

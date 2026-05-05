@@ -33,3 +33,31 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+:where(button, a, [role='button'], [role='menuitem'], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-emerald-500, #10b981);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #18181b;
+  border: 2px solid #10b981;
+}
+
+.dark .skip-link:focus {
+  background-color: #18181b;
+  color: white;
+}

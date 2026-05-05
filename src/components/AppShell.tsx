@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { ThemeToggle } from './ThemeToggle'
+import { KeyboardShortcuts } from './KeyboardShortcuts'
 
 const NAV = [
   { to: '/', label: 'Heute', end: true },
@@ -12,6 +13,10 @@ const NAV = [
 export function AppShell() {
   return (
     <div className="flex min-h-full flex-col">
+      <a className="skip-link" href="#main-content">
+        Zum Inhalt springen
+      </a>
+      <KeyboardShortcuts />
       <header className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
           <h1 className="text-xl font-semibold tracking-tight">ErinnerMich</h1>
@@ -43,7 +48,11 @@ export function AppShell() {
         </ul>
       </nav>
 
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-8">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-8 focus:outline-none"
+      >
         <Outlet />
       </main>
 

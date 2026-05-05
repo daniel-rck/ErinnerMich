@@ -16,6 +16,13 @@ import {
   schedulerStatus,
   showTestNotification,
 } from '../lib/notifications/scheduler'
+import {
+  exportAll,
+  exportFilename,
+  importAll,
+  ImportSchemaError,
+  parseExport,
+} from '../lib/io/exportImport'
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme()
@@ -153,6 +160,8 @@ export function SettingsPage() {
         </section>
       )}
 
+      <DataIO />
+
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
           Datenschutz
@@ -164,6 +173,142 @@ export function SettingsPage() {
         </p>
       </section>
     </div>
+  )
+}
+
+function DataIO() {
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
+    null,
+  )
+
+  async function doExport() {
+    setBusy(true)
+    setNotice(null)
+    try {
+      const snap = await exportAll()
+      const blob = new Blob([JSON.stringify(snap, null, 2)], {
+        type: 'application/json',
+      })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = exportFilename()
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+      setNotice({
+        kind: 'ok',
+        text: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events.`,
+      })
+    } catch (err) {
+      setNotice({
+        kind: 'err',
+        text: err instanceof Error ? err.message : 'Export fehlgeschlagen.',
+      })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleFile(file: File, mode: 'merge' | 'replace') {
+    setBusy(true)
+    setNotice(null)
+    try {
+      const text = await file.text()
+      const data = parseExport(JSON.parse(text))
+      if (
+        mode === 'replace' &&
+        !confirm('Alle bestehenden Daten werden überschrieben. Fortfahren?')
+      ) {
+        setBusy(false)
+        return
+      }
+      const summary = await importAll(data, { mode })
+      setNotice({
+        kind: 'ok',
+        text: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge.`,
+      })
+    } catch (err) {
+      const text =
+        err instanceof ImportSchemaError
+          ? `Schema-Fehler: ${err.message}`
+          : err instanceof Error
+            ? err.message
+            : 'Import fehlgeschlagen.'
+      setNotice({ kind: 'err', text })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+        Daten Export / Import
+      </h2>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={doExport}
+          disabled={busy}
+          className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        >
+          Export (JSON)
+        </button>
+        <ImportButton mode="merge" onFile={handleFile} disabled={busy}>
+          Import (Merge)
+        </ImportButton>
+        <ImportButton mode="replace" onFile={handleFile} disabled={busy}>
+          Import (Ersetzen)
+        </ImportButton>
+      </div>
+      {notice && (
+        <p
+          className={
+            notice.kind === 'ok'
+              ? 'text-xs text-emerald-700 dark:text-emerald-300'
+              : 'text-xs text-rose-700 dark:text-rose-300'
+          }
+        >
+          {notice.text}
+        </p>
+      )}
+    </section>
+  )
+}
+
+function ImportButton({
+  mode,
+  onFile,
+  disabled,
+  children,
+}: {
+  mode: 'merge' | 'replace'
+  onFile: (file: File, mode: 'merge' | 'replace') => Promise<void>
+  disabled?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <label
+      className={
+        'inline-flex cursor-pointer items-center gap-1 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 ' +
+        (disabled ? 'pointer-events-none opacity-50' : '')
+      }
+    >
+      <input
+        type="file"
+        accept="application/json,.json"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          if (file) void onFile(file, mode)
+          event.target.value = ''
+        }}
+      />
+      {children}
+    </label>
   )
 }
 

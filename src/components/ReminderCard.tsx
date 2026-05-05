@@ -1,8 +1,16 @@
+import { useEffect, useRef, useState } from 'react'
 import type { Reminder } from '../lib/types'
 import { addEvent } from '../lib/db/events'
 import { updateReminder } from '../lib/db/reminders'
 import { adjustInventory } from '../lib/db/inventories'
 import { formatSchedule } from '../lib/format'
+
+const SNOOZE_OPTIONS: { minutes: number; label: string }[] = [
+  { minutes: 10, label: '+10 min' },
+  { minutes: 30, label: '+30 min' },
+  { minutes: 60, label: '+1 h' },
+  { minutes: 24 * 60, label: '+1 Tag' },
+]
 
 interface ReminderCardProps {
   reminder: Reminder
@@ -67,13 +75,7 @@ export function ReminderCard({
         >
           Erledigt
         </button>
-        <button
-          type="button"
-          onClick={() => snooze(30)}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-        >
-          +30 min
-        </button>
+        <SnoozeMenu onSnooze={snooze} />
         {onEdit && (
           <button
             type="button"
@@ -94,5 +96,67 @@ export function ReminderCard({
         )}
       </div>
     </article>
+  )
+}
+
+function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function onDocClick(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false)
+      }
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+      >
+        Snooze ▾
+      </button>
+      {open && (
+        <ul
+          role="menu"
+          className="absolute z-10 mt-1 flex min-w-[8rem] flex-col rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+        >
+          {SNOOZE_OPTIONS.map(({ minutes, label }) => (
+            <li key={minutes}>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  onSnooze(minutes)
+                  setOpen(false)
+                }}
+                className="block w-full px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
