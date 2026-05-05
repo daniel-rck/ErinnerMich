@@ -1,6 +1,7 @@
 import type { Reminder } from '../lib/types'
 import { addEvent } from '../lib/db/events'
 import { updateReminder } from '../lib/db/reminders'
+import { adjustInventory } from '../lib/db/inventories'
 import { formatSchedule } from '../lib/format'
 
 interface ReminderCardProps {
@@ -28,6 +29,9 @@ export function ReminderCard({
       await updateReminder(reminder.id, {
         schedule: { ...reminder.schedule, lastDone: now },
       })
+    }
+    if (reminder.kind === 'reminder') {
+      await adjustInventory(reminder.id, -1)
     }
   }
 

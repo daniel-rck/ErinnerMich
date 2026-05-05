@@ -5,6 +5,7 @@ const NAV = [
   { to: '/', label: 'Heute', end: true },
   { to: '/habits', label: 'Habits' },
   { to: '/all', label: 'Alle' },
+  { to: '/stats', label: 'Statistik' },
   { to: '/settings', label: 'Einstellungen' },
 ]
 

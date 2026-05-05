@@ -81,6 +81,13 @@ export function AllPage() {
               </button>
               <button
                 type="button"
+                onClick={() => navigate(`/detail/${reminder.id}`)}
+                className="rounded-md px-2.5 py-1 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              >
+                Details
+              </button>
+              <button
+                type="button"
                 onClick={() => navigate(`/edit/${reminder.id}`)}
                 className="rounded-md px-2.5 py-1 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
               >
