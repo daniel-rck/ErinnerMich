@@ -118,7 +118,7 @@ export function SettingsPage() {
             <button
               type="button"
               onClick={requestPermission}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
             >
               Berechtigung anfragen
             </button>
@@ -253,7 +253,7 @@ function DataIO() {
           type="button"
           onClick={doExport}
           disabled={busy}
-          className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           Export (JSON)
         </button>
@@ -371,7 +371,7 @@ function ChoiceButton({
       className={
         'rounded-md border px-3 py-1.5 text-sm ' +
         (active
-          ? 'border-emerald-500 bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100'
+          ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
           : 'border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800')
       }
     >

@@ -56,7 +56,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
           <button
             type="button"
             onClick={() => bump(1, 'completed')}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
             disabled={completions > 0}
           >
             {completions > 0 ? 'Erledigt' : 'Erledigt markieren'}
@@ -67,7 +67,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(1, 'progress')}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
             >
               +1 {goal.unit}
             </button>
@@ -85,7 +85,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(15, 'progress')}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
             >
               +15 min
             </button>
@@ -163,7 +163,7 @@ function ProgressRing({ ratio, icon }: { ratio: number; icon: string }) {
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
           strokeLinecap="round"
-          className="stroke-emerald-500 transition-[stroke-dashoffset] duration-300"
+          className="stroke-brand-500 transition-[stroke-dashoffset] duration-300"
         />
       </svg>
       <span className="absolute text-xl" aria-hidden>

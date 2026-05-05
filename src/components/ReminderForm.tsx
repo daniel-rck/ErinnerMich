@@ -168,7 +168,7 @@ export function ReminderForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {initial ? 'Speichern' : 'Anlegen'}
         </button>
@@ -187,7 +187,7 @@ export function ReminderForm({
 }
 
 const inputClass =
-  'w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-900'
+  'w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900'
 
 function FieldGroup({
   label,
@@ -323,7 +323,7 @@ function WeeklyEditor({
             className={
               'rounded-md border px-3 py-1.5 text-sm ' +
               (schedule.days.includes(value)
-                ? 'border-emerald-500 bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100'
+                ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
                 : 'border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800')
             }
           >

@@ -67,7 +67,7 @@ function TabButton({
       className={
         'border-b-2 px-3 py-2 text-sm font-medium transition-colors ' +
         (active
-          ? 'border-emerald-500 text-emerald-700 dark:text-emerald-300'
+          ? 'border-brand-500 text-brand-700 dark:text-brand-300'
           : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100')
       }
     >
