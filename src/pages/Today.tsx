@@ -4,6 +4,7 @@ import { deleteReminder } from '../lib/db/reminders'
 import { TodayTimeline } from '../components/TodayTimeline'
 import { TodayHero } from '../components/TodayHero'
 import { AttentionStrip } from '../components/AttentionStrip'
+import { QuickCapture } from '../components/QuickCapture'
 import type { Reminder } from '../lib/types'
 
 export function TodayPage() {
@@ -32,6 +33,7 @@ export function TodayPage() {
       </header>
 
       <TodayHero />
+      <QuickCapture />
       <AttentionStrip />
 
       {loading ? (

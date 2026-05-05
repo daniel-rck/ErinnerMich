@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Plus, X } from 'lucide-react'
 import type {
   HabitGoal,
   Reminder,
@@ -14,6 +15,9 @@ import {
   readSettings,
   writeNotificationOnboardingDone,
 } from '../lib/db/settings'
+import { lastDayOfMonth } from '../lib/schedule/helpers'
+import { SchedulePreview } from './SchedulePreview'
+import { useConfirm } from './ui/Confirm'
 
 const WEEKDAY_OPTIONS: { value: Weekday; label: string }[] = [
   { value: 'MON', label: 'Mo' },
@@ -39,6 +43,7 @@ interface ReminderFormProps {
   initial?: Reminder
   template?: Template
   kind: ReminderKind
+  initialTitle?: string
   onSaved: (reminder: Reminder) => void
   onCancel?: () => void
 }
@@ -47,10 +52,13 @@ export function ReminderForm({
   initial,
   template,
   kind,
+  initialTitle,
   onSaved,
   onCancel,
 }: ReminderFormProps) {
-  const [title, setTitle] = useState(initial?.title ?? template?.title ?? '')
+  const [title, setTitle] = useState(
+    initial?.title ?? initialTitle ?? template?.title ?? '',
+  )
   const [icon, setIcon] = useState(initial?.icon ?? template?.icon ?? '⏰')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [schedule, setSchedule] = useState<Schedule>(
@@ -61,10 +69,47 @@ export function ReminderForm({
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const confirm = useConfirm()
+
+  const initialSnapshot = useMemo(
+    () =>
+      JSON.stringify({
+        title: initial?.title ?? initialTitle ?? template?.title ?? '',
+        icon: initial?.icon ?? template?.icon ?? '⏰',
+        description: initial?.description ?? '',
+        schedule:
+          initial?.schedule ?? template?.defaultSchedule ?? {
+            type: 'daily',
+            times: ['09:00'],
+          },
+        goal:
+          initial?.goal ?? template?.defaultGoal ??
+          (kind === 'habit' ? { type: 'binary' } : undefined),
+      }),
+    [initial, initialTitle, template, kind],
+  )
+  const isDirty =
+    JSON.stringify({ title, icon, description, schedule, goal }) !==
+    initialSnapshot
 
   const isReadOnlySchedule = !EDITABLE_TYPES.includes(
     schedule.type as EditableType,
   )
+
+  async function handleCancel() {
+    if (!onCancel) return
+    if (!isDirty) {
+      onCancel()
+      return
+    }
+    const ok = await confirm({
+      title: 'Änderungen verwerfen?',
+      message: 'Deine Änderungen gehen dabei verloren.',
+      confirmLabel: 'Verwerfen',
+      destructive: true,
+    })
+    if (ok) onCancel()
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -158,6 +203,8 @@ export function ReminderForm({
         )}
       </FieldGroup>
 
+      <SchedulePreview schedule={schedule} />
+
       {error && (
         <p role="alert" className="text-sm text-rose-600">
           {error}
@@ -175,7 +222,7 @@ export function ReminderForm({
         {onCancel && (
           <button
             type="button"
-            onClick={onCancel}
+            onClick={handleCancel}
             className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
           >
             Abbrechen
@@ -280,22 +327,53 @@ function DailyEditor({
   schedule: Extract<Schedule, { type: 'daily' }>
   onChange: (s: Schedule) => void
 }) {
+  function update(times: string[]) {
+    onChange({ ...schedule, times })
+  }
+  function addTime() {
+    const fallback = schedule.times.length === 0 ? '09:00' : '20:00'
+    update([...schedule.times, fallback])
+  }
+  function removeAt(idx: number) {
+    update(schedule.times.filter((_, i) => i !== idx))
+  }
+  function setAt(idx: number, value: string) {
+    update(schedule.times.map((t, i) => (i === idx ? value : t)))
+  }
+
   return (
-    <input
-      type="text"
-      value={schedule.times.join(', ')}
-      onChange={(e) =>
-        onChange({
-          ...schedule,
-          times: e.target.value
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean),
-        })
-      }
-      placeholder="08:00, 20:00"
-      className={inputClass}
-    />
+    <div className="flex flex-wrap gap-2">
+      {schedule.times.map((time, idx) => (
+        <span
+          key={idx}
+          className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-white pl-2 pr-1 dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setAt(idx, e.target.value)}
+            aria-label={`Zeit ${idx + 1}`}
+            className="min-w-[5.5rem] bg-transparent py-1 text-sm focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => removeAt(idx)}
+            aria-label={`Zeit ${idx + 1} entfernen`}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          >
+            <X size={14} />
+          </button>
+        </span>
+      ))}
+      <button
+        type="button"
+        onClick={addTime}
+        className="inline-flex items-center gap-1 rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-brand-400 hover:text-brand-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-brand-500 dark:hover:text-brand-300"
+      >
+        <Plus size={14} />
+        Zeit hinzufügen
+      </button>
+    </div>
   )
 }
 
@@ -349,27 +427,52 @@ function MonthlyEditor({
   onChange: (s: Schedule) => void
 }) {
   return (
-    <div className="flex gap-2">
-      <input
-        type="number"
-        min={1}
-        max={31}
-        value={schedule.dayOfMonth}
-        onChange={(e) =>
-          onChange({ ...schedule, dayOfMonth: Number(e.target.value) })
-        }
-        className={inputClass}
-        aria-label="Tag im Monat"
-      />
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-7 gap-1 sm:grid-cols-10">
+        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+          <button
+            key={day}
+            type="button"
+            onClick={() => onChange({ ...schedule, dayOfMonth: day })}
+            className={
+              'rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap ' +
+              (schedule.dayOfMonth === day
+                ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                : 'border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600')
+            }
+            aria-pressed={schedule.dayOfMonth === day}
+            aria-label={`Tag ${day}`}
+          >
+            {day}
+          </button>
+        ))}
+      </div>
       <input
         type="time"
         value={schedule.time}
         onChange={(e) => onChange({ ...schedule, time: e.target.value })}
         className={inputClass}
+        aria-label="Uhrzeit"
       />
     </div>
   )
 }
+
+const MONTH_LABELS = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+]
+const LEAD_QUICK = [0, 1, 7, 30, 365] as const
 
 function YearlyEditor({
   schedule,
@@ -378,54 +481,90 @@ function YearlyEditor({
   schedule: Extract<Schedule, { type: 'yearly' }>
   onChange: (s: Schedule) => void
 }) {
+  const maxDay = lastDayOfMonth(2024, schedule.month - 1)
   return (
-    <div className="flex flex-wrap gap-2">
-      <input
-        type="number"
-        min={1}
-        max={12}
-        value={schedule.month}
-        onChange={(e) =>
-          onChange({ ...schedule, month: Number(e.target.value) })
-        }
-        className={inputClass}
-        aria-label="Monat"
-      />
-      <input
-        type="number"
-        min={1}
-        max={31}
-        value={schedule.day}
-        onChange={(e) =>
-          onChange({ ...schedule, day: Number(e.target.value) })
-        }
-        className={inputClass}
-        aria-label="Tag"
-      />
-      <input
-        type="time"
-        value={schedule.time}
-        onChange={(e) => onChange({ ...schedule, time: e.target.value })}
-        className={inputClass}
-      />
-      <input
-        type="number"
-        min={0}
-        max={365}
-        value={schedule.leadDays ?? 0}
-        onChange={(e) =>
-          onChange({
-            ...schedule,
-            leadDays: Number(e.target.value) || undefined,
-          })
-        }
-        className={inputClass}
-        aria-label="Vorlauf in Tagen"
-        placeholder="Vorlauf in Tagen"
-      />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={schedule.month}
+          onChange={(e) => {
+            const newMonth = Number(e.target.value)
+            const max = lastDayOfMonth(2024, newMonth - 1)
+            onChange({
+              ...schedule,
+              month: newMonth,
+              day: Math.min(schedule.day, max),
+            })
+          }}
+          className={inputClass + ' w-auto'}
+          aria-label="Monat"
+        >
+          {MONTH_LABELS.map((label, idx) => (
+            <option key={idx} value={idx + 1}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <input
+          type="time"
+          value={schedule.time}
+          onChange={(e) => onChange({ ...schedule, time: e.target.value })}
+          className={inputClass + ' w-auto'}
+          aria-label="Uhrzeit"
+        />
+      </div>
+      <div className="grid grid-cols-7 gap-1 sm:grid-cols-10">
+        {Array.from({ length: maxDay }, (_, i) => i + 1).map((day) => (
+          <button
+            key={day}
+            type="button"
+            onClick={() => onChange({ ...schedule, day })}
+            className={
+              'rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap ' +
+              (schedule.day === day
+                ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                : 'border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600')
+            }
+            aria-pressed={schedule.day === day}
+            aria-label={`Tag ${day}`}
+          >
+            {day}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          Vorlauf
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {LEAD_QUICK.map((d) => {
+            const active = (schedule.leadDays ?? 0) === d
+            return (
+              <button
+                key={d}
+                type="button"
+                onClick={() =>
+                  onChange({ ...schedule, leadDays: d === 0 ? undefined : d })
+                }
+                className={
+                  'rounded-full border px-3 py-1 text-xs ' +
+                  (active
+                    ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                    : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600')
+                }
+                aria-pressed={active}
+              >
+                {d === 0 ? 'kein Vorlauf' : `${d} Tage`}
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
+
+const ELAPSED_QUICK = [3, 7, 14, 30, 90] as const
 
 function ElapsedEditor({
   schedule,
@@ -435,18 +574,43 @@ function ElapsedEditor({
   onChange: (s: Schedule) => void
 }) {
   return (
-    <input
-      type="number"
-      min={1}
-      value={schedule.days}
-      onChange={(e) =>
-        onChange({ ...schedule, days: Number(e.target.value) })
-      }
-      className={inputClass}
-      aria-label="Tage zwischen Erinnerungen"
-    />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-1.5">
+        {ELAPSED_QUICK.map((d) => {
+          const active = schedule.days === d
+          return (
+            <button
+              key={d}
+              type="button"
+              onClick={() => onChange({ ...schedule, days: d })}
+              className={
+                'rounded-full border px-3 py-1 text-sm ' +
+                (active
+                  ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                  : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600')
+              }
+              aria-pressed={active}
+            >
+              alle {d} Tage
+            </button>
+          )
+        })}
+      </div>
+      <input
+        type="number"
+        min={1}
+        value={schedule.days}
+        onChange={(e) =>
+          onChange({ ...schedule, days: Number(e.target.value) })
+        }
+        className={inputClass}
+        aria-label="Eigene Anzahl Tage"
+      />
+    </div>
   )
 }
+
+const INTERVAL_QUICK = [30, 60, 90, 120, 240] as const
 
 function IntervalEditor({
   schedule,
@@ -456,17 +620,75 @@ function IntervalEditor({
   onChange: (s: Schedule) => void
 }) {
   return (
-    <input
-      type="number"
-      min={1}
-      value={schedule.minutes}
-      onChange={(e) =>
-        onChange({ ...schedule, minutes: Number(e.target.value) })
-      }
-      className={inputClass}
-      aria-label="Minuten"
-    />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-1.5">
+        {INTERVAL_QUICK.map((m) => {
+          const active = schedule.minutes === m
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => onChange({ ...schedule, minutes: m })}
+              className={
+                'rounded-full border px-3 py-1 text-sm ' +
+                (active
+                  ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                  : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600')
+              }
+              aria-pressed={active}
+            >
+              alle {m >= 60 ? `${m / 60} h` : `${m} min`}
+            </button>
+          )
+        })}
+      </div>
+      <input
+        type="number"
+        min={1}
+        value={schedule.minutes}
+        onChange={(e) =>
+          onChange({ ...schedule, minutes: Number(e.target.value) })
+        }
+        className={inputClass}
+        aria-label="Eigene Anzahl Minuten"
+      />
+    </div>
   )
+}
+
+const GOAL_PRESETS: { key: string; label: string; goal: HabitGoal }[] = [
+  { key: 'done', label: '✅ Erledigt / Nicht', goal: { type: 'binary' } },
+  {
+    key: 'water',
+    label: '💧 8 Glas Wasser',
+    goal: { type: 'count', target: 8, unit: 'Glas' },
+  },
+  {
+    key: 'steps',
+    label: '🚶 10 000 Schritte',
+    goal: { type: 'count', target: 10000, unit: 'Schritte' },
+  },
+  {
+    key: 'sport',
+    label: '🏃 30 min Sport',
+    goal: { type: 'duration', targetMinutes: 30 },
+  },
+  {
+    key: 'read',
+    label: '📚 20 min Lesen',
+    goal: { type: 'duration', targetMinutes: 20 },
+  },
+]
+
+function goalsEqual(a: HabitGoal | undefined, b: HabitGoal): boolean {
+  if (!a) return false
+  if (a.type !== b.type) return false
+  if (a.type === 'binary') return true
+  if (a.type === 'count' && b.type === 'count')
+    return a.target === b.target && a.unit === b.unit
+  if (a.type === 'duration' && b.type === 'duration')
+    return a.targetMinutes === b.targetMinutes
+  return false
 }
 
 function HabitGoalEditor({
@@ -479,6 +701,27 @@ function HabitGoalEditor({
   const type = goal?.type ?? 'binary'
   return (
     <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-1.5">
+        {GOAL_PRESETS.map((preset) => {
+          const active = goalsEqual(goal, preset.goal)
+          return (
+            <button
+              key={preset.key}
+              type="button"
+              onClick={() => onChange(preset.goal)}
+              className={
+                'rounded-full border px-3 py-1 text-sm ' +
+                (active
+                  ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
+                  : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600')
+              }
+              aria-pressed={active}
+            >
+              {preset.label}
+            </button>
+          )
+        })}
+      </div>
       <select
         value={type}
         onChange={(e) => {
@@ -489,6 +732,7 @@ function HabitGoalEditor({
           else onChange({ type: 'duration', targetMinutes: 30 })
         }}
         className={inputClass}
+        aria-label="Ziel-Typ"
       >
         <option value="binary">Erledigt / Nicht erledigt</option>
         <option value="count">Zähler (z.B. 8 Glas)</option>
