@@ -1,9 +1,13 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check, Clock, Pencil, Trash2 } from 'lucide-react'
 import type { Reminder } from '../lib/types'
 import { addEvent } from '../lib/db/events'
 import { updateReminder } from '../lib/db/reminders'
 import { adjustInventory } from '../lib/db/inventories'
 import { formatSchedule } from '../lib/format'
+import { vibrate } from './ui/Haptic'
+import { useToast } from './ui/Toast'
 
 const SNOOZE_OPTIONS: { minutes: number; label: string }[] = [
   { minutes: 10, label: '+10 min' },
@@ -25,8 +29,11 @@ export function ReminderCard({
   onEdit,
   onDelete,
 }: ReminderCardProps) {
+  const toast = useToast()
+
   async function complete() {
     const now = Date.now()
+    vibrate('success')
     await addEvent({
       reminderId: reminder.id,
       action: 'completed',
@@ -41,10 +48,12 @@ export function ReminderCard({
     if (reminder.kind === 'reminder') {
       await adjustInventory(reminder.id, -1)
     }
+    toast.show({ variant: 'success', message: `„${reminder.title}" erledigt` })
   }
 
   async function snooze(minutes: number) {
     const now = Date.now()
+    vibrate('tick')
     await addEvent({
       reminderId: reminder.id,
       action: 'snoozed',
@@ -52,10 +61,18 @@ export function ReminderCard({
       scheduledFor: scheduledFor?.getTime(),
       snoozeUntil: now + minutes * 60_000,
     })
+    toast.show({ message: `Erneut in ${formatSnooze(minutes)}` })
   }
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+      className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+    >
       <header className="flex items-start gap-3">
         <span className="text-2xl" aria-hidden>
           {reminder.icon}
@@ -68,36 +85,48 @@ export function ReminderCard({
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-2">
-        <button
+      <div className="flex flex-wrap items-center gap-2">
+        <motion.button
           type="button"
           onClick={complete}
-          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+          whileTap={{ scale: 0.94 }}
+          className="inline-flex items-center gap-1.5 rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
         >
+          <Check size={14} />
           Erledigt
-        </button>
+        </motion.button>
         <SnoozeMenu onSnooze={snooze} />
         {onEdit && (
           <button
             type="button"
             onClick={() => onEdit(reminder)}
-            className="ml-auto rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            aria-label="Bearbeiten"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
-            Bearbeiten
+            <Pencil size={14} />
+            <span className="hidden sm:inline">Bearbeiten</span>
           </button>
         )}
         {onDelete && (
           <button
             type="button"
             onClick={() => onDelete(reminder)}
-            className="rounded-md px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+            aria-label="Löschen"
+            className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
           >
-            Löschen
+            <Trash2 size={14} />
+            <span className="hidden sm:inline">Löschen</span>
           </button>
         )}
       </div>
-    </article>
+    </motion.article>
   )
+}
+
+function formatSnooze(minutes: number): string {
+  if (minutes >= 24 * 60) return `${Math.round(minutes / (24 * 60))} Tagen`
+  if (minutes >= 60) return `${Math.round(minutes / 60)} Std.`
+  return `${minutes} min`
 }
 
 function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
@@ -134,9 +163,10 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={popoverId}
-        className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
       >
-        Snooze ▾
+        <Clock size={14} />
+        Snooze
       </button>
       {open && (
         <div

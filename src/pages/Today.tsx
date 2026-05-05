@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { useReminders } from '../lib/hooks/useReminders'
 import { deleteReminder } from '../lib/db/reminders'
 import { TodayTimeline } from '../components/TodayTimeline'
+import { TodayHero } from '../components/TodayHero'
+import { AttentionStrip } from '../components/AttentionStrip'
 import type { Reminder } from '../lib/types'
 
 export function TodayPage() {
@@ -10,10 +12,6 @@ export function TodayPage() {
     kind: 'reminder',
     activeOnly: true,
   })
-
-  if (loading) {
-    return <p className="text-sm text-zinc-500">Lade …</p>
-  }
 
   async function handleDelete(reminder: Reminder) {
     if (!confirm(`„${reminder.title}“ wirklich löschen?`)) return
@@ -33,11 +31,18 @@ export function TodayPage() {
         </button>
       </header>
 
-      <TodayTimeline
-        reminders={reminders}
-        onEdit={(r) => navigate(`/edit/${r.id}`)}
-        onDelete={handleDelete}
-      />
+      <TodayHero />
+      <AttentionStrip />
+
+      {loading ? (
+        <p className="text-sm text-zinc-500">Lade …</p>
+      ) : (
+        <TodayTimeline
+          reminders={reminders}
+          onEdit={(r) => navigate(`/edit/${r.id}`)}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   )
 }
