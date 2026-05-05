@@ -172,6 +172,14 @@ export function SettingsPage() {
           Tracker. DSGVO-konform per Default.
         </p>
       </section>
+
+      <section className="flex flex-col gap-2 border-t border-zinc-200 pt-6 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p>
+          ErinnerMich · Daten werden ausschließlich lokal in deinem Browser
+          gespeichert.
+        </p>
+        <p>Keine Cookies · Kein Tracking · DSGVO-konform</p>
+      </section>
     </div>
   )
 }

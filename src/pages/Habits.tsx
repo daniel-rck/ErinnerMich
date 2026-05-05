@@ -19,7 +19,7 @@ export function HabitsPage() {
         <button
           type="button"
           onClick={() => navigate('/new?kind=habit')}
-          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+          className="hidden rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex"
         >
           + Neu
         </button>
