@@ -29,7 +29,7 @@ export function HabitsPage() {
         <p className="text-sm text-zinc-500">Lade …</p>
       ) : reminders.length === 0 ? (
         <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-          Noch keine Habits. Tippe auf „+ Neu", um einen anzulegen.
+          Noch keine Habits. Tippe auf „+ Neu“, um einen anzulegen.
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">

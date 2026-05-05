@@ -104,15 +104,36 @@ export async function clearReminderTriggers(
   registration: ServiceWorkerRegistration,
   reminderId: string,
 ): Promise<void> {
-  const opts: GetNotificationsOptions = { includeTriggered: true }
-  const all = await (
-    registration as unknown as {
-      getNotifications: (opts?: GetNotificationsOptions) => Promise<Notification[]>
-    }
-  ).getNotifications(opts)
+  const all = await getRegisteredNotifications(registration)
   for (const n of all) {
     if (n.tag.startsWith(`reminder-${reminderId}-`)) {
       n.close()
     }
   }
+}
+
+/**
+ * Closes every reminder-tagged notification, including ones armed via the
+ * Triggers API that haven't fired yet. Used on `db-cleared` / Import-Replace.
+ */
+export async function clearAllTriggers(
+  registration: ServiceWorkerRegistration,
+): Promise<void> {
+  const all = await getRegisteredNotifications(registration)
+  for (const n of all) {
+    if (n.tag.startsWith('reminder-')) {
+      n.close()
+    }
+  }
+}
+
+async function getRegisteredNotifications(
+  registration: ServiceWorkerRegistration,
+): Promise<Notification[]> {
+  const opts: GetNotificationsOptions = { includeTriggered: true }
+  return (
+    registration as unknown as {
+      getNotifications: (opts?: GetNotificationsOptions) => Promise<Notification[]>
+    }
+  ).getNotifications(opts)
 }

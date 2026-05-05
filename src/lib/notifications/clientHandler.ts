@@ -152,17 +152,24 @@ async function maybeDecrementInventory(reminder: Reminder): Promise<void> {
  * so cold-start clicks (no live page) can still apply their action.
  */
 export function consumeUrlNotifAction(
-  href: string = window.location.href,
+  href?: string,
 ): NotificationActionPayload | null {
+  const usedExplicitHref = href !== undefined
+  const target =
+    href ??
+    (typeof window !== 'undefined' ? window.location.href : undefined)
+  if (!target) return null
   try {
-    const url = new URL(href)
+    const url = new URL(target)
     const raw = url.searchParams.get('notif')
     if (!raw) return null
     const [action, reminderId, scheduledFor, kind] = raw.split('|')
     if (!action || !reminderId || !scheduledFor || !kind) return null
     if (kind !== 'reminder' && kind !== 'habit' && kind !== 'mood') return null
     url.searchParams.delete('notif')
-    if (typeof history !== 'undefined') {
+    // Only rewrite history when we read from the live URL — calls with an
+    // explicit href (tests, SW context) must not mutate browser state.
+    if (!usedExplicitHref && typeof history !== 'undefined') {
       history.replaceState(null, '', url.pathname + url.search + url.hash)
     }
     return {

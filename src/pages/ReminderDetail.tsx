@@ -158,7 +158,7 @@ function EventRow({ event }: { event: ReminderEvent }) {
         )}
         {event.note && (
           <span className="text-xs italic text-zinc-500 dark:text-zinc-400">
-            „{event.note}"
+            „{event.note}“
           </span>
         )}
       </span>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { Reminder } from '../lib/types'
 import { addEvent } from '../lib/db/events'
 import { updateReminder } from '../lib/db/reminders'
@@ -49,6 +49,7 @@ export function ReminderCard({
       reminderId: reminder.id,
       action: 'snoozed',
       triggeredAt: now,
+      scheduledFor: scheduledFor?.getTime(),
       snoozeUntil: now + minutes * 60_000,
     })
   }
@@ -102,6 +103,7 @@ export function ReminderCard({
 function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const popoverId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -129,33 +131,33 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
+        aria-haspopup="true"
         aria-expanded={open}
+        aria-controls={popoverId}
         className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
       >
         Snooze ▾
       </button>
       {open && (
-        <ul
-          role="menu"
+        <div
+          id={popoverId}
+          aria-label="Snooze-Optionen"
           className="absolute z-10 mt-1 flex min-w-[8rem] flex-col rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
         >
           {SNOOZE_OPTIONS.map(({ minutes, label }) => (
-            <li key={minutes}>
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  onSnooze(minutes)
-                  setOpen(false)
-                }}
-                className="block w-full px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
-              >
-                {label}
-              </button>
-            </li>
+            <button
+              key={minutes}
+              type="button"
+              onClick={() => {
+                onSnooze(minutes)
+                setOpen(false)
+              }}
+              className="block w-full px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
+            >
+              {label}
+            </button>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )

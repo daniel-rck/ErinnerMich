@@ -3,6 +3,7 @@ import { getReminder, listReminders } from '../db/reminders'
 import { subscribe } from '../db/broadcast'
 import {
   armReminderTriggers,
+  clearAllTriggers,
   clearReminderTriggers,
   supportsNotificationTriggers,
 } from './triggers'
@@ -106,6 +107,12 @@ async function handleMessage(message: { type: string }): Promise<void> {
   }
   if (message.type === 'db-cleared') {
     clearAllInTabTimers()
+    const registration = await getRegistration()
+    if (registration) {
+      await clearAllTriggers(registration)
+    }
+    // After a wipe (Import-Replace), arm whatever now lives in the DB.
+    await rearmAll()
   }
 }
 

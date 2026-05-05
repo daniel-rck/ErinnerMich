@@ -47,9 +47,10 @@ export function Heatmap({
   ariaLabel = 'Heatmap',
   palette = DEFAULT_PALETTE,
 }: HeatmapProps) {
-  const grid = useMemo(() => buildGrid(weeks, today), [weeks, today])
-  const width = weeks * (cellSize + cellGap)
-  const height = 7 * (cellSize + cellGap) + 16
+  const step = cellSize + cellGap
+  const grid = useMemo(() => buildGrid(weeks, today, step), [weeks, today, step])
+  const width = weeks * step
+  const height = 7 * step + 16
 
   return (
     <svg
@@ -115,6 +116,7 @@ interface MonthLabel {
 function buildGrid(
   weeks: number,
   today: Date,
+  step: number,
 ): { cells: Cell[]; monthLabels: MonthLabel[] } {
   const cells: Cell[] = []
   const monthLabels: MonthLabel[] = []
@@ -132,14 +134,14 @@ function buildGrid(
   let dayCursor = startDayKey
   for (let col = 0; col < weeks; col++) {
     for (let row = 0; row < 7; row++) {
-      const x = col * 14
-      const y = row * 14
+      const x = col * step
+      const y = row * step
       cells.push({ day: dayCursor, x, y })
       dayCursor = dayKeyAddDays(dayCursor, 1)
     }
     const month = Number(dayCursor.split('-')[1]) - 1
     if (month !== lastMonth && col % 4 === 0) {
-      monthLabels.push({ x: col * 14, label: MONTHS_SHORT[month] })
+      monthLabels.push({ x: col * step, label: MONTHS_SHORT[month] })
       lastMonth = month
     }
   }
