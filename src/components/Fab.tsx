@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Bell, Flame, Smile } from 'lucide-react'
 import { vibrate } from './ui/Haptic'
+import { useMoodLog } from './MoodLog/MoodLogProvider'
 
 const LONG_PRESS_MS = 400
 
 export function Fab() {
   const navigate = useNavigate()
+  const moodLog = useMoodLog()
   const [open, setOpen] = useState(false)
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const longPressFired = useRef(false)
@@ -83,7 +85,10 @@ export function Fab() {
             <FabMenuItem
               icon={<Smile size={16} />}
               label="Mood loggen"
-              onClick={() => pick('/new?kind=mood')}
+              onClick={() => {
+                setOpen(false)
+                moodLog.open()
+              }}
             />
             <FabMenuItem
               icon={<Flame size={16} />}

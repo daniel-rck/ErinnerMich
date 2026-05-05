@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './lib/hooks/useTheme'
 import { ToastProvider } from './components/ui/Toast'
 import { ConfirmProvider } from './components/ui/Confirm'
+import { MoodLogProvider } from './components/MoodLog/MoodLogProvider'
 import { AppShell } from './components/AppShell'
 import { TodayPage } from './pages/Today'
 import { HabitsPage } from './pages/Habits'
@@ -18,20 +19,22 @@ export function App() {
     <ThemeProvider>
       <ToastProvider>
         <ConfirmProvider>
-          <NotificationsBootstrap />
           <BrowserRouter>
-            <Routes>
-              <Route element={<AppShell />}>
-                <Route index element={<TodayPage />} />
-                <Route path="habits" element={<HabitsPage />} />
-                <Route path="all" element={<AllPage />} />
-                <Route path="stats" element={<StatsPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="new" element={<NewReminderPage />} />
-                <Route path="edit/:id" element={<EditReminderPage />} />
-                <Route path="detail/:id" element={<ReminderDetailPage />} />
-              </Route>
-            </Routes>
+            <MoodLogProvider>
+              <NotificationsBootstrap />
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route index element={<TodayPage />} />
+                  <Route path="habits" element={<HabitsPage />} />
+                  <Route path="all" element={<AllPage />} />
+                  <Route path="stats" element={<StatsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="new" element={<NewReminderPage />} />
+                  <Route path="edit/:id" element={<EditReminderPage />} />
+                  <Route path="detail/:id" element={<ReminderDetailPage />} />
+                </Route>
+              </Routes>
+            </MoodLogProvider>
           </BrowserRouter>
         </ConfirmProvider>
       </ToastProvider>

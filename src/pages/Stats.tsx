@@ -285,47 +285,73 @@ function MoodStats() {
         </section>
       )}
 
-      {correlations.some((c) => c.r !== null) && (
-        <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-            Habit ↔ Mood-Korrelation
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Pearson-Koeffizient zwischen Habit-Erfüllung und Tages-Mood. +1 ↔
-            stark positiv, −1 ↔ stark negativ. Mindestens 2 überlappende
-            Mood-Tage nötig.
-          </p>
-          <ul className="flex flex-col gap-1 text-sm">
-            {correlations
-              .filter((c) => c.r !== null)
-              .sort((a, b) => Math.abs(b.r ?? 0) - Math.abs(a.r ?? 0))
-              .map((c) => (
-                <li
-                  key={c.habitId}
-                  className="flex items-center justify-between gap-3 border-b border-zinc-100 py-1 last:border-b-0 dark:border-zinc-800"
-                >
-                  <span className="flex items-center gap-2">
-                    <span aria-hidden>{c.habitIcon}</span>
-                    {c.habitTitle}
-                  </span>
-                  <span
-                    className={
-                      'tabular-nums ' +
-                      (c.r! > 0.3
-                        ? 'text-emerald-700 dark:text-emerald-300'
-                        : c.r! < -0.3
-                          ? 'text-rose-700 dark:text-rose-300'
-                          : 'text-zinc-600 dark:text-zinc-400')
-                    }
-                  >
-                    r = {c.r!.toFixed(2)} ({c.pairs} Tage)
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </section>
-      )}
+      <CorrelationInsights correlations={correlations} />
     </div>
+  )
+}
+
+function CorrelationInsights({
+  correlations,
+}: {
+  correlations: ReturnType<typeof habitMoodCorrelations>
+}) {
+  const meaningful = correlations
+    .filter((c) => c.r !== null && Math.abs(c.r) > 0.3 && c.pairs >= 4)
+    .sort((a, b) => Math.abs(b.r ?? 0) - Math.abs(a.r ?? 0))
+
+  if (meaningful.length === 0) return null
+
+  return (
+    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <header className="flex items-baseline justify-between gap-3">
+        <h2 className="text-sm font-medium uppercase text-zinc-500 dark:text-zinc-400">
+          Was wirkt auf deine Stimmung?
+        </h2>
+        <span className="text-xs text-zinc-400">aus den letzten 30 Tagen</span>
+      </header>
+      <ul className="flex flex-col gap-2">
+        {meaningful.map((c) => {
+          const positive = (c.r ?? 0) > 0
+          const intensity = Math.abs(c.r ?? 0)
+          return (
+            <li
+              key={c.habitId}
+              className={
+                'flex items-start gap-3 rounded-md border-l-4 p-3 ' +
+                (positive
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
+                  : 'border-rose-500 bg-rose-50 dark:bg-rose-950/30')
+              }
+            >
+              <span className="text-2xl" aria-hidden>
+                {c.habitIcon}
+              </span>
+              <div className="flex flex-col gap-0.5 text-sm">
+                <p
+                  className={
+                    positive
+                      ? 'text-emerald-900 dark:text-emerald-100'
+                      : 'text-rose-900 dark:text-rose-100'
+                  }
+                >
+                  An Tagen mit <strong>{c.habitTitle}</strong> warst du im
+                  Schnitt{' '}
+                  <strong>
+                    {(intensity * 1.5).toFixed(1)} Punkte{' '}
+                    {positive ? 'glücklicher' : 'gestresster'}
+                  </strong>
+                  .
+                </p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                  {c.pairs} überlappende Tage · Stärke{' '}
+                  {intensity > 0.6 ? 'stark' : 'mittel'}
+                </p>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 

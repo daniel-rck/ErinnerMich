@@ -9,6 +9,7 @@ import { TodayTimeline } from '../components/TodayTimeline'
 import { TodayHero } from '../components/TodayHero'
 import { AttentionStrip } from '../components/AttentionStrip'
 import { QuickCapture } from '../components/QuickCapture'
+import { MoodTile } from '../components/MoodTile'
 import { useToast } from '../components/ui/Toast'
 import type { Reminder } from '../lib/types'
 
@@ -58,6 +59,7 @@ export function TodayPage() {
 
       <TodayHero />
       <QuickCapture />
+      <MoodTile />
       <AttentionStrip />
 
       {loading ? (

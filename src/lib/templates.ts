@@ -248,9 +248,43 @@ export const HABIT_TEMPLATES: Template[] = [
   },
 ]
 
+export const MOOD_TEMPLATES: Template[] = [
+  {
+    key: 'mood-daily',
+    kind: 'mood',
+    title: 'Tages-Stimmung',
+    icon: '🙂',
+    category: 'mood',
+    color: 'violet',
+    description: '5-Emoji-Skala, einmal pro Tag',
+    defaultSchedule: { type: 'daily', times: ['21:00'] },
+  },
+  {
+    key: 'mood-twice',
+    kind: 'mood',
+    title: 'Mood 2× am Tag',
+    icon: '😊',
+    category: 'mood',
+    color: 'violet',
+    description: 'Morgens + Abends',
+    defaultSchedule: { type: 'daily', times: ['09:00', '21:00'] },
+  },
+  {
+    key: 'mood-energy',
+    kind: 'mood',
+    title: 'Mood + Energie',
+    icon: '⚡',
+    category: 'mood',
+    color: 'violet',
+    description: '2D-Grid Stimmung × Energie',
+    defaultSchedule: { type: 'daily', times: ['21:00'] },
+  },
+]
+
 export const ALL_TEMPLATES: Template[] = [
   ...REMINDER_TEMPLATES,
   ...HABIT_TEMPLATES,
+  ...MOOD_TEMPLATES,
 ]
 
 function nextYearTimestamp(): number {
