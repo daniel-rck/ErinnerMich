@@ -15,7 +15,7 @@ export function AllPage() {
   })
 
   async function handleDelete(reminder: Reminder) {
-    if (!confirm(`„${reminder.title}" wirklich löschen?`)) return
+    if (!confirm(`„${reminder.title}“ wirklich löschen?`)) return
     await deleteReminder(reminder.id)
   }
 
@@ -78,6 +78,13 @@ export function AllPage() {
                 className="rounded-md border border-zinc-300 px-2.5 py-1 text-xs hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
               >
                 {reminder.active ? 'Aktiv' : 'Pausiert'}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/detail/${reminder.id}`)}
+                className="rounded-md px-2.5 py-1 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              >
+                Details
               </button>
               <button
                 type="button"

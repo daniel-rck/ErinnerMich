@@ -84,3 +84,7 @@ Siehe Plan-Dokument im Auftraggeber-Workflow. Phasen:
 - Alle Reminder-, Habit- und Event-Daten liegen ausschließlich lokal
   (IndexedDB / `localStorage`)
 - Optionaler Sync (Phase 7) überträgt nur AES-GCM-verschlüsselte Bytes
+
+## Lizenz
+
+[MIT](./LICENSE) © Daniel Rück

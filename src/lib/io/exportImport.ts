@@ -1,0 +1,154 @@
+import type {
+  Inventory,
+  MoodEntry,
+  Reminder,
+  ReminderEvent,
+} from '../types'
+import { dayKey, getDB, type StoredMoodEntry, type StoredReminderEvent } from '../db'
+import { broadcast } from '../db/broadcast'
+
+export const EXPORT_SCHEMA_VERSION = 1
+
+export interface ErinnermichExport {
+  schema: 'erinnermich'
+  schemaVersion: number
+  exportedAt: number
+  reminders: Reminder[]
+  events: ReminderEvent[]
+  inventories: Inventory[]
+  moodEntries: MoodEntry[]
+}
+
+export interface ImportSummary {
+  reminders: number
+  events: number
+  inventories: number
+  moodEntries: number
+}
+
+function stripStoredEvent(stored: StoredReminderEvent): ReminderEvent {
+  const { triggeredAtDay: _day, ...rest } = stored
+  return rest
+}
+
+function stripStoredMood(stored: StoredMoodEntry): MoodEntry {
+  const { loggedAtDay: _day, ...rest } = stored
+  return rest
+}
+
+export async function exportAll(): Promise<ErinnermichExport> {
+  const db = await getDB()
+  const [reminders, events, inventories, moods] = await Promise.all([
+    db.getAll('reminders'),
+    db.getAll('events'),
+    db.getAll('inventories'),
+    db.getAll('mood_entries'),
+  ])
+  return {
+    schema: 'erinnermich',
+    schemaVersion: EXPORT_SCHEMA_VERSION,
+    exportedAt: Date.now(),
+    reminders,
+    events: events.map(stripStoredEvent),
+    inventories,
+    moodEntries: moods.map(stripStoredMood),
+  }
+}
+
+export interface ImportOptions {
+  /** 'replace' clears existing stores first; 'merge' keeps existing rows. */
+  mode?: 'replace' | 'merge'
+}
+
+export class ImportSchemaError extends Error {}
+
+export function parseExport(raw: unknown): ErinnermichExport {
+  if (!raw || typeof raw !== 'object') {
+    throw new ImportSchemaError('Datei ist kein gültiges JSON-Objekt.')
+  }
+  const obj = raw as Record<string, unknown>
+  if (obj.schema !== 'erinnermich') {
+    throw new ImportSchemaError(`Unbekanntes Schema „${String(obj.schema)}".`)
+  }
+  if (typeof obj.schemaVersion !== 'number') {
+    throw new ImportSchemaError('schemaVersion fehlt oder ist kein Integer.')
+  }
+  if (obj.schemaVersion > EXPORT_SCHEMA_VERSION) {
+    throw new ImportSchemaError(
+      `schemaVersion=${obj.schemaVersion} ist neuer als unterstützt (${EXPORT_SCHEMA_VERSION}).`,
+    )
+  }
+  for (const key of [
+    'reminders',
+    'events',
+    'inventories',
+    'moodEntries',
+  ] as const) {
+    if (!Array.isArray(obj[key])) {
+      throw new ImportSchemaError(`Feld „${key}" muss ein Array sein.`)
+    }
+  }
+  return obj as unknown as ErinnermichExport
+}
+
+export async function importAll(
+  data: ErinnermichExport,
+  options: ImportOptions = {},
+): Promise<ImportSummary> {
+  const mode = options.mode ?? 'merge'
+  const db = await getDB()
+  const tx = db.transaction(
+    ['reminders', 'events', 'inventories', 'mood_entries'],
+    'readwrite',
+  )
+
+  if (mode === 'replace') {
+    await tx.objectStore('reminders').clear()
+    await tx.objectStore('events').clear()
+    await tx.objectStore('inventories').clear()
+    await tx.objectStore('mood_entries').clear()
+  }
+
+  for (const reminder of data.reminders) {
+    await tx.objectStore('reminders').put(reminder)
+  }
+  for (const event of data.events) {
+    const stored: StoredReminderEvent = {
+      ...event,
+      triggeredAtDay: event.triggeredAt ? dayKey(event.triggeredAt) : undefined,
+    }
+    await tx.objectStore('events').put(stored)
+  }
+  for (const inventory of data.inventories) {
+    await tx.objectStore('inventories').put(inventory)
+  }
+  for (const mood of data.moodEntries) {
+    const stored: StoredMoodEntry = {
+      ...mood,
+      loggedAtDay: dayKey(mood.loggedAt),
+    }
+    await tx.objectStore('mood_entries').put(stored)
+  }
+
+  await tx.done
+  if (mode === 'replace') {
+    broadcast({ type: 'db-cleared' })
+  }
+  for (const reminder of data.reminders) {
+    broadcast({ type: 'reminder-changed', id: reminder.id })
+  }
+
+  return {
+    reminders: data.reminders.length,
+    events: data.events.length,
+    inventories: data.inventories.length,
+    moodEntries: data.moodEntries.length,
+  }
+}
+
+export function exportFilename(now: Date = new Date()): string {
+  const yyyy = now.getFullYear()
+  const mm = String(now.getMonth() + 1).padStart(2, '0')
+  const dd = String(now.getDate()).padStart(2, '0')
+  return `erinnermich-${yyyy}-${mm}-${dd}.json`
+}

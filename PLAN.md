@@ -1,7 +1,9 @@
 # ErinnerMich — Roadmap
 
 > Lebendiges Dokument. Jede Phase wird in einer eigenen PR umgesetzt.
-> Stand: Phase 0 abgeschlossen.
+> Stand: Phase 0–6 abgeschlossen (inkl. Streak-Freeze + Habit↔Mood-Korrelation).
+> Druckansicht bewusst aus dem Scope genommen. Phase 7 (verschlüsselter Sync)
+> bleibt optional.
 
 ## Naming
 
@@ -242,7 +244,7 @@ Inventory-Threshold-Crossing.
 - Refill-Flow: `Inventory` zurücksetzen, `lastRefillAt` updaten
 - Dark-Mode persistent in `localStorage`
 
-### Phase 4 — Notifications
+### Phase 4 — Notifications ✅
 
 - `Notification.requestPermission()` erst beim Speichern des ersten aktiven Reminders
 - `src/lib/notifications/triggers.ts`: Notification Triggers API (`showTrigger` mit

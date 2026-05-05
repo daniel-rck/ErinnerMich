@@ -16,7 +16,7 @@ export function TodayPage() {
   }
 
   async function handleDelete(reminder: Reminder) {
-    if (!confirm(`„${reminder.title}" wirklich löschen?`)) return
+    if (!confirm(`„${reminder.title}“ wirklich löschen?`)) return
     await deleteReminder(reminder.id)
   }
 
