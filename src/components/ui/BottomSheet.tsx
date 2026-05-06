@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useId, type ReactNode } from 'react'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 
 interface BottomSheetProps {
@@ -17,6 +17,7 @@ export function BottomSheet({
   labelledBy,
 }: BottomSheetProps) {
   const controls = useDragControls()
+  const titleId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -49,9 +50,7 @@ export function BottomSheet({
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-labelledby={
-              labelledBy ?? (title ? 'bottomsheet-title' : undefined)
-            }
+            aria-labelledby={labelledBy ?? (title ? titleId : undefined)}
             drag="y"
             dragControls={controls}
             dragListener={false}
@@ -74,10 +73,7 @@ export function BottomSheet({
               <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
             </div>
             {title && (
-              <h2
-                id="bottomsheet-title"
-                className="px-5 pb-3 text-base font-semibold"
-              >
+              <h2 id={titleId} className="px-5 pb-3 text-base font-semibold">
                 {title}
               </h2>
             )}

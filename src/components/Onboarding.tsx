@@ -85,7 +85,7 @@ export function Onboarding() {
     })
     toast.show({
       variant: 'success',
-      message: `„${template.title}" angelegt`,
+      message: `„${template.title}“ angelegt`,
     })
     complete()
     navigate('/habits')

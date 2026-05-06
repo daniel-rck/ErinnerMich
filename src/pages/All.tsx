@@ -64,7 +64,8 @@ export function AllPage() {
     }, DELETE_GRACE_MS)
     toast.show({
       variant: 'success',
-      message: `„${reminder.title}" gelöscht`,
+      message: `„${reminder.title}“ gelöscht`,
+      durationMs: DELETE_GRACE_MS,
       action: {
         label: 'Rückgängig',
         onClick: () => {
@@ -102,7 +103,7 @@ export function AllPage() {
       </div>
 
       <div
-        role="tablist"
+        role="group"
         aria-label="Filter"
         className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
       >
@@ -134,7 +135,7 @@ export function AllPage() {
       ) : visible.length === 0 ? (
         <EmptyState search={search} />
       ) : (
-        <ul role="tabpanel" className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2">
           {visible.map((reminder) => (
             <RowItem
               key={reminder.id}
@@ -157,7 +158,7 @@ function EmptyState({ search }: { search: string }) {
   if (search.trim().length > 0) {
     return (
       <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-        Keine Treffer für „{search}".
+        Keine Treffer für „{search}“.
       </p>
     )
   }
@@ -320,8 +321,7 @@ function FilterButton({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={
         'flex-1 rounded-md px-3 py-1.5 text-sm font-medium ' +

@@ -17,6 +17,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
   const confirm: ConfirmFn = useCallback((options) => {
     return new Promise<boolean>((resolve) => {
+      // If a previous dialog is still open, resolve it as `false` so the
+      // earlier caller's promise never leaks.
+      const previous = pendingRef.current
+      if (previous) previous.resolve(false)
       const next: PendingState = { options, resolve }
       pendingRef.current = next
       setPending(next)

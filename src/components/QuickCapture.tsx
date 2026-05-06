@@ -39,7 +39,7 @@ export function QuickCapture() {
       vibrate('tick')
       toast.show({
         variant: 'success',
-        message: `„${parsed.title}" angelegt`,
+        message: `„${parsed.title}“ angelegt`,
         action: {
           label: 'Bearbeiten',
           onClick: () => navigate(`/edit/${created.id}`),
@@ -73,7 +73,7 @@ export function QuickCapture() {
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder='Schnell-Eintrag — z.B. „Mama Sonntag 18 Uhr"'
+        placeholder='Schnell-Eintrag — z.B. „Mama Sonntag 18 Uhr“'
         aria-label="Schnell-Eintrag"
         className="min-w-0 flex-1 bg-transparent py-2 text-sm focus:outline-none"
         disabled={busy}

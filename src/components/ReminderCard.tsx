@@ -49,7 +49,7 @@ export function ReminderCard({
     if (reminder.kind === 'reminder') {
       await adjustInventory(reminder.id, -1)
     }
-    toast.show({ variant: 'success', message: `„${reminder.title}" erledigt` })
+    toast.show({ variant: 'success', message: `„${reminder.title}“ erledigt` })
   }
 
   async function snoozeAt(at: Date, label: string) {

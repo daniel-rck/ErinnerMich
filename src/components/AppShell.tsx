@@ -35,8 +35,9 @@ export function AppShell() {
       <KeyboardShortcuts />
       <header className="border-b border-zinc-200 px-4 pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-3 sm:px-6 sm:py-4 dark:border-zinc-800">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-          <a
-            href="/"
+          <NavLink
+            to="/"
+            end
             className="inline-flex items-center gap-2 no-min-tap"
             aria-label="ErinnerMich"
           >
@@ -49,7 +50,7 @@ export function AppShell() {
             <span className="text-base font-semibold tracking-tight">
               ErinnerMich
             </span>
-          </a>
+          </NavLink>
           <ThemeToggle />
         </div>
       </header>

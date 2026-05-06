@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
 
@@ -30,6 +30,7 @@ export function Modal({
   hideClose = false,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  const titleId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -65,7 +66,7 @@ export function Modal({
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-labelledby={labelledBy ?? (title ? 'modal-title' : undefined)}
+            aria-labelledby={labelledBy ?? (title ? titleId : undefined)}
             ref={dialogRef}
             tabIndex={-1}
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -77,7 +78,7 @@ export function Modal({
             {(title || !hideClose) && (
               <header className="flex items-center justify-between gap-3 border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
                 {title ? (
-                  <h2 id="modal-title" className="text-base font-semibold">
+                  <h2 id={titleId} className="text-base font-semibold">
                     {title}
                   </h2>
                 ) : (
