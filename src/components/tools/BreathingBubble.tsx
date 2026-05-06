@@ -36,6 +36,7 @@ export function BreathingBubble() {
   const [phaseElapsed, setPhaseElapsed] = useState(0)
   const [totalElapsed, setTotalElapsed] = useState(0)
   const sessionStartRef = useRef<number | null>(null)
+  const finishingRef = useRef(false)
   const reducedMotion = useReducedMotion()
   const toast = useToast()
 
@@ -67,7 +68,8 @@ export function BreathingBubble() {
       })
       setTotalElapsed((t) => {
         const next = t + 0.1
-        if (next >= TOTAL_SECONDS) {
+        if (next >= TOTAL_SECONDS && !finishingRef.current) {
+          finishingRef.current = true
           void finish()
         }
         return next
@@ -79,6 +81,7 @@ export function BreathingBubble() {
 
   function start() {
     sessionStartRef.current = Date.now()
+    finishingRef.current = false
     setRunning(true)
   }
 
@@ -92,23 +95,34 @@ export function BreathingBubble() {
     setPhaseElapsed(0)
     setTotalElapsed(0)
     sessionStartRef.current = null
+    finishingRef.current = false
   }
 
   async function finish() {
     setRunning(false)
     const start = sessionStartRef.current
-    if (!start) return
+    if (!start) {
+      finishingRef.current = false
+      return
+    }
     const durationSec = Math.round((Date.now() - start) / 1000)
     sessionStartRef.current = null
-    await addToolEntry({
-      toolKey: 'breathing',
-      loggedAt: Date.now(),
-      durationSec,
-    })
-    toast.show({
-      variant: 'success',
-      message: `Atemübung abgeschlossen (${durationSec}s).`,
-    })
+    try {
+      await addToolEntry({
+        toolKey: 'breathing',
+        loggedAt: Date.now(),
+        durationSec,
+      })
+      toast.show({
+        variant: 'success',
+        message: `Atemübung abgeschlossen (${durationSec}s).`,
+      })
+    } catch {
+      toast.show({
+        variant: 'error',
+        message: 'Konnte Atemübung nicht speichern.',
+      })
+    }
     reset()
   }
 

@@ -36,12 +36,24 @@ export async function listToolEntries(options?: {
       'byToolKey',
       options.toolKey,
     )
-  } else if (options?.since !== undefined || options?.until !== undefined) {
-    const range = IDBKeyRange.bound(
-      options.since ?? -Infinity,
-      options.until ?? Date.now(),
+  } else if (options?.since !== undefined && options?.until !== undefined) {
+    stored = await db.getAllFromIndex(
+      'tool_entries',
+      'byLoggedAt',
+      IDBKeyRange.bound(options.since, options.until),
     )
-    stored = await db.getAllFromIndex('tool_entries', 'byLoggedAt', range)
+  } else if (options?.since !== undefined) {
+    stored = await db.getAllFromIndex(
+      'tool_entries',
+      'byLoggedAt',
+      IDBKeyRange.lowerBound(options.since),
+    )
+  } else if (options?.until !== undefined) {
+    stored = await db.getAllFromIndex(
+      'tool_entries',
+      'byLoggedAt',
+      IDBKeyRange.upperBound(options.until),
+    )
   } else {
     stored = await db.getAll('tool_entries')
   }

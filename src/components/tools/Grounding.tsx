@@ -69,27 +69,35 @@ export function Grounding() {
   }
 
   async function finish() {
-    const start = startRef.current ?? Date.now()
-    const durationSec = Math.round((Date.now() - start) / 1000)
+    const now = Date.now()
+    const start = startRef.current ?? now
+    const durationSec = Math.round((now - start) / 1000)
     const text = STEPS.map((s, i) => {
       const filled = inputs[i].filter((v) => v.trim().length > 0)
       return filled.length ? `${s.prompt}: ${filled.join(', ')}` : null
     })
       .filter((line): line is string => Boolean(line))
       .join('\n')
-    await addToolEntry({
-      toolKey: 'grounding',
-      loggedAt: Date.now(),
-      durationSec,
-      text: text || undefined,
-    })
-    toast.show({
-      variant: 'success',
-      message: 'Erdungsübung abgeschlossen.',
-    })
+    try {
+      await addToolEntry({
+        toolKey: 'grounding',
+        loggedAt: now,
+        durationSec,
+        text: text || undefined,
+      })
+      toast.show({
+        variant: 'success',
+        message: 'Erdungsübung abgeschlossen.',
+      })
+    } catch {
+      toast.show({
+        variant: 'error',
+        message: 'Konnte Erdungsübung nicht speichern.',
+      })
+    }
     setStepIndex(0)
     setInputs(STEPS.map((s) => Array.from({ length: s.count }, () => '')))
-    startRef.current = null
+    startRef.current = now
   }
 
   return (

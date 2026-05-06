@@ -1,3 +1,5 @@
+import { broadcast } from './broadcast'
+
 export type Theme = 'light' | 'dark' | 'system'
 export type LandingTab = 'today' | 'habits' | 'mood'
 
@@ -91,11 +93,7 @@ export function writeOnboardingCompleted(done: boolean): void {
 
 export function writeWellnessToolsEnabled(enabled: boolean): void {
   safeStorage()?.setItem(KEY_WELLNESS, enabled ? '1' : '0')
-  if (typeof BroadcastChannel !== 'undefined') {
-    const ch = new BroadcastChannel('erinnermich-db')
-    ch.postMessage({ type: 'settings-changed', key: 'wellnessToolsEnabled' })
-    ch.close()
-  }
+  broadcast({ type: 'settings-changed', key: 'wellnessToolsEnabled' })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('erinnermich:settings-changed', {

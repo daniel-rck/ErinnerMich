@@ -23,15 +23,22 @@ export function TreasureBox() {
       })
       return
     }
-    const dataUrl = await readAsDataUrl(file)
-    if (dataUrl.length > MAX_TOTAL_BASE64) {
+    try {
+      const dataUrl = await readAsDataUrl(file)
+      if (dataUrl.length > MAX_TOTAL_BASE64) {
+        toast.show({
+          variant: 'error',
+          message: 'Bild zu groß nach Kodierung.',
+        })
+        return
+      }
+      setImageDataUrl(dataUrl)
+    } catch {
       toast.show({
         variant: 'error',
-        message: 'Bild zu groß nach Kodierung.',
+        message: 'Konnte das Bild nicht lesen.',
       })
-      return
     }
-    setImageDataUrl(dataUrl)
   }
 
   async function submit() {

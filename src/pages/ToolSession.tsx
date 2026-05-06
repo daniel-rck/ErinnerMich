@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { useSettings } from '../lib/hooks/useSettings'
@@ -10,7 +11,7 @@ import { TreasureBox } from '../components/tools/TreasureBox'
 import { WorryBox } from '../components/tools/WorryBox'
 import { Affirmation } from '../components/tools/Affirmation'
 
-const COMPONENTS: Record<ToolKey, () => React.ReactElement> = {
+const COMPONENTS: Record<ToolKey, () => ReactElement> = {
   breathing: BreathingBubble,
   grounding: Grounding,
   gratitude: GratitudeJar,

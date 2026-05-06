@@ -19,18 +19,26 @@ export function WorryBox() {
     if (!value) return
     setSubmitting(true)
     const now = Date.now()
-    await addToolEntry({
-      toolKey: 'worry',
-      loggedAt: now,
-      text: value,
-      expiresAt: autoDelete ? now + THIRTY_DAYS_MS : undefined,
-    })
-    setText('')
-    setSubmitting(false)
-    toast.show({
-      variant: 'success',
-      message: 'In der Box. Du darfst jetzt loslassen.',
-    })
+    try {
+      await addToolEntry({
+        toolKey: 'worry',
+        loggedAt: now,
+        text: value,
+        expiresAt: autoDelete ? now + THIRTY_DAYS_MS : undefined,
+      })
+      setText('')
+      toast.show({
+        variant: 'success',
+        message: 'In der Box. Du darfst jetzt loslassen.',
+      })
+    } catch {
+      toast.show({
+        variant: 'error',
+        message: 'Konnte Sorge nicht speichern.',
+      })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
