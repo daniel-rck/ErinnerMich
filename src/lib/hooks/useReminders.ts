@@ -6,6 +6,7 @@ import { subscribe } from '../db/broadcast'
 export interface UseRemindersOptions {
   kind?: ReminderKind
   activeOnly?: boolean
+  includeArchived?: boolean
 }
 
 export function useReminders(options: UseRemindersOptions = {}): {
@@ -18,11 +19,11 @@ export function useReminders(options: UseRemindersOptions = {}): {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const { kind, activeOnly } = options
+  const { kind, activeOnly, includeArchived } = options
 
   const reload = useCallback(async () => {
     try {
-      const data = await listReminders({ kind, activeOnly })
+      const data = await listReminders({ kind, activeOnly, includeArchived })
       setReminders(data)
       setError(null)
     } catch (err) {
@@ -30,7 +31,7 @@ export function useReminders(options: UseRemindersOptions = {}): {
     } finally {
       setLoading(false)
     }
-  }, [kind, activeOnly])
+  }, [kind, activeOnly, includeArchived])
 
   useEffect(() => {
     void reload()

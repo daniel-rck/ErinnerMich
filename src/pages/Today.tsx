@@ -1,23 +1,62 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useReminders } from '../lib/hooks/useReminders'
-import { deleteReminder } from '../lib/db/reminders'
+import {
+  archiveReminder,
+  deleteReminder,
+  restoreReminder,
+} from '../lib/db/reminders'
 import { TodayTimeline } from '../components/TodayTimeline'
+import { TodayHero } from '../components/TodayHero'
+import { AttentionStrip } from '../components/AttentionStrip'
+import { QuickCapture } from '../components/QuickCapture'
+import { MoodTile } from '../components/MoodTile'
+import { useMoodLog } from '../components/MoodLog/MoodLogProvider'
+import { useToast } from '../components/ui/Toast'
+import { CardSkeleton } from '../components/ui/CardSkeleton'
 import type { Reminder } from '../lib/types'
+
+const DELETE_GRACE_MS = 5500
 
 export function TodayPage() {
   const navigate = useNavigate()
+  const toast = useToast()
+  const moodLog = useMoodLog()
+  const [params, setParams] = useSearchParams()
   const { reminders, loading } = useReminders({
     kind: 'reminder',
     activeOnly: true,
   })
 
-  if (loading) {
-    return <p className="text-sm text-zinc-500">Lade …</p>
-  }
+  useEffect(() => {
+    if (params.get('mood') === 'open') {
+      moodLog.open()
+      const np = new URLSearchParams(params)
+      np.delete('mood')
+      setParams(np, { replace: true })
+    }
+  }, [params, setParams, moodLog])
 
   async function handleDelete(reminder: Reminder) {
-    if (!confirm(`„${reminder.title}“ wirklich löschen?`)) return
-    await deleteReminder(reminder.id)
+    await archiveReminder(reminder.id)
+    let cancelled = false
+    const timer = setTimeout(() => {
+      if (cancelled) return
+      void deleteReminder(reminder.id)
+    }, DELETE_GRACE_MS)
+    toast.show({
+      variant: 'success',
+      message: `„${reminder.title}“ gelöscht`,
+      durationMs: DELETE_GRACE_MS,
+      action: {
+        label: 'Rückgängig',
+        onClick: () => {
+          cancelled = true
+          clearTimeout(timer)
+          void restoreReminder(reminder.id)
+        },
+      },
+    })
   }
 
   return (
@@ -27,17 +66,26 @@ export function TodayPage() {
         <button
           type="button"
           onClick={() => navigate('/new?kind=reminder')}
-          className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+          className="hidden rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex"
         >
           + Neu
         </button>
       </header>
 
-      <TodayTimeline
-        reminders={reminders}
-        onEdit={(r) => navigate(`/edit/${r.id}`)}
-        onDelete={handleDelete}
-      />
+      <TodayHero />
+      <QuickCapture />
+      <MoodTile />
+      <AttentionStrip />
+
+      {loading ? (
+        <CardSkeleton count={2} />
+      ) : (
+        <TodayTimeline
+          reminders={reminders}
+          onEdit={(r) => navigate(`/edit/${r.id}`)}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   )
 }

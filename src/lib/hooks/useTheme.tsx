@@ -6,38 +6,53 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { writeTheme, type Theme } from '../db/settings'
-import { ThemeContext } from './themeContext'
+import { readSettings, writeTheme, type Theme } from '../db/settings'
+import { ThemeContext, type ResolvedTheme } from './themeContext'
 
-const STORAGE_KEY = 'erinnermich:theme'
-
-function readInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'light'
-  const stored = window.localStorage.getItem(STORAGE_KEY)
-  if (stored === 'light' || stored === 'dark') return stored
+function systemPrefersDark(): boolean {
+  if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light'
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => readInitialTheme())
+  const [theme, setThemeState] = useState<Theme>(() => readSettings().theme)
+  const [systemDark, setSystemDark] = useState<boolean>(() => systemPrefersDark())
+
+  const resolvedTheme: ResolvedTheme = useMemo(() => {
+    if (theme === 'system') return systemDark ? 'dark' : 'light'
+    return theme
+  }, [theme, systemDark])
 
   useEffect(() => {
-    const root = document.documentElement
-    root.classList.toggle('dark', theme === 'dark')
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = () => setSystemDark(mq.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', resolvedTheme === 'dark')
+  }, [resolvedTheme])
+
+  useEffect(() => {
     writeTheme(theme)
   }, [theme])
 
   const setTheme = useCallback((next: Theme) => setThemeState(next), [])
   const toggle = useCallback(
-    () => setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark')),
+    () =>
+      setThemeState((prev) => {
+        const current: ResolvedTheme =
+          prev === 'system' ? (systemPrefersDark() ? 'dark' : 'light') : prev
+        return current === 'dark' ? 'light' : 'dark'
+      }),
     [],
   )
 
   const value = useMemo(
-    () => ({ theme, setTheme, toggle }),
-    [theme, setTheme, toggle],
+    () => ({ theme, resolvedTheme, setTheme, toggle }),
+    [theme, resolvedTheme, setTheme, toggle],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

@@ -23,9 +23,12 @@ import {
   ImportSchemaError,
   parseExport,
 } from '../lib/io/exportImport'
+import { useToast } from '../components/ui/Toast'
+import { useConfirm } from '../components/ui/Confirm'
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme()
+  const toast = useToast()
   const [landing, setLanding] = useState<LandingTab>(
     () => readSettings().defaultLandingTab,
   )
@@ -35,7 +38,6 @@ export function SettingsPage() {
       return support.state === 'unsupported' ? 'unsupported' : support.permission
     },
   )
-  const [testNotice, setTestNotice] = useState<string | null>(null)
   const [showIosHint, setShowIosHint] = useState<boolean>(() =>
     isIosWithoutStandalone(),
   )
@@ -58,12 +60,12 @@ export function SettingsPage() {
   async function triggerTest() {
     if (permission !== 'granted') return
     const ok = await showTestNotification(10_000)
-    setTestNotice(
-      ok
+    toast.show({
+      variant: ok ? 'success' : 'error',
+      message: ok
         ? 'Test-Benachrichtigung in ~10s.'
         : 'Konnte Test-Benachrichtigung nicht planen.',
-    )
-    setTimeout(() => setTestNotice(null), 8_000)
+    })
   }
 
   return (
@@ -118,7 +120,7 @@ export function SettingsPage() {
             <button
               type="button"
               onClick={requestPermission}
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
             >
               Berechtigung anfragen
             </button>
@@ -132,11 +134,6 @@ export function SettingsPage() {
             Test in 10s
           </button>
         </div>
-        {testNotice && (
-          <p className="text-xs text-emerald-700 dark:text-emerald-300">
-            {testNotice}
-          </p>
-        )}
       </section>
 
       {showIosHint && (
@@ -172,19 +169,25 @@ export function SettingsPage() {
           Tracker. DSGVO-konform per Default.
         </p>
       </section>
+
+      <section className="flex flex-col gap-2 border-t border-zinc-200 pt-6 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+        <p>
+          ErinnerMich · Daten werden ausschließlich lokal in deinem Browser
+          gespeichert.
+        </p>
+        <p>Keine Cookies · Kein Tracking · DSGVO-konform</p>
+      </section>
     </div>
   )
 }
 
 function DataIO() {
   const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
-    null,
-  )
+  const toast = useToast()
+  const confirm = useConfirm()
 
   async function doExport() {
     setBusy(true)
-    setNotice(null)
     try {
       const snap = await exportAll()
       const blob = new Blob([JSON.stringify(snap, null, 2)], {
@@ -198,14 +201,14 @@ function DataIO() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      setNotice({
-        kind: 'ok',
-        text: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events.`,
+      toast.show({
+        variant: 'success',
+        message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events.`,
       })
     } catch (err) {
-      setNotice({
-        kind: 'err',
-        text: err instanceof Error ? err.message : 'Export fehlgeschlagen.',
+      toast.show({
+        variant: 'error',
+        message: err instanceof Error ? err.message : 'Export fehlgeschlagen.',
       })
     } finally {
       setBusy(false)
@@ -214,21 +217,26 @@ function DataIO() {
 
   async function handleFile(file: File, mode: 'merge' | 'replace') {
     setBusy(true)
-    setNotice(null)
     try {
       const text = await file.text()
       const data = parseExport(JSON.parse(text))
-      if (
-        mode === 'replace' &&
-        !confirm('Alle bestehenden Daten werden überschrieben. Fortfahren?')
-      ) {
-        setBusy(false)
-        return
+      if (mode === 'replace') {
+        const ok = await confirm({
+          title: 'Daten ersetzen?',
+          message:
+            'Alle bestehenden Daten werden überschrieben. Dieser Schritt ist nicht rückgängig.',
+          confirmLabel: 'Ersetzen',
+          destructive: true,
+        })
+        if (!ok) {
+          setBusy(false)
+          return
+        }
       }
       const summary = await importAll(data, { mode })
-      setNotice({
-        kind: 'ok',
-        text: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge.`,
+      toast.show({
+        variant: 'success',
+        message: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge.`,
       })
     } catch (err) {
       const text =
@@ -237,7 +245,7 @@ function DataIO() {
           : err instanceof Error
             ? err.message
             : 'Import fehlgeschlagen.'
-      setNotice({ kind: 'err', text })
+      toast.show({ variant: 'error', message: text })
     } finally {
       setBusy(false)
     }
@@ -253,7 +261,7 @@ function DataIO() {
           type="button"
           onClick={doExport}
           disabled={busy}
-          className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           Export (JSON)
         </button>
@@ -264,17 +272,6 @@ function DataIO() {
           Import (Ersetzen)
         </ImportButton>
       </div>
-      {notice && (
-        <p
-          className={
-            notice.kind === 'ok'
-              ? 'text-xs text-emerald-700 dark:text-emerald-300'
-              : 'text-xs text-rose-700 dark:text-rose-300'
-          }
-        >
-          {notice.text}
-        </p>
-      )}
     </section>
   )
 }
@@ -371,7 +368,7 @@ function ChoiceButton({
       className={
         'rounded-md border px-3 py-1.5 text-sm ' +
         (active
-          ? 'border-emerald-500 bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100'
+          ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
           : 'border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800')
       }
     >

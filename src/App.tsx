@@ -1,5 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './lib/hooks/useTheme'
+import { ToastProvider } from './components/ui/Toast'
+import { ConfirmProvider } from './components/ui/Confirm'
+import { MoodLogProvider } from './components/MoodLog/MoodLogProvider'
+import { Onboarding } from './components/Onboarding'
 import { AppShell } from './components/AppShell'
 import { TodayPage } from './pages/Today'
 import { HabitsPage } from './pages/Habits'
@@ -14,21 +18,28 @@ import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstr
 export function App() {
   return (
     <ThemeProvider>
-      <NotificationsBootstrap />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route index element={<TodayPage />} />
-            <Route path="habits" element={<HabitsPage />} />
-            <Route path="all" element={<AllPage />} />
-            <Route path="stats" element={<StatsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="new" element={<NewReminderPage />} />
-            <Route path="edit/:id" element={<EditReminderPage />} />
-            <Route path="detail/:id" element={<ReminderDetailPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <ToastProvider>
+        <ConfirmProvider>
+          <BrowserRouter>
+            <MoodLogProvider>
+              <NotificationsBootstrap />
+              <Onboarding />
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route index element={<TodayPage />} />
+                  <Route path="habits" element={<HabitsPage />} />
+                  <Route path="all" element={<AllPage />} />
+                  <Route path="stats" element={<StatsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="new" element={<NewReminderPage />} />
+                  <Route path="edit/:id" element={<EditReminderPage />} />
+                  <Route path="detail/:id" element={<ReminderDetailPage />} />
+                </Route>
+              </Routes>
+            </MoodLogProvider>
+          </BrowserRouter>
+        </ConfirmProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }

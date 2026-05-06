@@ -3,11 +3,10 @@ import { render, screen } from '@testing-library/react'
 import { App } from './App'
 
 describe('App', () => {
-  it('zeigt den ErinnerMich-Titel', () => {
+  it('zeigt die ErinnerMich-Wortmarke', () => {
     render(<App />)
-    expect(
-      screen.getByRole('heading', { level: 1, name: /ErinnerMich/i }),
-    ).toBeInTheDocument()
+    const all = screen.getAllByLabelText(/ErinnerMich/i)
+    expect(all.length).toBeGreaterThan(0)
   })
 
   it('hat einen Dark-Mode-Toggle', () => {

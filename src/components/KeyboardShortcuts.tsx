@@ -7,9 +7,11 @@ import {
   type Shortcut,
   type ShortcutMatcherState,
 } from '../lib/keyboard/shortcuts'
+import { useMoodLog } from './MoodLog/MoodLogProvider'
 
 export function KeyboardShortcuts() {
   const navigate = useNavigate()
+  const moodLog = useMoodLog()
   const [helpOpen, setHelpOpen] = useState(false)
   const stateRef = useRef<ShortcutMatcherState>(emptyShortcutState())
 
@@ -17,7 +19,7 @@ export function KeyboardShortcuts() {
     const shortcuts: Shortcut[] = [
       { combo: 'n', description: 'Neuer Reminder', action: () => navigate('/new?kind=reminder') },
       { combo: 'h', description: 'Neue Habit', action: () => navigate('/new?kind=habit') },
-      { combo: 'm', description: 'Neuer Mood-Log', action: () => navigate('/new?kind=mood') },
+      { combo: 'm', description: 'Mood loggen', action: () => moodLog.open() },
       { combo: 'g t', description: 'Heute', action: () => navigate('/') },
       { combo: 'g h', description: 'Habits', action: () => navigate('/habits') },
       { combo: 'g a', description: 'Alle', action: () => navigate('/all') },
@@ -50,7 +52,7 @@ export function KeyboardShortcuts() {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [navigate])
+  }, [navigate, moodLog])
 
   if (!helpOpen) return null
 
@@ -72,7 +74,7 @@ export function KeyboardShortcuts() {
           {[
             ['n', 'Neuer Reminder'],
             ['h', 'Neue Habit'],
-            ['m', 'Neuer Mood-Log'],
+            ['m', 'Mood loggen'],
             ['g t', 'Heute'],
             ['g h', 'Habits'],
             ['g a', 'Alle'],

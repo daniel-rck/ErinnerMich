@@ -41,6 +41,34 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+        shortcuts: [
+          {
+            name: 'Neue Erinnerung',
+            short_name: 'Reminder',
+            url: '/new?kind=reminder',
+            icons: [{ src: '/logo.svg', sizes: 'any', type: 'image/svg+xml' }],
+          },
+          {
+            name: 'Neuer Habit',
+            short_name: 'Habit',
+            url: '/new?kind=habit',
+            icons: [{ src: '/logo.svg', sizes: 'any', type: 'image/svg+xml' }],
+          },
+          {
+            name: 'Mood loggen',
+            short_name: 'Mood',
+            url: '/?mood=open',
+            icons: [{ src: '/logo.svg', sizes: 'any', type: 'image/svg+xml' }],
+          },
+        ],
+        share_target: {
+          action: '/new',
+          method: 'GET',
+          params: {
+            title: 'title',
+            text: 'title',
+          },
+        },
       },
       devOptions: {
         enabled: false,
