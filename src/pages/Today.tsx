@@ -11,6 +11,7 @@ import { AttentionStrip } from '../components/AttentionStrip'
 import { QuickCapture } from '../components/QuickCapture'
 import { MoodTile } from '../components/MoodTile'
 import { useToast } from '../components/ui/Toast'
+import { CardSkeleton } from '../components/ui/CardSkeleton'
 import type { Reminder } from '../lib/types'
 
 const DELETE_GRACE_MS = 5500
@@ -63,7 +64,7 @@ export function TodayPage() {
       <AttentionStrip />
 
       {loading ? (
-        <p className="text-sm text-zinc-500">Lade …</p>
+        <CardSkeleton count={2} />
       ) : (
         <TodayTimeline
           reminders={reminders}

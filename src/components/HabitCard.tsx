@@ -11,6 +11,7 @@ import {
 } from '../lib/stats/streaks'
 import { dayKeyAddDays, dayKeyForDate } from '../lib/stats/dayKey'
 import { isMilestone } from '../lib/stats/streakMilestones'
+import { categoryClasses } from '../lib/categoryColors'
 import { vibrate } from './ui/Haptic'
 import { Celebration } from './Celebration'
 
@@ -66,8 +67,12 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
     }
   }
 
+  const tone = categoryClasses(reminder.category)
+
   return (
-    <article className="relative flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+    <article
+      className={`relative flex flex-col gap-3 rounded-xl border border-l-4 ${tone.borderL} border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900`}
+    >
       {streak > 0 && (
         <div
           className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
@@ -82,7 +87,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
       )}
 
       <header className="flex items-start gap-3 pr-12">
-        <ProgressRing ratio={ratio} icon={reminder.icon} />
+        <ProgressRing ratio={ratio} icon={reminder.icon} ringClass={tone.ring} />
         <div className="flex flex-1 flex-col gap-1.5">
           <h3 className="font-medium leading-tight">{reminder.title}</h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -210,7 +215,15 @@ function computeProgress(
   }
 }
 
-function ProgressRing({ ratio, icon }: { ratio: number; icon: string }) {
+function ProgressRing({
+  ratio,
+  icon,
+  ringClass,
+}: {
+  ratio: number
+  icon: string
+  ringClass?: string
+}) {
   const size = 64
   const stroke = 5
   const radius = (size - stroke) / 2
@@ -242,7 +255,7 @@ function ProgressRing({ ratio, icon }: { ratio: number; icon: string }) {
           strokeWidth={stroke}
           strokeDasharray={circumference}
           strokeLinecap="round"
-          className="stroke-brand-500"
+          className={ringClass ?? 'stroke-brand-500'}
           initial={false}
           animate={{ strokeDashoffset: dashOffset }}
           transition={{ duration: 0.5, ease: 'easeOut' }}

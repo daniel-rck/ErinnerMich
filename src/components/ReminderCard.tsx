@@ -1,20 +1,16 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Clock, Pencil, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, Clock, Pencil, Trash2 } from 'lucide-react'
 import type { Reminder } from '../lib/types'
 import { addEvent } from '../lib/db/events'
 import { updateReminder } from '../lib/db/reminders'
 import { adjustInventory } from '../lib/db/inventories'
 import { formatSchedule } from '../lib/format'
+import { useInventory } from '../lib/hooks/useInventory'
+import { categoryClasses } from '../lib/categoryColors'
+import { snoozeOptions } from '../lib/schedule/snoozeOptions'
 import { vibrate } from './ui/Haptic'
 import { useToast } from './ui/Toast'
-
-const SNOOZE_OPTIONS: { minutes: number; label: string }[] = [
-  { minutes: 10, label: '+10 min' },
-  { minutes: 30, label: '+30 min' },
-  { minutes: 60, label: '+1 h' },
-  { minutes: 24 * 60, label: '+1 Tag' },
-]
 
 interface ReminderCardProps {
   reminder: Reminder
@@ -30,6 +26,11 @@ export function ReminderCard({
   onDelete,
 }: ReminderCardProps) {
   const toast = useToast()
+  const { inventory } = useInventory(reminder.id)
+  const tone = categoryClasses(reminder.category)
+
+  const lowStock =
+    inventory != null && inventory.remaining <= inventory.refillThreshold
 
   async function complete() {
     const now = Date.now()
@@ -51,7 +52,7 @@ export function ReminderCard({
     toast.show({ variant: 'success', message: `„${reminder.title}" erledigt` })
   }
 
-  async function snooze(minutes: number) {
+  async function snoozeAt(at: Date, label: string) {
     const now = Date.now()
     vibrate('tick')
     await addEvent({
@@ -59,9 +60,9 @@ export function ReminderCard({
       action: 'snoozed',
       triggeredAt: now,
       scheduledFor: scheduledFor?.getTime(),
-      snoozeUntil: now + minutes * 60_000,
+      snoozeUntil: at.getTime(),
     })
-    toast.show({ message: `Erneut in ${formatSnooze(minutes)}` })
+    toast.show({ message: `Erneut ${label}` })
   }
 
   return (
@@ -71,10 +72,13 @@ export function ReminderCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-      className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+      className={`flex flex-col gap-3 rounded-xl border border-l-4 ${tone.borderL} border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900`}
     >
       <header className="flex items-start gap-3">
-        <span className="text-2xl" aria-hidden>
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${tone.iconBg} text-2xl`}
+          aria-hidden
+        >
           {reminder.icon}
         </span>
         <div className="flex flex-1 flex-col">
@@ -82,6 +86,12 @@ export function ReminderCard({
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             {formatSchedule(reminder.schedule)}
           </p>
+          {lowStock && inventory && (
+            <p className="mt-1 inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300">
+              <AlertTriangle size={12} />
+              Nur noch {inventory.remaining} {inventory.unit}
+            </p>
+          )}
         </div>
       </header>
 
@@ -95,7 +105,7 @@ export function ReminderCard({
           <Check size={14} />
           Erledigt
         </motion.button>
-        <SnoozeMenu onSnooze={snooze} />
+        <SnoozeMenu onPick={(at, label) => void snoozeAt(at, label)} />
         {onEdit && (
           <button
             type="button"
@@ -123,16 +133,15 @@ export function ReminderCard({
   )
 }
 
-function formatSnooze(minutes: number): string {
-  if (minutes >= 24 * 60) return `${Math.round(minutes / (24 * 60))} Tagen`
-  if (minutes >= 60) return `${Math.round(minutes / 60)} Std.`
-  return `${minutes} min`
-}
-
-function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
+function SnoozeMenu({
+  onPick,
+}: {
+  onPick: (at: Date, label: string) => void
+}) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const popoverId = useId()
+  const options = snoozeOptions()
 
   useEffect(() => {
     if (!open) return
@@ -172,14 +181,14 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (minutes: number) => void }) {
         <div
           id={popoverId}
           aria-label="Snooze-Optionen"
-          className="absolute z-10 mt-1 flex min-w-[8rem] flex-col rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+          className="absolute z-10 mt-1 flex min-w-[14rem] flex-col rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
         >
-          {SNOOZE_OPTIONS.map(({ minutes, label }) => (
+          {options.map(({ key, label, at }) => (
             <button
-              key={minutes}
+              key={key}
               type="button"
               onClick={() => {
-                onSnooze(minutes)
+                onPick(at, label)
                 setOpen(false)
               }}
               className="block w-full px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
