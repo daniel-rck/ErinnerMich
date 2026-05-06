@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
   CalendarCheck,
@@ -6,26 +6,50 @@ import {
   BarChart3,
   Menu,
   ListTodo,
+  Sparkles,
   Settings as SettingsIcon,
 } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
 import { KeyboardShortcuts } from './KeyboardShortcuts'
 import { Fab } from './Fab'
 import { BottomSheet } from './ui/BottomSheet'
+import { useSettings } from '../lib/hooks/useSettings'
 
-const PRIMARY_NAV = [
+interface NavEntry {
+  to: string
+  label: string
+  icon: typeof CalendarCheck
+  end?: boolean
+}
+
+const BASE_PRIMARY: NavEntry[] = [
   { to: '/', label: 'Heute', icon: CalendarCheck, end: true },
   { to: '/habits', label: 'Habits', icon: Flame, end: false },
   { to: '/stats', label: 'Statistik', icon: BarChart3, end: false },
-] as const
+]
 
-const SECONDARY_NAV = [
+const TOOLS_NAV: NavEntry = {
+  to: '/tools',
+  label: 'Tools',
+  icon: Sparkles,
+  end: false,
+}
+
+const SECONDARY_NAV: NavEntry[] = [
   { to: '/all', label: 'Alle', icon: ListTodo },
   { to: '/settings', label: 'Einstellungen', icon: SettingsIcon },
-] as const
+]
 
 export function AppShell() {
   const [moreOpen, setMoreOpen] = useState(false)
+  const settings = useSettings()
+  const PRIMARY_NAV = useMemo<NavEntry[]>(
+    () =>
+      settings.wellnessToolsEnabled
+        ? [BASE_PRIMARY[0], BASE_PRIMARY[1], TOOLS_NAV, BASE_PRIMARY[2]]
+        : BASE_PRIMARY,
+    [settings.wellnessToolsEnabled],
+  )
 
   return (
     <div className="flex min-h-full flex-col pb-[calc(env(safe-area-inset-bottom)+4rem)] sm:pb-0">

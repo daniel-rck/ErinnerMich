@@ -20,7 +20,7 @@ export default defineConfig({
         name: 'ErinnerMich',
         short_name: 'ErinnerMich',
         description:
-          'Lokale Reminder- und Habit-Tracker-App ohne Account. Daten bleiben im Browser.',
+          'Erinnern. Reflektieren. Durchatmen. Reminder, Habits, Mood und Wellness-Tools — ohne Account, alles lokal im Browser.',
         theme_color: '#7c3aed',
         background_color: '#0b0b10',
         display: 'standalone',

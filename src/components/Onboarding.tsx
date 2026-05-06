@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, Lock, Sparkles, ChevronRight } from 'lucide-react'
+import { Bell, Lock, Sparkles, ChevronRight, HeartPulse } from 'lucide-react'
 import {
   readSettings,
   writeNotificationOnboardingDone,
   writeOnboardingCompleted,
+  writeWellnessToolsEnabled,
 } from '../lib/db/settings'
 import { ensureNotificationPermission } from '../lib/notifications/permission'
 import { HABIT_TEMPLATES } from '../lib/templates'
@@ -17,6 +18,7 @@ interface Slide {
   icon: React.ReactNode
   title: string
   body: string
+  kind?: 'info' | 'choice'
 }
 
 const SLIDES: Slide[] = [
@@ -24,13 +26,20 @@ const SLIDES: Slide[] = [
     key: 'welcome',
     icon: <Sparkles size={28} className="text-brand-600" />,
     title: 'Willkommen bei ErinnerMich',
-    body: 'Eine sanfte App für Erinnerungen, Habits und Stimmung — alles an einem Ort.',
+    body: 'Erinnern. Reflektieren. Durchatmen. Eine sanfte App für Erinnerungen, Habits, Stimmung — und wenn du magst, kleine Wellness-Tools.',
   },
   {
     key: 'privacy',
     icon: <Lock size={28} className="text-brand-600" />,
     title: 'Deine Daten bleiben bei dir',
     body: 'Alles wird ausschließlich lokal in deinem Browser gespeichert. Kein Account, kein Tracking, DSGVO-konform.',
+  },
+  {
+    key: 'wellness',
+    icon: <HeartPulse size={28} className="text-brand-600" />,
+    title: 'Wellness-Tools nutzen?',
+    body: 'Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Sorgen-Box, Schatzkiste und Affirmationen — direkt in der App. Kannst du jederzeit in den Einstellungen umstellen.',
+    kind: 'choice',
   },
   {
     key: 'notify',
@@ -67,6 +76,11 @@ export function Onboarding() {
       if (result === 'granted') writeNotificationOnboardingDone(true)
     }
     setStep(SLIDES.length)
+  }
+
+  function chooseWellness(enabled: boolean) {
+    writeWellnessToolsEnabled(enabled)
+    setStep(step + 1)
   }
 
   async function pickStarter(templateKey: string) {
@@ -123,6 +137,25 @@ export function Onboarding() {
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
                 {SLIDES[step].body}
               </p>
+              {SLIDES[step].kind === 'choice' &&
+                SLIDES[step].key === 'wellness' && (
+                  <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
+                    <button
+                      type="button"
+                      onClick={() => chooseWellness(true)}
+                      className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+                    >
+                      Ja, aktivieren
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => chooseWellness(false)}
+                      className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                    >
+                      Später
+                    </button>
+                  </div>
+                )}
             </motion.div>
           ) : (
             <motion.div
@@ -195,13 +228,17 @@ export function Onboarding() {
             ))}
           </div>
           {!onPicker ? (
-            <button
-              type="button"
-              onClick={() => void nextStep()}
-              className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
-            >
-              {step === SLIDES.length - 1 ? 'Weiter' : 'Weiter'}
-            </button>
+            SLIDES[step].kind === 'choice' ? (
+              <span aria-hidden />
+            ) : (
+              <button
+                type="button"
+                onClick={() => void nextStep()}
+                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+              >
+                Weiter
+              </button>
+            )
           ) : (
             <button
               type="button"

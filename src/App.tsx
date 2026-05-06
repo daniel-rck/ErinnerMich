@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './lib/hooks/useTheme'
 import { ToastProvider } from './components/ui/Toast'
@@ -14,6 +15,22 @@ import { EditReminderPage } from './pages/EditReminder'
 import { StatsPage } from './pages/Stats'
 import { ReminderDetailPage } from './pages/ReminderDetail'
 import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstrap'
+import { ToolsBootstrap } from './lib/tools/ToolsBootstrap'
+
+const ToolsPage = lazy(() =>
+  import('./pages/Tools').then((m) => ({ default: m.ToolsPage })),
+)
+const ToolSessionPage = lazy(() =>
+  import('./pages/ToolSession').then((m) => ({ default: m.ToolSessionPage })),
+)
+
+function ToolsFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center text-sm text-zinc-500">
+      Lade …
+    </div>
+  )
+}
 
 export function App() {
   return (
@@ -23,6 +40,7 @@ export function App() {
           <BrowserRouter>
             <MoodLogProvider>
               <NotificationsBootstrap />
+              <ToolsBootstrap />
               <Onboarding />
               <Routes>
                 <Route element={<AppShell />}>
@@ -34,6 +52,22 @@ export function App() {
                   <Route path="new" element={<NewReminderPage />} />
                   <Route path="edit/:id" element={<EditReminderPage />} />
                   <Route path="detail/:id" element={<ReminderDetailPage />} />
+                  <Route
+                    path="tools"
+                    element={
+                      <Suspense fallback={<ToolsFallback />}>
+                        <ToolsPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="tools/:toolKey"
+                    element={
+                      <Suspense fallback={<ToolsFallback />}>
+                        <ToolSessionPage />
+                      </Suspense>
+                    }
+                  />
                 </Route>
               </Routes>
             </MoodLogProvider>

@@ -4,6 +4,7 @@ import {
   readSettings,
   writeLandingTab,
   writeNotificationOnboardingDone,
+  writeWellnessToolsEnabled,
   type LandingTab,
 } from '../lib/db/settings'
 import {
@@ -32,6 +33,9 @@ export function SettingsPage() {
   const [landing, setLanding] = useState<LandingTab>(
     () => readSettings().defaultLandingTab,
   )
+  const [wellness, setWellness] = useState<boolean>(
+    () => readSettings().wellnessToolsEnabled,
+  )
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
     () => {
       const support = getNotificationSupport()
@@ -46,6 +50,11 @@ export function SettingsPage() {
   function pickLanding(next: LandingTab) {
     setLanding(next)
     writeLandingTab(next)
+  }
+
+  function toggleWellness(next: boolean) {
+    setWellness(next)
+    writeWellnessToolsEnabled(next)
   }
 
   async function requestPermission() {
@@ -156,6 +165,24 @@ export function SettingsPage() {
           </button>
         </section>
       )}
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+          Wellness-Tools
+        </h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Schatzkiste, Sorgen-Box
+          und Affirmationen — direkt in der App.
+        </p>
+        <div className="flex gap-2">
+          <ChoiceButton active={wellness} onClick={() => toggleWellness(true)}>
+            An
+          </ChoiceButton>
+          <ChoiceButton active={!wellness} onClick={() => toggleWellness(false)}>
+            Aus
+          </ChoiceButton>
+        </div>
+      </section>
 
       <DataIO />
 

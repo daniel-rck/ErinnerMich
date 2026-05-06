@@ -8,6 +8,7 @@ export interface Settings {
   hapticsEnabled: boolean
   soundEnabled: boolean
   onboardingCompleted: boolean
+  wellnessToolsEnabled: boolean
   lastSyncAt?: number
   syncSecretHash?: string
 }
@@ -19,6 +20,7 @@ const KEY_NOTIF_ONBOARDING = `${KEY_PREFIX}notification-onboarding-done`
 const KEY_HAPTICS = `${KEY_PREFIX}haptics-enabled`
 const KEY_SOUND = `${KEY_PREFIX}sound-enabled`
 const KEY_ONBOARDING_DONE = `${KEY_PREFIX}onboarding-completed`
+const KEY_WELLNESS = `${KEY_PREFIX}wellness-tools-enabled`
 const KEY_LAST_SYNC = `${KEY_PREFIX}last-sync-at`
 const KEY_SYNC_HASH = `${KEY_PREFIX}sync-secret-hash`
 
@@ -29,6 +31,7 @@ const DEFAULTS: Settings = {
   hapticsEnabled: true,
   soundEnabled: false,
   onboardingCompleted: false,
+  wellnessToolsEnabled: false,
 }
 
 function safeStorage(): Storage | null {
@@ -56,6 +59,7 @@ export function readSettings(): Settings {
     hapticsEnabled: ls.getItem(KEY_HAPTICS) !== '0',
     soundEnabled: ls.getItem(KEY_SOUND) === '1',
     onboardingCompleted: ls.getItem(KEY_ONBOARDING_DONE) === '1',
+    wellnessToolsEnabled: ls.getItem(KEY_WELLNESS) === '1',
     lastSyncAt: numberOr(ls.getItem(KEY_LAST_SYNC)),
     syncSecretHash: ls.getItem(KEY_SYNC_HASH) ?? undefined,
   }
@@ -83,6 +87,22 @@ export function writeSoundEnabled(enabled: boolean): void {
 
 export function writeOnboardingCompleted(done: boolean): void {
   safeStorage()?.setItem(KEY_ONBOARDING_DONE, done ? '1' : '0')
+}
+
+export function writeWellnessToolsEnabled(enabled: boolean): void {
+  safeStorage()?.setItem(KEY_WELLNESS, enabled ? '1' : '0')
+  if (typeof BroadcastChannel !== 'undefined') {
+    const ch = new BroadcastChannel('erinnermich-db')
+    ch.postMessage({ type: 'settings-changed', key: 'wellnessToolsEnabled' })
+    ch.close()
+  }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('erinnermich:settings-changed', {
+        detail: { key: 'wellnessToolsEnabled' },
+      }),
+    )
+  }
 }
 
 export function writeLastSyncAt(timestamp: number): void {

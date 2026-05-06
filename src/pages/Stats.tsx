@@ -21,15 +21,19 @@ import { habitMoodCorrelations } from '../lib/stats/correlations'
 import type { ReminderEvent } from '../lib/types'
 import { dayKeyForDate } from '../lib/stats/dayKey'
 import { formatRelativeDate } from '../lib/format'
+import { useToolEntries } from '../lib/hooks/useToolEntries'
+import { TOOLS } from '../lib/tools/registry'
+import { useSettings } from '../lib/hooks/useSettings'
 
-type Tab = 'habits' | 'reminders' | 'mood'
+type Tab = 'habits' | 'reminders' | 'mood' | 'tools'
 
 export function StatsPage() {
   const [tab, setTab] = useState<Tab>('habits')
+  const { wellnessToolsEnabled } = useSettings()
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">Statistik</h1>
-      <nav className="flex gap-1 border-b border-zinc-200 dark:border-zinc-800">
+      <nav className="flex gap-1 overflow-x-auto border-b border-zinc-200 dark:border-zinc-800">
         <TabButton active={tab === 'habits'} onClick={() => setTab('habits')}>
           Habits
         </TabButton>
@@ -42,13 +46,88 @@ export function StatsPage() {
         <TabButton active={tab === 'mood'} onClick={() => setTab('mood')}>
           Mood
         </TabButton>
+        {wellnessToolsEnabled && (
+          <TabButton active={tab === 'tools'} onClick={() => setTab('tools')}>
+            Tools
+          </TabButton>
+        )}
       </nav>
 
       {tab === 'habits' && <HabitStats />}
       {tab === 'reminders' && <ReminderStats />}
       {tab === 'mood' && <MoodStats />}
+      {tab === 'tools' && wellnessToolsEnabled && <ToolStats />}
     </div>
   )
+}
+
+const TOOLS_WINDOW_DAYS = 30
+
+function ToolStats() {
+  const [now] = useState(() => Date.now())
+  const since = now - TOOLS_WINDOW_DAYS * 24 * 60 * 60 * 1000
+  const { entries, loading } = useToolEntries({ since })
+
+  const byTool = useMemo(() => {
+    const map = new Map<string, typeof entries>()
+    for (const e of entries) {
+      const list = map.get(e.toolKey) ?? []
+      list.push(e)
+      map.set(e.toolKey, list)
+    }
+    return map
+  }, [entries])
+
+  if (loading) return <Loading />
+  if (entries.length === 0) {
+    return <Empty>Noch keine Tool-Sessions in den letzten {TOOLS_WINDOW_DAYS} Tagen.</Empty>
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {TOOLS.map((tool) => {
+        const list = byTool.get(tool.key) ?? []
+        if (list.length === 0) return null
+        const heatmap = buildToolHeatmap(list.map((e) => e.loggedAt))
+        return (
+          <article
+            key={tool.key}
+            className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <header className="flex items-center gap-3">
+              <span className="text-2xl" aria-hidden>
+                {tool.icon}
+              </span>
+              <h2 className="font-medium">{tool.title}</h2>
+              <span className="ml-auto text-sm text-zinc-500 dark:text-zinc-400">
+                {list.length} {list.length === 1 ? 'Session' : 'Sessions'}
+              </span>
+            </header>
+            <Heatmap
+              values={heatmap}
+              ariaLabel={`Heatmap für ${tool.title}`}
+            />
+          </article>
+        )
+      })}
+    </div>
+  )
+}
+
+function buildToolHeatmap(
+  timestamps: readonly number[],
+): Map<string, number | null> {
+  const counts = new Map<string, number>()
+  for (const ts of timestamps) {
+    const key = dayKeyForDate(new Date(ts))
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  const max = Math.max(1, ...counts.values())
+  const out = new Map<string, number | null>()
+  for (const [key, count] of counts) {
+    out.set(key, count / max)
+  }
+  return out
 }
 
 function TabButton({
