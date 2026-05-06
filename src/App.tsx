@@ -3,6 +3,7 @@ import { ThemeProvider } from './lib/hooks/useTheme'
 import { ToastProvider } from './components/ui/Toast'
 import { ConfirmProvider } from './components/ui/Confirm'
 import { MoodLogProvider } from './components/MoodLog/MoodLogProvider'
+import { Onboarding } from './components/Onboarding'
 import { AppShell } from './components/AppShell'
 import { TodayPage } from './pages/Today'
 import { HabitsPage } from './pages/Habits'
@@ -22,6 +23,7 @@ export function App() {
           <BrowserRouter>
             <MoodLogProvider>
               <NotificationsBootstrap />
+              <Onboarding />
               <Routes>
                 <Route element={<AppShell />}>
                   <Route index element={<TodayPage />} />

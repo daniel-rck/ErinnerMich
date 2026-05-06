@@ -5,7 +5,8 @@ import { App } from './App'
 describe('App', () => {
   it('zeigt die ErinnerMich-Wortmarke', () => {
     render(<App />)
-    expect(screen.getByLabelText(/ErinnerMich/i)).toBeInTheDocument()
+    const all = screen.getAllByLabelText(/ErinnerMich/i)
+    expect(all.length).toBeGreaterThan(0)
   })
 
   it('hat einen Dark-Mode-Toggle', () => {

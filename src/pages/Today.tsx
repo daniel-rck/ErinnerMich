@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useReminders } from '../lib/hooks/useReminders'
 import {
   archiveReminder,
@@ -10,6 +11,7 @@ import { TodayHero } from '../components/TodayHero'
 import { AttentionStrip } from '../components/AttentionStrip'
 import { QuickCapture } from '../components/QuickCapture'
 import { MoodTile } from '../components/MoodTile'
+import { useMoodLog } from '../components/MoodLog/MoodLogProvider'
 import { useToast } from '../components/ui/Toast'
 import { CardSkeleton } from '../components/ui/CardSkeleton'
 import type { Reminder } from '../lib/types'
@@ -19,10 +21,21 @@ const DELETE_GRACE_MS = 5500
 export function TodayPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const moodLog = useMoodLog()
+  const [params, setParams] = useSearchParams()
   const { reminders, loading } = useReminders({
     kind: 'reminder',
     activeOnly: true,
   })
+
+  useEffect(() => {
+    if (params.get('mood') === 'open') {
+      moodLog.open()
+      const np = new URLSearchParams(params)
+      np.delete('mood')
+      setParams(np, { replace: true })
+    }
+  }, [params, setParams, moodLog])
 
   async function handleDelete(reminder: Reminder) {
     await archiveReminder(reminder.id)
