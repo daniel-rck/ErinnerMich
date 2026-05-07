@@ -14,6 +14,9 @@ import { MoodTile } from '../components/MoodTile'
 import { useMoodLog } from '../components/MoodLog/MoodLogProvider'
 import { useToast } from '../components/ui/Toast'
 import { CardSkeleton } from '../components/ui/CardSkeleton'
+import { EmergencyButton } from '../components/EmergencyButton'
+import { TodayAffirmation } from '../components/TodayAffirmation'
+import { useSettings } from '../lib/hooks/useSettings'
 import type { Reminder } from '../lib/types'
 
 const DELETE_GRACE_MS = 5500
@@ -22,6 +25,7 @@ export function TodayPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const moodLog = useMoodLog()
+  const settings = useSettings()
   const [params, setParams] = useSearchParams()
   const { reminders, loading } = useReminders({
     kind: 'reminder',
@@ -74,6 +78,7 @@ export function TodayPage() {
 
       <TodayHero />
       <QuickCapture />
+      {settings.wellnessToolsEnabled && <TodayAffirmation />}
       <MoodTile />
       <AttentionStrip />
 
@@ -86,6 +91,8 @@ export function TodayPage() {
           onDelete={handleDelete}
         />
       )}
+
+      {settings.wellnessToolsEnabled && <EmergencyButton />}
     </div>
   )
 }

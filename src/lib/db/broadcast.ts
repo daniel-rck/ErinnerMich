@@ -7,6 +7,9 @@ export type BroadcastMessage =
   | { type: 'inventory-changed'; reminderId: string }
   | { type: 'mood-added'; id: string }
   | { type: 'mood-deleted'; id: string }
+  | { type: 'tool-added'; id: string; toolKey: string }
+  | { type: 'tool-deleted'; id: string }
+  | { type: 'settings-changed'; key: string }
   | { type: 'db-cleared' }
 
 export function broadcast(message: BroadcastMessage): void {

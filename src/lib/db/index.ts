@@ -4,10 +4,11 @@ import type {
   MoodEntry,
   Reminder,
   ReminderEvent,
+  ToolEntry,
 } from '../types'
 
 export const DB_NAME = 'erinnermich'
-export const DB_VERSION = 1
+export const DB_VERSION = 2
 
 export interface ErinnermichDB extends DBSchema {
   reminders: {
@@ -39,6 +40,15 @@ export interface ErinnermichDB extends DBSchema {
       byReminderId: string
     }
   }
+  tool_entries: {
+    key: string
+    value: StoredToolEntry
+    indexes: {
+      byToolKey: string
+      byLoggedAt: number
+      byLoggedAtDay: string
+    }
+  }
 }
 
 export type StoredReminderEvent = ReminderEvent & {
@@ -46,6 +56,10 @@ export type StoredReminderEvent = ReminderEvent & {
 }
 
 export type StoredMoodEntry = MoodEntry & {
+  loggedAtDay: string
+}
+
+export type StoredToolEntry = ToolEntry & {
   loggedAtDay: string
 }
 
@@ -78,6 +92,12 @@ export function getDB(): Promise<IDBPDatabase<ErinnermichDB>> {
           mood.createIndex('byLoggedAt', 'loggedAt')
           mood.createIndex('byLoggedAtDay', 'loggedAtDay')
           mood.createIndex('byReminderId', 'reminderId')
+        }
+        if (oldVersion < 2) {
+          const tools = db.createObjectStore('tool_entries', { keyPath: 'id' })
+          tools.createIndex('byToolKey', 'toolKey')
+          tools.createIndex('byLoggedAt', 'loggedAt')
+          tools.createIndex('byLoggedAtDay', 'loggedAtDay')
         }
       },
       blocked() {

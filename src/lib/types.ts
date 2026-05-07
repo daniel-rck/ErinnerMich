@@ -120,3 +120,22 @@ export type MoodEntry = {
   tags?: string[]
   note?: string
 }
+
+export type ToolKey =
+  | 'breathing'
+  | 'grounding'
+  | 'gratitude'
+  | 'treasure'
+  | 'worry'
+  | 'affirmation'
+
+export type ToolEntry = {
+  id: string
+  toolKey: ToolKey
+  loggedAt: number
+  durationSec?: number
+  text?: string
+  imageDataUrl?: string
+  affirmationId?: string
+  expiresAt?: number
+}
