@@ -13,6 +13,7 @@ import { SettingsPage } from './pages/Settings'
 import { NewReminderPage } from './pages/NewReminder'
 import { EditReminderPage } from './pages/EditReminder'
 import { StatsPage } from './pages/Stats'
+import { MoodPage } from './pages/Mood'
 import { ReminderDetailPage } from './pages/ReminderDetail'
 import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstrap'
 import { ToolsBootstrap } from './lib/tools/ToolsBootstrap'
@@ -45,15 +46,8 @@ export function App() {
               <Routes>
                 <Route element={<AppShell />}>
                   <Route index element={<TodayPage />} />
-                  {/* New IA destinations — content evolves in PR 4/5/6 */}
-                  <Route
-                    path="mood"
-                    element={
-                      <Suspense fallback={<ToolsFallback />}>
-                        <ToolsPage />
-                      </Suspense>
-                    }
-                  />
+                  {/* New IA destinations — Mood live in PR 4, Library in PR 5, You in PR 6 */}
+                  <Route path="mood" element={<MoodPage />} />
                   <Route path="library" element={<HabitsPage />} />
                   <Route path="you" element={<SettingsPage />} />
                   {/* Legacy routes — kept for back-compat, also reachable */}
