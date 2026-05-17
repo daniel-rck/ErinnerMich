@@ -14,6 +14,7 @@ import { NewReminderPage } from './pages/NewReminder'
 import { EditReminderPage } from './pages/EditReminder'
 import { StatsPage } from './pages/Stats'
 import { MoodPage } from './pages/Mood'
+import { LibraryPage } from './pages/Library'
 import { ReminderDetailPage } from './pages/ReminderDetail'
 import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstrap'
 import { ToolsBootstrap } from './lib/tools/ToolsBootstrap'
@@ -46,9 +47,9 @@ export function App() {
               <Routes>
                 <Route element={<AppShell />}>
                   <Route index element={<TodayPage />} />
-                  {/* New IA destinations — Mood live in PR 4, Library in PR 5, You in PR 6 */}
+                  {/* New IA destinations — Mood live in PR 4, Library live in PR 5, You in PR 6 */}
                   <Route path="mood" element={<MoodPage />} />
-                  <Route path="library" element={<HabitsPage />} />
+                  <Route path="library" element={<LibraryPage />} />
                   <Route path="you" element={<SettingsPage />} />
                   {/* Legacy routes — kept for back-compat, also reachable */}
                   <Route path="habits" element={<HabitsPage />} />
