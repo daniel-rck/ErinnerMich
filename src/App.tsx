@@ -45,6 +45,18 @@ export function App() {
               <Routes>
                 <Route element={<AppShell />}>
                   <Route index element={<TodayPage />} />
+                  {/* New IA destinations — content evolves in PR 4/5/6 */}
+                  <Route
+                    path="mood"
+                    element={
+                      <Suspense fallback={<ToolsFallback />}>
+                        <ToolsPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route path="library" element={<HabitsPage />} />
+                  <Route path="you" element={<SettingsPage />} />
+                  {/* Legacy routes — kept for back-compat, also reachable */}
                   <Route path="habits" element={<HabitsPage />} />
                   <Route path="all" element={<AllPage />} />
                   <Route path="stats" element={<StatsPage />} />

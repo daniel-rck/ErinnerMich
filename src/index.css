@@ -99,6 +99,7 @@
 
   /* Layout */
   --tap-target: 48px;
+  --side-nav-w: 15rem;
 }
 
 :root.dark {
