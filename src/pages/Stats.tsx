@@ -5,6 +5,9 @@ import { useMoodEntriesInRange } from '../lib/hooks/useMoodEntries'
 import { Heatmap } from '../components/charts/Heatmap'
 import { WeekdayBar } from '../components/charts/WeekdayBar'
 import { Sparkline } from '../components/charts/Sparkline'
+import { Tabs } from '../components/ui/Tabs'
+import { Card } from '../components/ui/Card'
+import { StatTile } from '../components/ui/StatTile'
 import { currentStreakWithFreeze, streakStats } from '../lib/stats/streaks'
 import {
   averageDaysBetweenCompletions,
@@ -25,38 +28,53 @@ import { useToolEntries } from '../lib/hooks/useToolEntries'
 import { TOOLS } from '../lib/tools/registry'
 import { useSettings } from '../lib/hooks/useSettings'
 
-type Tab = 'habits' | 'reminders' | 'mood' | 'tools'
+type StatsTab = 'habits' | 'reminders' | 'mood' | 'tools'
 
-export function StatsPage() {
-  const [tab, setTab] = useState<Tab>('habits')
+interface StatsPageProps {
+  embedded?: boolean
+}
+
+export function StatsPage({ embedded = false }: StatsPageProps = {}) {
+  const [tab, setTab] = useState<StatsTab>('habits')
   const { wellnessToolsEnabled } = useSettings()
-  return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Statistik</h1>
-      <nav className="flex gap-1 overflow-x-auto border-b border-zinc-200 dark:border-zinc-800">
-        <TabButton active={tab === 'habits'} onClick={() => setTab('habits')}>
-          Habits
-        </TabButton>
-        <TabButton
-          active={tab === 'reminders'}
-          onClick={() => setTab('reminders')}
-        >
-          Reminder
-        </TabButton>
-        <TabButton active={tab === 'mood'} onClick={() => setTab('mood')}>
-          Mood
-        </TabButton>
-        {wellnessToolsEnabled && (
-          <TabButton active={tab === 'tools'} onClick={() => setTab('tools')}>
-            Tools
-          </TabButton>
-        )}
-      </nav>
 
-      {tab === 'habits' && <HabitStats />}
-      {tab === 'reminders' && <ReminderStats />}
-      {tab === 'mood' && <MoodStats />}
-      {tab === 'tools' && wellnessToolsEnabled && <ToolStats />}
+  return (
+    <div className="flex flex-col gap-[var(--space-lg)]">
+      {!embedded && (
+        <header className="flex flex-col gap-[var(--space-2xs)]">
+          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+            Du
+          </p>
+          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+            Statistik
+          </h1>
+        </header>
+      )}
+
+      <Tabs value={tab} onChange={(v) => setTab(v as StatsTab)}>
+        <Tabs.List ariaLabel="Statistik-Bereiche">
+          <Tabs.Trigger value="habits">Habits</Tabs.Trigger>
+          <Tabs.Trigger value="reminders">Reminder</Tabs.Trigger>
+          <Tabs.Trigger value="mood">Mood</Tabs.Trigger>
+          {wellnessToolsEnabled && <Tabs.Trigger value="tools">Tools</Tabs.Trigger>}
+        </Tabs.List>
+        <div className="mt-[var(--space-md)]">
+          <Tabs.Panel value="habits">
+            <HabitStats />
+          </Tabs.Panel>
+          <Tabs.Panel value="reminders">
+            <ReminderStats />
+          </Tabs.Panel>
+          <Tabs.Panel value="mood">
+            <MoodStats />
+          </Tabs.Panel>
+          {wellnessToolsEnabled && (
+            <Tabs.Panel value="tools">
+              <ToolStats />
+            </Tabs.Panel>
+          )}
+        </div>
+      </Tabs>
     </div>
   )
 }
@@ -84,30 +102,26 @@ function ToolStats() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-[var(--space-md)]">
       {TOOLS.map((tool) => {
         const list = byTool.get(tool.key) ?? []
         if (list.length === 0) return null
         const heatmap = buildToolHeatmap(list.map((e) => e.loggedAt))
         return (
-          <article
-            key={tool.key}
-            className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-          >
-            <header className="flex items-center gap-3">
+          <Card key={tool.key} variant="raised" radius="lg" padding="md">
+            <header className="mb-[var(--space-sm)] flex items-center gap-3">
               <span className="text-2xl" aria-hidden>
                 {tool.icon}
               </span>
-              <h2 className="font-medium">{tool.title}</h2>
-              <span className="ml-auto text-sm text-zinc-500 dark:text-zinc-400">
+              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+                {tool.title}
+              </h2>
+              <span className="ml-auto text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
                 {list.length} {list.length === 1 ? 'Session' : 'Sessions'}
               </span>
             </header>
-            <Heatmap
-              values={heatmap}
-              ariaLabel={`Heatmap für ${tool.title}`}
-            />
-          </article>
+            <Heatmap values={heatmap} ariaLabel={`Heatmap für ${tool.title}`} />
+          </Card>
         )
       })}
     </div>
@@ -130,45 +144,17 @@ function buildToolHeatmap(
   return out
 }
 
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        'border-b-2 px-3 py-2 text-sm font-medium transition-colors ' +
-        (active
-          ? 'border-brand-500 text-brand-700 dark:text-brand-300'
-          : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100')
-      }
-    >
-      {children}
-    </button>
-  )
-}
-
 function HabitStats() {
   const { reminders } = useReminders({ kind: 'habit' })
   const { events, loading } = useAllEvents()
 
-  const eventsByReminder = useMemo(
-    () => groupByReminder(events),
-    [events],
-  )
+  const eventsByReminder = useMemo(() => groupByReminder(events), [events])
 
   if (loading) return <Loading />
   if (reminders.length === 0) return <Empty>Noch keine Habits.</Empty>
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-[var(--space-md)]">
       {reminders.map((habit) => {
         const habitEvents = eventsByReminder.get(habit.id) ?? []
         const streak = streakStats(habitEvents)
@@ -176,37 +162,37 @@ function HabitStats() {
         const summary = completionSummary(habitEvents)
         const heatmapValues = buildHeatmapValues(habitEvents)
         return (
-          <article
-            key={habit.id}
-            className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-          >
-            <header className="flex items-center gap-3">
+          <Card key={habit.id} variant="raised" radius="lg" padding="md">
+            <header className="mb-[var(--space-sm)] flex items-center gap-3">
               <span className="text-2xl" aria-hidden>
                 {habit.icon}
               </span>
-              <h2 className="font-medium">{habit.title}</h2>
+              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+                {habit.title}
+              </h2>
             </header>
-            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <Metric label="Aktuelle Streak" value={`${streak.current} d`} />
-              <Metric
+            <div className="mb-[var(--space-md)] grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+              <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
+              <StatTile
                 label="Mit Freeze"
                 value={
                   freeze.freezesUsed > 0
-                    ? `${freeze.length} d (❄ ${freeze.freezesUsed})`
-                    : `${freeze.length} d`
+                    ? `${freeze.length}d ❄${freeze.freezesUsed}`
+                    : `${freeze.length}d`
                 }
+                accent="calm"
+                size="sm"
               />
-              <Metric label="Längste Streak" value={`${streak.longest} d`} />
-              <Metric
-                label="30-Tage-Quote"
-                value={`${Math.round(summary.last30.rate * 100)} %`}
+              <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
+              <StatTile
+                label="30-Tage"
+                value={`${Math.round(summary.last30.rate * 100)}%`}
+                accent="grow"
+                size="sm"
               />
             </div>
-            <Heatmap
-              values={heatmapValues}
-              ariaLabel={`Heatmap für ${habit.title}`}
-            />
-          </article>
+            <Heatmap values={heatmapValues} ariaLabel={`Heatmap für ${habit.title}`} />
+          </Card>
         )
       })}
     </div>
@@ -222,41 +208,44 @@ function ReminderStats() {
   if (reminders.length === 0) return <Empty>Noch keine Reminder.</Empty>
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-[var(--space-sm)]">
       {reminders.map((reminder) => {
         const reminderEvents = eventsByReminder.get(reminder.id) ?? []
         const completed = completedCount(reminderEvents)
         const avgGap = averageDaysBetweenCompletions(reminderEvents)
         const summary = completionSummary(reminderEvents)
         return (
-          <article
-            key={reminder.id}
-            className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-          >
-            <header className="flex items-center gap-3">
+          <Card key={reminder.id} variant="raised" radius="lg" padding="md">
+            <header className="mb-[var(--space-sm)] flex items-center gap-3">
               <span className="text-xl" aria-hidden>
                 {reminder.icon}
               </span>
-              <h2 className="font-medium">{reminder.title}</h2>
+              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+                {reminder.title}
+              </h2>
             </header>
-            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <Metric label="Erledigt insgesamt" value={String(completed)} />
-              <Metric
-                label="30-Tage-Quote"
-                value={`${Math.round(summary.last30.rate * 100)} %`}
+            <div className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+              <StatTile label="Erledigt" value={completed} accent="grow" size="sm" />
+              <StatTile
+                label="30-Tage"
+                value={`${Math.round(summary.last30.rate * 100)}%`}
+                accent="brand"
+                size="sm"
               />
-              <Metric
+              <StatTile
                 label="Ø Abstand"
-                value={
-                  avgGap === null ? '—' : `${avgGap.toFixed(1)} d`
-                }
+                value={avgGap === null ? '—' : `${avgGap.toFixed(1)}d`}
+                accent="calm"
+                size="sm"
               />
-              <Metric
-                label="Letzte Erledigung"
+              <StatTile
+                label="Zuletzt"
                 value={lastCompletionLabel(reminderEvents)}
+                accent="glow"
+                size="sm"
               />
             </div>
-          </article>
+          </Card>
         )
       })}
     </div>
@@ -272,14 +261,8 @@ function MoodStats() {
   const { reminders: habits } = useReminders({ kind: 'habit' })
   const { events } = useAllEvents()
 
-  const overview = useMemo(
-    () => moodOverview(entries, MOOD_WINDOW_DAYS),
-    [entries],
-  )
-  const series = useMemo(
-    () => dailyMoodSeries(entries, MOOD_WINDOW_DAYS),
-    [entries],
-  )
+  const overview = useMemo(() => moodOverview(entries, MOOD_WINDOW_DAYS), [entries])
+  const series = useMemo(() => dailyMoodSeries(entries, MOOD_WINDOW_DAYS), [entries])
   const weekday = useMemo(() => moodByWeekday(entries), [entries])
   const tags = useMemo(() => tagRollup(entries), [entries])
   const correlations = useMemo(
@@ -289,79 +272,77 @@ function MoodStats() {
 
   if (loading) return <Loading />
   if (entries.length === 0) {
-    return (
-      <Empty>Noch keine Mood-Einträge in den letzten {MOOD_WINDOW_DAYS} Tagen.</Empty>
-    )
+    return <Empty>Noch keine Mood-Einträge in den letzten {MOOD_WINDOW_DAYS} Tagen.</Empty>
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Metric label="Einträge" value={String(overview.count)} />
-        <Metric
+    <div className="flex flex-col gap-[var(--space-md)]">
+      <section className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+        <StatTile label="Einträge" value={overview.count} accent="brand" size="sm" />
+        <StatTile
           label="Ø Mood"
           value={overview.avgMood?.toFixed(2) ?? '—'}
+          accent="mood"
+          size="sm"
         />
-        <Metric
+        <StatTile
           label="Bester Tag"
           value={
-            overview.bestDay
-              ? `${overview.bestDay.day} (${overview.bestDay.avg.toFixed(1)})`
-              : '—'
+            overview.bestDay ? `${overview.bestDay.day} · ${overview.bestDay.avg.toFixed(1)}` : '—'
           }
+          accent="grow"
+          size="sm"
         />
-        <Metric
-          label="Schlechtester Tag"
+        <StatTile
+          label="Schlechtester"
           value={
             overview.worstDay
-              ? `${overview.worstDay.day} (${overview.worstDay.avg.toFixed(1)})`
+              ? `${overview.worstDay.day} · ${overview.worstDay.avg.toFixed(1)}`
               : '—'
           }
+          accent="glow"
+          size="sm"
         />
       </section>
 
-      <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+      <Card variant="raised" radius="lg" padding="md">
+        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
           Verlauf (30 Tage)
         </h2>
         <Sparkline
           data={series.map((p) => ({ label: p.day, value: p.avgMood }))}
           ariaLabel="Mood-Verlauf"
         />
-      </section>
+      </Card>
 
-      <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+      <Card variant="raised" radius="lg" padding="md">
+        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
           Ø Mood pro Wochentag
         </h2>
         <WeekdayBar
-          data={weekday.map((p) => ({
-            label: p.label,
-            value: p.avgMood,
-            count: p.count,
-          }))}
+          data={weekday.map((p) => ({ label: p.label, value: p.avgMood, count: p.count }))}
         />
-      </section>
+      </Card>
 
       {tags.length > 0 && (
-        <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+        <Card variant="raised" radius="lg" padding="md">
+          <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
             Tags
           </h2>
-          <ul className="flex flex-col gap-1 text-sm">
+          <ul className="flex flex-col gap-1 text-[length:var(--text-body)]">
             {tags.slice(0, 8).map((tag) => (
               <li
                 key={tag.tag}
-                className="flex items-center justify-between gap-3 border-b border-zinc-100 py-1 last:border-b-0 dark:border-zinc-800"
+                className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-subtle)] py-1 last:border-b-0"
               >
-                <span className="font-mono">{tag.tag}</span>
-                <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
+                <span className="font-mono text-[color:var(--color-text-primary)]">{tag.tag}</span>
+                <span className="tabular-nums text-[color:var(--color-text-secondary)]">
                   {tag.count}× · Ø {tag.avgMood.toFixed(1)}
                 </span>
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       )}
 
       <CorrelationInsights correlations={correlations} />
@@ -381,47 +362,42 @@ function CorrelationInsights({
   if (meaningful.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <header className="flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-medium uppercase text-zinc-500 dark:text-zinc-400">
+    <Card variant="raised" radius="lg" padding="md">
+      <header className="mb-[var(--space-sm)] flex items-baseline justify-between gap-3">
+        <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
           Was wirkt auf deine Stimmung?
         </h2>
-        <span className="text-xs text-zinc-400">aus den letzten 30 Tagen</span>
+        <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+          aus den letzten 30 Tagen
+        </span>
       </header>
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-[var(--space-xs)]">
         {meaningful.map((c) => {
           const positive = (c.r ?? 0) > 0
           const intensity = Math.abs(c.r ?? 0)
           return (
             <li
               key={c.habitId}
-              className={
-                'flex items-start gap-3 rounded-md border-l-4 p-3 ' +
-                (positive
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
-                  : 'border-rose-500 bg-rose-50 dark:bg-rose-950/30')
-              }
+              className={[
+                'flex items-start gap-3 rounded-[var(--radius-md)] border-l-4 p-[var(--space-sm)]',
+                positive
+                  ? 'border-l-[color:var(--color-success)] bg-[color:var(--color-success-soft)]'
+                  : 'border-l-[color:var(--color-danger)] bg-[color:var(--color-danger-soft)]',
+              ].join(' ')}
             >
               <span className="text-2xl" aria-hidden>
                 {c.habitIcon}
               </span>
-              <div className="flex flex-col gap-0.5 text-sm">
-                <p
-                  className={
-                    positive
-                      ? 'text-emerald-900 dark:text-emerald-100'
-                      : 'text-rose-900 dark:text-rose-100'
-                  }
-                >
-                  An Tagen mit <strong>{c.habitTitle}</strong> warst du im
-                  Schnitt{' '}
+              <div className="flex flex-col gap-0.5 text-[length:var(--text-body)]">
+                <p className="text-[color:var(--color-text-primary)]">
+                  An Tagen mit <strong>{c.habitTitle}</strong> warst du im Schnitt{' '}
                   <strong>
                     {(intensity * 1.5).toFixed(1)} Punkte{' '}
                     {positive ? 'glücklicher' : 'gestresster'}
                   </strong>
                   .
                 </p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
                   {c.pairs} überlappende Tage · Stärke{' '}
                   {intensity > 0.6 ? 'stark' : 'mittel'}
                 </p>
@@ -430,34 +406,23 @@ function CorrelationInsights({
           )
         })}
       </ul>
-    </section>
-  )
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col rounded-md bg-zinc-50 px-3 py-2 dark:bg-zinc-800/40">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="font-mono text-base">{value}</span>
-    </div>
+    </Card>
   )
 }
 
 function Loading() {
-  return <p className="text-sm text-zinc-500">Lade …</p>
+  return <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">Lade …</p>
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+    <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-lg)] text-center text-[length:var(--text-body)] text-[color:var(--color-text-secondary)]">
       {children}
     </p>
   )
 }
 
-function groupByReminder(
-  events: readonly ReminderEvent[],
-): Map<string, ReminderEvent[]> {
+function groupByReminder(events: readonly ReminderEvent[]): Map<string, ReminderEvent[]> {
   const map = new Map<string, ReminderEvent[]>()
   for (const event of events) {
     const list = map.get(event.reminderId) ?? []
@@ -467,9 +432,7 @@ function groupByReminder(
   return map
 }
 
-function buildHeatmapValues(
-  events: readonly ReminderEvent[],
-): Map<string, number | null> {
+function buildHeatmapValues(events: readonly ReminderEvent[]): Map<string, number | null> {
   const counts = new Map<string, number>()
   for (const event of events) {
     if (event.action !== 'completed') continue

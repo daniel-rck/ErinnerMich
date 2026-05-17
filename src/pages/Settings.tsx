@@ -27,7 +27,11 @@ import {
 import { useToast } from '../components/ui/Toast'
 import { useConfirm } from '../components/ui/Confirm'
 
-export function SettingsPage() {
+interface SettingsPageProps {
+  embedded?: boolean
+}
+
+export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
   const { theme, setTheme } = useTheme()
   const toast = useToast()
   const [landing, setLanding] = useState<LandingTab>(
@@ -78,8 +82,17 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Einstellungen</h1>
+    <div className="flex flex-col gap-[var(--space-xl)]">
+      {!embedded && (
+        <header className="flex flex-col gap-[var(--space-2xs)]">
+          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+            Du
+          </p>
+          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+            Einstellungen
+          </h1>
+        </header>
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">

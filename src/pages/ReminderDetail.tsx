@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Pencil } from 'lucide-react'
 import { getReminder } from '../lib/db/reminders'
 import { useEvents } from '../lib/hooks/useEvents'
 import { getInventory } from '../lib/db/inventories'
@@ -10,6 +11,10 @@ import {
 } from '../lib/stats/completionRate'
 import type { Inventory, Reminder, ReminderEvent } from '../lib/types'
 import { formatDate, formatSchedule, formatTime } from '../lib/format'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+import { StatTile } from '../components/ui/StatTile'
+import { categoryClasses } from '../lib/categoryColors'
 
 export function ReminderDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -35,18 +40,17 @@ export function ReminderDetailPage() {
     }
   }, [id])
 
-  if (loading) return <p className="text-sm text-zinc-500">Lade …</p>
+  if (loading)
+    return <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">Lade …</p>
   if (!reminder) {
     return (
-      <div className="flex flex-col gap-4">
-        <p className="text-sm text-zinc-500">Reminder nicht gefunden.</p>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="self-start rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-        >
+      <div className="flex flex-col gap-[var(--space-md)]">
+        <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
+          Reminder nicht gefunden.
+        </p>
+        <Button variant="secondary" onClick={() => navigate('/')}>
           Zurück
-        </button>
+        </Button>
       </div>
     )
   }
@@ -54,87 +58,116 @@ export function ReminderDetailPage() {
   const streak = streakStats(events)
   const completions = completionSummary(events)
   const avgGap = averageDaysBetweenCompletions(events)
+  const tone = categoryClasses(reminder.category)
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-3">
-        <span className="text-3xl" aria-hidden>
-          {reminder.icon}
-        </span>
-        <div className="flex flex-1 flex-col">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {reminder.title}
-          </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {formatSchedule(reminder.schedule)}
-          </p>
+    <div className="flex flex-col gap-[var(--space-lg)]">
+      {/* Hero */}
+      <Card
+        variant="raised"
+        radius="xl"
+        padding="lg"
+        accentBorder={reminder.category}
+        className="relative overflow-hidden"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br from-[color:var(--color-brand-400)] to-[color:var(--color-accent-mood)] opacity-10 blur-3xl"
+        />
+        <div className="relative flex items-start gap-[var(--space-md)]">
+          <span
+            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--radius-lg)] text-4xl ${tone.iconBg}`}
+            aria-hidden
+          >
+            {reminder.icon}
+          </span>
+          <div className="flex flex-1 flex-col">
+            <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+              {reminder.kind === 'habit' ? 'Habit' : reminder.kind === 'mood' ? 'Mood' : 'Reminder'}
+            </p>
+            <h1 className="text-[length:var(--text-title-1)] font-semibold leading-[var(--leading-title)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+              {reminder.title}
+            </h1>
+            <p className="mt-1 text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+              {formatSchedule(reminder.schedule)}
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            leadingIcon={Pencil}
+            onClick={() => navigate(`/edit/${reminder.id}`)}
+          >
+            <span className="hidden sm:inline">Bearbeiten</span>
+          </Button>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate(`/edit/${reminder.id}`)}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-        >
-          Bearbeiten
-        </button>
-      </header>
+      </Card>
 
       {reminder.description && (
-        <p className="rounded-md bg-zinc-50 p-3 text-sm dark:bg-zinc-800/40">
-          {reminder.description}
-        </p>
+        <Card variant="sunken" radius="md" padding="md">
+          <p className="text-[length:var(--text-body)] text-[color:var(--color-text-primary)]">
+            {reminder.description}
+          </p>
+        </Card>
       )}
 
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
         {reminder.kind === 'habit' && (
           <>
-            <Metric label="Aktuelle Streak" value={`${streak.current} d`} />
-            <Metric label="Längste Streak" value={`${streak.longest} d`} />
+            <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
+            <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
           </>
         )}
-        <Metric
-          label="7-Tage-Quote"
-          value={`${Math.round(completions.last7.rate * 100)} %`}
+        <StatTile
+          label="7-Tage"
+          value={`${Math.round(completions.last7.rate * 100)}%`}
+          accent="grow"
+          size="sm"
         />
-        <Metric
-          label="30-Tage-Quote"
-          value={`${Math.round(completions.last30.rate * 100)} %`}
+        <StatTile
+          label="30-Tage"
+          value={`${Math.round(completions.last30.rate * 100)}%`}
+          accent="calm"
+          size="sm"
         />
         {avgGap !== null && (
-          <Metric label="Ø Abstand" value={`${avgGap.toFixed(1)} d`} />
+          <StatTile label="Ø Abstand" value={`${avgGap.toFixed(1)}d`} accent="mood" size="sm" />
         )}
       </section>
 
       {inventory && (
-        <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+        <Card variant="raised" radius="lg" padding="md">
+          <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
             Vorrat
           </h2>
-          <p className="text-sm">
-            {inventory.remaining} {inventory.unit} (Schwelle:{' '}
-            {inventory.refillThreshold} {inventory.unit})
+          <p className="text-[length:var(--text-body)] text-[color:var(--color-text-primary)]">
+            {inventory.remaining} {inventory.unit} (Schwelle: {inventory.refillThreshold}{' '}
+            {inventory.unit})
           </p>
           {inventory.lastRefillAt && (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
               Letztes Auffüllen: {formatDate(new Date(inventory.lastRefillAt))}
             </p>
           )}
-        </section>
+        </Card>
       )}
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
+      <section className="flex flex-col gap-[var(--space-xs)]">
+        <h2 className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
           Verlauf ({events.length} Einträge)
         </h2>
         {events.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-md)] text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
             Noch keine Aktivität.
           </p>
         ) : (
-          <ul className="flex flex-col">
-            {events.slice(0, 50).map((event) => (
-              <EventRow key={event.id} event={event} />
-            ))}
-          </ul>
+          <Card variant="raised" radius="lg" padding="none">
+            <ul className="flex flex-col">
+              {events.slice(0, 50).map((event) => (
+                <EventRow key={event.id} event={event} />
+              ))}
+            </ul>
+          </Card>
         )}
       </section>
     </div>
@@ -145,20 +178,20 @@ function EventRow({ event }: { event: ReminderEvent }) {
   const ts = event.triggeredAt ?? event.scheduledFor
   const date = ts ? new Date(ts) : null
   return (
-    <li className="flex items-center justify-between gap-3 border-b border-zinc-100 py-2 text-sm last:border-b-0 dark:border-zinc-800">
-      <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+    <li className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-subtle)] px-[var(--space-md)] py-[var(--space-xs)] last:border-b-0">
+      <span className="font-mono text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
         {date ? `${formatDate(date)} ${formatTime(date)}` : '—'}
       </span>
       <span className="flex items-center gap-2">
         <ActionPill action={event.action} />
         {event.progress && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
             +{event.progress.value} {event.progress.unit}
           </span>
         )}
         {event.note && (
-          <span className="text-xs italic text-zinc-500 dark:text-zinc-400">
-            „{event.note}“
+          <span className="text-[length:var(--text-caption)] italic text-[color:var(--color-text-secondary)]">
+            „{event.note}"
           </span>
         )}
       </span>
@@ -176,29 +209,20 @@ const ACTION_LABELS: Record<ReminderEvent['action'], string> = {
 }
 
 const ACTION_CLASSES: Record<ReminderEvent['action'], string> = {
-  completed: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200',
-  snoozed: 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200',
-  skipped: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-  missed: 'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-200',
-  progress: 'bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-200',
-  dismissed: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+  completed: 'bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]',
+  snoozed: 'bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]',
+  skipped: 'bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]',
+  missed: 'bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]',
+  progress: 'bg-[color:var(--color-info-soft)] text-[color:var(--color-info)]',
+  dismissed: 'bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]',
 }
 
 function ActionPill({ action }: { action: ReminderEvent['action'] }) {
   return (
     <span
-      className={`rounded-full px-2 py-0.5 text-xs font-medium ${ACTION_CLASSES[action]}`}
+      className={`rounded-full px-2 py-0.5 text-[length:var(--text-micro)] font-medium ${ACTION_CLASSES[action]}`}
     >
       {ACTION_LABELS[action]}
     </span>
-  )
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col rounded-md bg-zinc-50 px-3 py-2 dark:bg-zinc-800/40">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="font-mono text-base">{value}</span>
-    </div>
   )
 }
