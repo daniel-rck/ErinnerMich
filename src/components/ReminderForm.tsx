@@ -18,6 +18,7 @@ import {
 import { lastDayOfMonth } from '../lib/schedule/helpers'
 import { SchedulePreview } from './SchedulePreview'
 import { useConfirm } from './ui/Confirm'
+import { IconPicker } from './ui/IconPicker'
 
 const WEEKDAY_OPTIONS: { value: Weekday; label: string }[] = [
   { value: 'MON', label: 'Mo' },
@@ -157,15 +158,9 @@ export function ReminderForm({
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
-      <div className="flex gap-3">
-        <FieldGroup label="Symbol" className="w-24">
-          <input
-            value={icon}
-            onChange={(e) => setIcon(e.target.value)}
-            className={inputClass}
-            maxLength={4}
-            aria-label="Symbol oder Emoji"
-          />
+      <div className="flex items-end gap-3">
+        <FieldGroup label="Symbol" className="w-auto">
+          <IconPicker value={icon} onChange={setIcon} ariaLabel="Symbol wählen" />
         </FieldGroup>
         <FieldGroup label="Titel" className="flex-1">
           <input
