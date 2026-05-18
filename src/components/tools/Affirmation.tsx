@@ -51,7 +51,7 @@ export function Affirmation() {
           className="w-full max-w-md rounded-2xl bg-gradient-to-br from-violet-100 to-pink-100 p-8 text-center shadow-sm dark:from-violet-950/40 dark:to-pink-950/40"
         >
           <p className="text-xl font-semibold leading-relaxed text-violet-950 dark:text-violet-50 sm:text-2xl">
-            „{shown.text}"
+            „{shown.text}“
           </p>
         </motion.div>
       </AnimatePresence>

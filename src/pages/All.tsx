@@ -18,13 +18,26 @@ type Filter = 'all' | ReminderKind
 
 const DELETE_GRACE_MS = 5500
 
-export function AllPage() {
+interface AllPageProps {
+  /**
+   * When true, omits the page header (used inside Library tabs).
+   */
+  embedded?: boolean
+  /**
+   * Pre-applied filter when no URL param is set — used to scope the "Reminder"
+   * tab inside Library.
+   */
+  defaultFilter?: ReminderKind
+}
+
+export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) {
   const navigate = useNavigate()
   const toast = useToast()
   const [params, setParams] = useSearchParams()
   const filter: Filter = (() => {
     const f = params.get('filter')
-    return f === 'reminder' || f === 'habit' || f === 'mood' ? f : 'all'
+    if (f === 'reminder' || f === 'habit' || f === 'mood') return f
+    return defaultFilter ?? 'all'
   })()
   const search = params.get('q') ?? ''
   const { reminders, loading } = useReminders({
@@ -78,19 +91,21 @@ export function AllPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Alle</h1>
-        <button
-          type="button"
-          onClick={() => navigate('/new')}
-          className="hidden rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex"
-        >
-          + Neu
-        </button>
-      </header>
+    <div className="flex flex-col gap-[var(--space-md)]">
+      {!embedded && (
+        <header className="flex items-end justify-between">
+          <div className="flex flex-col gap-[var(--space-2xs)]">
+            <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+              Bibliothek
+            </p>
+            <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+              Alle
+            </h1>
+          </div>
+        </header>
+      )}
 
-      <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-elevated)] px-[var(--space-sm)]">
         <Search size={16} className="text-zinc-400" aria-hidden />
         <input
           type="search"

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, PackageOpen, CalendarClock } from 'lucide-react'
 import { useLowStock } from '../lib/hooks/useInventory'
 import { useExpiryRadar } from '../lib/hooks/useExpiryRadar'
+import { Card } from './ui/Card'
 
 export function AttentionStrip() {
   const navigate = useNavigate()
@@ -15,23 +16,27 @@ export function AttentionStrip() {
   if (total === 0) return null
 
   return (
-    <section
+    <Card
+      variant="raised"
+      radius="lg"
+      padding="md"
       aria-label="Achtung"
-      className="flex flex-col gap-2 rounded-xl border border-amber-300/60 bg-amber-50 p-3 dark:border-amber-700/40 dark:bg-amber-950/20"
+      as="section"
+      className="bg-[color:var(--color-warning-soft)] border-[color:var(--color-warning)]/30"
     >
-      <header className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-amber-900 dark:text-amber-200">
-        <AlertTriangle size={14} />
+      <header className="mb-[var(--space-xs)] flex items-center gap-2 text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-warning)]">
+        <AlertTriangle size={14} aria-hidden />
         Achtung
       </header>
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-0.5">
         {lowStock.slice(0, 3).map((inv) => (
           <li key={inv.reminderId}>
             <button
               type="button"
               onClick={() => navigate(`/detail/${inv.reminderId}`)}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-amber-900 hover:bg-amber-100 dark:text-amber-100 dark:hover:bg-amber-950/40"
+              className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
             >
-              <PackageOpen size={14} className="shrink-0" />
+              <PackageOpen size={14} aria-hidden className="shrink-0 text-[color:var(--color-warning)]" />
               <span>
                 Vorrat niedrig:{' '}
                 <span className="tabular-nums font-medium">
@@ -47,9 +52,9 @@ export function AttentionStrip() {
             <button
               type="button"
               onClick={() => navigate(`/detail/${item.reminder.id}`)}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-amber-900 hover:bg-amber-100 dark:text-amber-100 dark:hover:bg-amber-950/40"
+              className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
             >
-              <CalendarClock size={14} className="shrink-0" />
+              <CalendarClock size={14} aria-hidden className="shrink-0 text-[color:var(--color-warning)]" />
               <span>
                 <span className="font-medium">{item.reminder.title}</span> läuft
                 in {item.daysRemaining} Tag{item.daysRemaining === 1 ? '' : 'en'} ab
@@ -58,6 +63,6 @@ export function AttentionStrip() {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   )
 }

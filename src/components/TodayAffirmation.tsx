@@ -9,11 +9,25 @@ export function TodayAffirmation() {
   return (
     <Link
       to="/tools/affirmation"
-      className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-violet-100 to-pink-100 p-4 transition-shadow hover:shadow-md dark:from-violet-950/40 dark:to-pink-950/40"
+      className={[
+        'group relative flex items-center gap-3 overflow-hidden',
+        'rounded-[var(--radius-lg)] p-[var(--space-md)]',
+        'bg-gradient-to-br from-[color:var(--color-accent-mood-soft)] via-[color:var(--color-surface-elevated)] to-[color:var(--color-accent-glow-soft)]',
+        'border border-[color:var(--color-border-subtle)]',
+        'shadow-[var(--elev-1)]',
+        'transition-shadow duration-[var(--motion-base)]',
+        'hover:shadow-[var(--elev-2)]',
+      ].join(' ')}
     >
-      <Sparkles size={20} className="shrink-0 text-violet-700 dark:text-violet-200" />
-      <p className="text-sm font-medium leading-snug text-violet-950 dark:text-violet-50">
-        „{today.text}"
+      <div
+        aria-hidden
+        className="absolute -bottom-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br from-[color:var(--color-accent-mood)] to-[color:var(--color-accent-glow)] opacity-20 blur-2xl"
+      />
+      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-surface-elevated)] shadow-[var(--elev-1)]">
+        <Sparkles size={18} className="text-[color:var(--color-brand-600)]" aria-hidden />
+      </div>
+      <p className="relative text-[length:var(--text-body)] font-medium leading-snug text-[color:var(--color-text-primary)]">
+        „{today.text}“
       </p>
     </Link>
   )

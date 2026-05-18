@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useReminders } from '../lib/hooks/useReminders'
 import {
   archiveReminder,
@@ -9,14 +10,14 @@ import {
 import { TodayTimeline } from '../components/TodayTimeline'
 import { TodayHero } from '../components/TodayHero'
 import { AttentionStrip } from '../components/AttentionStrip'
-import { QuickCapture } from '../components/QuickCapture'
-import { MoodTile } from '../components/MoodTile'
+import { MoodStrip } from '../components/MoodStrip'
+import { HabitRail } from '../components/HabitRail'
+import { WellnessRibbon } from '../components/WellnessRibbon'
 import { useMoodLog } from '../components/MoodLog/MoodLogProvider'
 import { useToast } from '../components/ui/Toast'
 import { CardSkeleton } from '../components/ui/CardSkeleton'
-import { EmergencyButton } from '../components/EmergencyButton'
-import { TodayAffirmation } from '../components/TodayAffirmation'
 import { useSettings } from '../lib/hooks/useSettings'
+import { FADE_UP, STAGGER_CONTAINER } from '../lib/design/motion'
 import type { Reminder } from '../lib/types'
 
 const DELETE_GRACE_MS = 5500
@@ -64,35 +65,47 @@ export function TodayPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Heute</h1>
-        <button
-          type="button"
-          onClick={() => navigate('/new?kind=reminder')}
-          className="hidden rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 sm:inline-flex"
-        >
-          + Neu
-        </button>
-      </header>
-
-      <TodayHero />
-      <QuickCapture />
-      {settings.wellnessToolsEnabled && <TodayAffirmation />}
-      <MoodTile />
-      <AttentionStrip />
-
-      {loading ? (
-        <CardSkeleton count={2} />
-      ) : (
-        <TodayTimeline
-          reminders={reminders}
-          onEdit={(r) => navigate(`/edit/${r.id}`)}
-          onDelete={handleDelete}
-        />
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={STAGGER_CONTAINER}
+      className="flex flex-col gap-[var(--space-lg)]"
+    >
+      {settings.wellnessToolsEnabled && (
+        <motion.section variants={FADE_UP}>
+          <MoodStrip />
+        </motion.section>
       )}
 
-      {settings.wellnessToolsEnabled && <EmergencyButton />}
-    </div>
+      <motion.section variants={FADE_UP}>
+        <TodayHero />
+      </motion.section>
+
+      {settings.wellnessToolsEnabled && (
+        <motion.section variants={FADE_UP}>
+          <WellnessRibbon />
+        </motion.section>
+      )}
+
+      <motion.section variants={FADE_UP}>
+        <AttentionStrip />
+      </motion.section>
+
+      <motion.section variants={FADE_UP}>
+        {loading ? (
+          <CardSkeleton count={2} />
+        ) : (
+          <TodayTimeline
+            reminders={reminders}
+            onEdit={(r) => navigate(`/edit/${r.id}`)}
+            onDelete={handleDelete}
+          />
+        )}
+      </motion.section>
+
+      <motion.section variants={FADE_UP}>
+        <HabitRail />
+      </motion.section>
+    </motion.div>
   )
 }

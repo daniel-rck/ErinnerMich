@@ -6,6 +6,8 @@ import { useAllEvents } from '../lib/hooks/useAllEvents'
 import { nextOccurrence } from '../lib/schedule/nextOccurrence'
 import { streakStats } from '../lib/stats/streaks'
 import { dayKeyForDate } from '../lib/stats/dayKey'
+import { Surface } from './ui/Surface'
+import { StatTile } from './ui/StatTile'
 import type { Reminder, ReminderEvent } from '../lib/types'
 
 interface HeroStats {
@@ -23,16 +25,6 @@ function endOfDay(d: Date): Date {
   const x = new Date(d)
   x.setHours(23, 59, 59, 999)
   return x
-}
-
-function greeting(now: Date): string {
-  const h = now.getHours()
-  if (h < 5) return 'Späte Stunde'
-  if (h < 11) return 'Guten Morgen'
-  if (h < 14) return 'Guten Tag'
-  if (h < 18) return 'Guten Nachmittag'
-  if (h < 22) return 'Guten Abend'
-  return 'Gute Nacht'
 }
 
 function microcopy(ratio: number, due: number): string {
@@ -113,40 +105,54 @@ export function TodayHero() {
     stats.dueTotal === 0 ? 0 : Math.min(1, stats.doneTotal / stats.dueTotal)
 
   return (
-    <section
+    <Surface
+      variant="raised"
+      radius="xl"
+      padding="lg"
+      as="section"
       aria-label="Tagesübersicht"
-      className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-gradient-to-br from-brand-50/60 via-white to-white p-5 dark:border-zinc-800 dark:from-brand-950/30 dark:via-zinc-900 dark:to-zinc-900"
+      className="relative overflow-hidden"
     >
-      <div className="flex items-center gap-5">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-gradient-to-br from-[color:var(--color-brand-400)] to-[color:var(--color-accent-mood)] opacity-15 blur-3xl"
+      />
+      <div className="relative flex items-center gap-5">
         <ProgressRing ratio={ratio} done={stats.doneTotal} due={stats.dueTotal} />
         <div className="flex flex-1 flex-col gap-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            {greeting(now)}
+          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+            {stats.dueTotal === 0 ? 'Heute' : `${stats.doneTotal} / ${stats.dueTotal} erledigt`}
           </p>
-          <h2 className="text-xl font-semibold leading-tight">
+          <h2 className="text-[length:var(--text-title-1)] font-semibold leading-[var(--leading-title)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
             {microcopy(ratio, stats.dueTotal)}
           </h2>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 text-sm">
-        <MiniStat
-          icon={<CheckCircle2 size={16} className="text-emerald-600" />}
+      <div className="relative mt-[var(--space-lg)] grid grid-cols-3 gap-2">
+        <StatTile
           label="Erledigt"
-          value={String(stats.doneTotal)}
+          value={stats.doneTotal}
+          icon={CheckCircle2}
+          accent="grow"
+          size="sm"
         />
-        <MiniStat
-          icon={<Clock size={16} className="text-brand-600" />}
+        <StatTile
           label="Offen"
-          value={String(Math.max(0, stats.dueTotal - stats.doneTotal))}
+          value={Math.max(0, stats.dueTotal - stats.doneTotal)}
+          icon={Clock}
+          accent="brand"
+          size="sm"
         />
-        <MiniStat
-          icon={<Flame size={16} className="text-amber-500" />}
+        <StatTile
           label="Streak"
-          value={`${stats.bestStreak} d`}
+          value={`${stats.bestStreak}d`}
+          icon={Flame}
+          accent="glow"
+          size="sm"
         />
       </div>
-    </section>
+    </Surface>
   )
 }
 
@@ -159,8 +165,8 @@ function ProgressRing({
   done: number
   due: number
 }) {
-  const size = 96
-  const stroke = 8
+  const size = 124
+  const stroke = 10
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
   const dashOffset = circumference * (1 - ratio)
@@ -176,13 +182,20 @@ function ProgressRing({
       style={{ width: size, height: size }}
     >
       <svg width={size} height={size} className="-rotate-90">
+        <defs>
+          <linearGradient id="hero-ring-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--color-brand-400)" />
+            <stop offset="60%" stopColor="var(--color-brand-600)" />
+            <stop offset="100%" stopColor="var(--color-accent-mood)" />
+          </linearGradient>
+        </defs>
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
           strokeWidth={stroke}
-          className="stroke-zinc-200 dark:stroke-zinc-800"
+          stroke="var(--color-border-subtle)"
         />
         <motion.circle
           cx={size / 2}
@@ -192,40 +205,20 @@ function ProgressRing({
           strokeWidth={stroke}
           strokeDasharray={circumference}
           strokeLinecap="round"
-          className="stroke-brand-500"
+          stroke="url(#hero-ring-gradient)"
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: dashOffset }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-semibold leading-none tabular-nums">
+        <span className="text-[length:var(--text-display)] font-semibold leading-none tabular-nums text-[color:var(--color-text-primary)]">
           {done}
         </span>
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="mt-0.5 text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
           / {due}
         </span>
       </div>
-    </div>
-  )
-}
-
-function MiniStat({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode
-  label: string
-  value: string
-}) {
-  return (
-    <div className="flex flex-col items-start gap-0.5 rounded-lg bg-white/60 px-3 py-2 dark:bg-zinc-800/40">
-      <span className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-        {icon}
-        {label}
-      </span>
-      <span className="text-base font-semibold tabular-nums">{value}</span>
     </div>
   )
 }
