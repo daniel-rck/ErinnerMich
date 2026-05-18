@@ -191,7 +191,7 @@ function EventRow({ event }: { event: ReminderEvent }) {
         )}
         {event.note && (
           <span className="text-[length:var(--text-caption)] italic text-[color:var(--color-text-secondary)]">
-            „{event.note}"
+            „{event.note}“
           </span>
         )}
       </span>

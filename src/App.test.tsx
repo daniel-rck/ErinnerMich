@@ -22,7 +22,7 @@ describe('App shell', () => {
     expect(screen.getAllByRole('link', { name: /^Du$/ }).length).toBeGreaterThan(0)
   })
 
-  it('hat den zentralen FAB als „Neu anlegen"-Button', () => {
+  it('hat den zentralen FAB als „Neu anlegen“-Button', () => {
     render(<App />)
     expect(
       screen.getAllByRole('button', { name: /Neu anlegen/ }).length,

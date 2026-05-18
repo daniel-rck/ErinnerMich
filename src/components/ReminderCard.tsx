@@ -57,7 +57,7 @@ export function ReminderCard({
     if (reminder.kind === 'reminder') {
       await adjustInventory(reminder.id, -1)
     }
-    toast.show({ variant: 'success', message: `„${reminder.title}" erledigt` })
+    toast.show({ variant: 'success', message: `„${reminder.title}“ erledigt` })
   }
 
   async function snoozeAt(at: Date, label: string) {
@@ -81,8 +81,8 @@ export function ReminderCard({
     leftColor: 'transparent',
   })
 
-  // The card content (without swipe wrapper) — also serves as the static
-  // fallback when reduced-motion is preferred.
+  // The card content (without any motion wrappers) — rendered as a plain
+  // <article> when prefers-reduced-motion is set.
   const cardInner = (
     <>
       <header className="flex items-start gap-[var(--space-sm)]">
@@ -172,18 +172,7 @@ export function ReminderCard({
   ].join(' ')
 
   if (reducedMotion) {
-    return (
-      <motion.article
-        layout
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97 }}
-        transition={{ duration: 0.18 }}
-        className={cardClass}
-      >
-        {cardInner}
-      </motion.article>
-    )
+    return <article className={cardClass}>{cardInner}</article>
   }
 
   return (

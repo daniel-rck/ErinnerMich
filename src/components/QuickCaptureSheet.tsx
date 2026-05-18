@@ -87,7 +87,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder='z.B. „Mama Sonntag 18 Uhr"'
+            placeholder='z.B. „Mama Sonntag 18 Uhr“'
             aria-label="Schnell-Eintrag"
             className="min-w-0 flex-1 bg-transparent text-[length:var(--text-body)] focus:outline-none placeholder:text-[color:var(--color-text-tertiary)]"
             disabled={busy}

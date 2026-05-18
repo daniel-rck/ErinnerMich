@@ -45,7 +45,7 @@ describe('MoodStrip', () => {
     })
   })
 
-  it('zeigt „Mit Notiz loggen" als Sekundär-Aktion', async () => {
+  it('zeigt „Mit Notiz loggen“ als Sekundär-Aktion', async () => {
     renderStrip()
     await waitFor(() => {
       expect(screen.getByText(/Mit Notiz loggen/)).toBeInTheDocument()

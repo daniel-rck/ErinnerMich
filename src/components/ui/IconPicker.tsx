@@ -300,7 +300,7 @@ export function IconPicker({
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={'Suchen … z.B. „wasser", „pflanze", „arzt"'}
+              placeholder={'Suchen … z.B. „wasser“, „pflanze“, „arzt“'}
               className="pl-9"
               autoFocus
             />
@@ -308,7 +308,7 @@ export function IconPicker({
 
           {filteredCategories.length === 0 ? (
             <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-md)] text-center text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
-              Keine Symbole für „{query}"
+              Keine Symbole für „{query}“
             </p>
           ) : (
             <div className="flex max-h-[min(50vh,420px)] flex-col gap-[var(--space-md)] overflow-y-auto pr-1">

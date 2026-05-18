@@ -51,7 +51,7 @@ export function TodayPage() {
     }, DELETE_GRACE_MS)
     toast.show({
       variant: 'success',
-      message: `„${reminder.title}" gelöscht`,
+      message: `„${reminder.title}“ gelöscht`,
       durationMs: DELETE_GRACE_MS,
       action: {
         label: 'Rückgängig',

@@ -27,7 +27,7 @@ export function TodayAffirmation() {
         <Sparkles size={18} className="text-[color:var(--color-brand-600)]" aria-hidden />
       </div>
       <p className="relative text-[length:var(--text-body)] font-medium leading-snug text-[color:var(--color-text-primary)]">
-        „{today.text}"
+        „{today.text}“
       </p>
     </Link>
   )

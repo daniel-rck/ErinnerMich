@@ -136,6 +136,8 @@ function TabsPanel({ value, children, className = '' }: TabsPanelProps) {
   )
 }
 
+// Compound-component API. TypeScript widens the function's type to include
+// these properties via inference, so `Tabs.List` etc. are type-safe.
 Tabs.List = TabsList
 Tabs.Trigger = TabsTrigger
 Tabs.Panel = TabsPanel
