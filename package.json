@@ -3,6 +3,28 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Privacy-first PWA für Erinnerungen, Habits und Mood – lokal, ohne Account.",
+  "keywords": [
+    "pwa",
+    "reminders",
+    "habits",
+    "mood-tracker",
+    "offline",
+    "privacy",
+    "react",
+    "vite",
+    "typescript"
+  ],
+  "author": "Daniel Rück",
+  "license": "MIT",
+  "homepage": "https://erinnermich.daniel-rck.workers.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daniel-rck/ErinnerMich.git"
+  },
+  "bugs": {
+    "url": "https://github.com/daniel-rck/ErinnerMich/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

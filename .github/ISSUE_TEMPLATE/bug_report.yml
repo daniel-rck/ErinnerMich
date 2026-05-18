@@ -1,0 +1,80 @@
+name: 🐞 Bug Report
+description: Einen Fehler in ErinnerMich melden
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke, dass du dir die Zeit für einen Bug-Report nimmst! Bitte fülle die folgenden Felder möglichst genau aus.
+
+        ⚠️ **Sicherheits­lücken bitte nicht hier melden**, sondern über [GitHub Security Advisories](https://github.com/daniel-rck/ErinnerMich/security/advisories/new).
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung
+      description: Was passiert? Was hast du erwartet?
+      placeholder: Beim Anlegen einer wöchentlichen Erinnerung wird der Termin am Sonntag übersprungen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduktion
+      description: Schritte, um den Fehler zu reproduzieren.
+      placeholder: |
+        1. App auf <https://erinnermich.daniel-rck.workers.dev/> öffnen
+        2. Neue Erinnerung anlegen mit Recurrence "wöchentlich, Sonntag"
+        3. Auf Today-Seite gehen
+        4. Fehler: Erinnerung erscheint nicht
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+      placeholder: Die Erinnerung sollte am Sonntag in der Today-Liste auftauchen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Tatsächliches Verhalten
+      placeholder: Die Liste ist leer; in der Library ist der Eintrag aber vorhanden.
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser / OS / Gerät
+      placeholder: "Firefox 128, macOS 15, MacBook Air M2"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App-Version / Commit
+      description: Wo deployed (Live-URL) oder welcher Commit-Hash bei lokalem Build.
+      placeholder: "Live / commit abc1234"
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Logs (optional)
+      description: Bild oder Konsolen-Output anhängen, falls vorhanden.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Vor dem Abschicken
+      options:
+        - label: Ich habe nach bestehenden Issues gesucht und keinen passenden Eintrag gefunden.
+          required: true
+        - label: Dies ist kein Sicherheits-Issue (sonst Security Advisory).
+          required: true

@@ -1,0 +1,48 @@
+name: ✨ Feature Request
+description: Eine Idee oder Verbesserung vorschlagen
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Vorschlag! Bitte beschreibe das **Problem zuerst** und dann eine mögliche Lösung – so können wir alternative Ansätze diskutieren.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: Welches Problem löst das Feature? Welchen Use-Case deckt es ab?
+      placeholder: Ich möchte bei wiederkehrenden Erinnerungen mehrere Tageszeiten gleichzeitig hinterlegen können.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Lösungsidee
+      description: Wie könnte das Feature aussehen? Gerne auch Mockups oder Skizzen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen
+      description: Welche anderen Wege hast du in Erwägung gezogen? Warum sind sie schlechter?
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Zusatzkontext
+      description: Verlinkte Issues, Beispiele aus anderen Apps, relevante Spec-Doku, …
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Vor dem Abschicken
+      options:
+        - label: Ich habe nach bestehenden Issues / Diskussionen gesucht.
+          required: true
+        - label: Der Vorschlag passt zur Privacy-First-Philosophie (keine Cloud, kein Tracking).
+          required: true

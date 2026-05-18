@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Sicherheits­lücke melden
+    url: https://github.com/daniel-rck/ErinnerMich/security/advisories/new
+    about: Sicherheits-Findings bitte privat über GitHub Security Advisories melden – nicht als öffentliches Issue.
+  - name: 📖 Roadmap & Datenmodell
+    url: https://github.com/daniel-rck/ErinnerMich/blob/main/PLAN.md
+    about: Aktuelle Phasen, geplante Features und Architektur­entscheidungen.
