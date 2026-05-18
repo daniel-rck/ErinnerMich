@@ -71,9 +71,11 @@ export function TodayPage() {
       variants={STAGGER_CONTAINER}
       className="flex flex-col gap-[var(--space-lg)]"
     >
-      <motion.section variants={FADE_UP}>
-        <MoodStrip />
-      </motion.section>
+      {settings.wellnessToolsEnabled && (
+        <motion.section variants={FADE_UP}>
+          <MoodStrip />
+        </motion.section>
+      )}
 
       <motion.section variants={FADE_UP}>
         <TodayHero />

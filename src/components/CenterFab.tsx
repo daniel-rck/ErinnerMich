@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react'
 import { vibrate } from './ui/Haptic'
 import { useMoodLog } from './MoodLog/MoodLogProvider'
 import { QuickCaptureSheet } from './QuickCaptureSheet'
+import { useSettings } from '../lib/hooks/useSettings'
 import { LONG_PRESS_MS } from '../lib/design/gestures'
 
 interface CenterFabProps {
@@ -16,11 +17,13 @@ interface CenterFabProps {
 
 export function CenterFab({ variant = 'circle' }: CenterFabProps) {
   const moodLog = useMoodLog()
+  const { wellnessToolsEnabled } = useSettings()
   const [sheetOpen, setSheetOpen] = useState(false)
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const longPressFired = useRef(false)
 
   function startLongPress() {
+    if (!wellnessToolsEnabled) return
     longPressFired.current = false
     longPressTimer.current = setTimeout(() => {
       longPressFired.current = true
@@ -53,7 +56,11 @@ export function CenterFab({ variant = 'circle' }: CenterFabProps) {
           onPointerUp={cancelLongPress}
           onPointerLeave={cancelLongPress}
           onPointerCancel={cancelLongPress}
-          aria-label="Neu anlegen (lang drücken: Stimmung)"
+          aria-label={
+            wellnessToolsEnabled
+              ? 'Neu anlegen (lang drücken: Stimmung)'
+              : 'Neu anlegen'
+          }
           className={[
             'flex w-full items-center justify-center gap-2',
             'h-11 rounded-[var(--radius-md)]',

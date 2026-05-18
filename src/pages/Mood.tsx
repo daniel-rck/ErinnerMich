@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { LifeBuoy, ArrowRight, TrendingUp } from 'lucide-react'
 import { MoodStrip } from '../components/MoodStrip'
@@ -45,6 +45,8 @@ export function MoodPage() {
       })),
     [entries],
   )
+
+  if (!settings.wellnessToolsEnabled) return <Navigate to="/" replace />
 
   return (
     <motion.div

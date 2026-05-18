@@ -6,6 +6,7 @@ import { Button } from './ui/Button'
 import { useToast } from './ui/Toast'
 import { vibrate } from './ui/Haptic'
 import { useMoodLog } from './MoodLog/MoodLogProvider'
+import { useSettings } from '../lib/hooks/useSettings'
 import { quickParse } from '../lib/schedule/quickParse'
 import { createReminder } from '../lib/db/reminders'
 
@@ -18,6 +19,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
   const navigate = useNavigate()
   const toast = useToast()
   const moodLog = useMoodLog()
+  const { wellnessToolsEnabled } = useSettings()
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -128,19 +130,21 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
           >
             Habit
           </Button>
-          <Button
-            variant="secondary"
-            size="lg"
-            leadingIcon={Smile}
-            onClick={() => {
-              onClose()
-              moodLog.open()
-            }}
-            fullWidth
-            className="justify-start"
-          >
-            Stimmung
-          </Button>
+          {wellnessToolsEnabled && (
+            <Button
+              variant="secondary"
+              size="lg"
+              leadingIcon={Smile}
+              onClick={() => {
+                onClose()
+                moodLog.open()
+              }}
+              fullWidth
+              className="justify-start"
+            >
+              Stimmung
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="lg"

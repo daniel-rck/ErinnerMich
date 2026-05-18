@@ -8,10 +8,12 @@ import {
   type ShortcutMatcherState,
 } from '../lib/keyboard/shortcuts'
 import { useMoodLog } from './MoodLog/MoodLogProvider'
+import { useSettings } from '../lib/hooks/useSettings'
 
 export function KeyboardShortcuts() {
   const navigate = useNavigate()
   const moodLog = useMoodLog()
+  const { wellnessToolsEnabled } = useSettings()
   const [helpOpen, setHelpOpen] = useState(false)
   const stateRef = useRef<ShortcutMatcherState>(emptyShortcutState())
 
@@ -19,9 +21,13 @@ export function KeyboardShortcuts() {
     const shortcuts: Shortcut[] = [
       { combo: 'n', description: 'Neuer Reminder', action: () => navigate('/new?kind=reminder') },
       { combo: 'h', description: 'Neue Habit', action: () => navigate('/new?kind=habit') },
-      { combo: 'm', description: 'Mood loggen', action: () => moodLog.open() },
+      ...(wellnessToolsEnabled
+        ? [
+            { combo: 'm', description: 'Mood loggen', action: () => moodLog.open() },
+            { combo: 'g m', description: 'Stimmung', action: () => navigate('/mood') },
+          ]
+        : []),
       { combo: 'g t', description: 'Heute', action: () => navigate('/') },
-      { combo: 'g m', description: 'Stimmung', action: () => navigate('/mood') },
       { combo: 'g r', description: 'Routinen', action: () => navigate('/library') },
       { combo: 'g u', description: 'Du', action: () => navigate('/you') },
       { combo: 'g h', description: 'Habits', action: () => navigate('/habits') },
@@ -55,7 +61,7 @@ export function KeyboardShortcuts() {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [navigate, moodLog])
+  }, [navigate, moodLog, wellnessToolsEnabled])
 
   if (!helpOpen) return null
 
@@ -74,21 +80,27 @@ export function KeyboardShortcuts() {
           Tastenkürzel
         </h2>
         <ul className="flex flex-col gap-1 text-sm">
-          {[
-            ['n', 'Neuer Reminder'],
-            ['h', 'Neue Habit'],
-            ['m', 'Mood loggen'],
-            ['g t', 'Heute'],
-            ['g m', 'Stimmung'],
-            ['g r', 'Routinen'],
-            ['g u', 'Du'],
-            ['g h', 'Habits'],
-            ['g a', 'Alle'],
-            ['g s', 'Statistik'],
-            ['g e', 'Einstellungen'],
-            ['?', 'Diese Hilfe'],
-            ['Esc', 'Schließen'],
-          ].map(([key, label]) => (
+          {(
+            [
+              ['n', 'Neuer Reminder'],
+              ['h', 'Neue Habit'],
+              ...(wellnessToolsEnabled
+                ? ([
+                    ['m', 'Mood loggen'],
+                    ['g m', 'Stimmung'],
+                  ] as [string, string][])
+                : []),
+              ['g t', 'Heute'],
+              ['g r', 'Routinen'],
+              ['g u', 'Du'],
+              ['g h', 'Habits'],
+              ['g a', 'Alle'],
+              ['g s', 'Statistik'],
+              ['g e', 'Einstellungen'],
+              ['?', 'Diese Hilfe'],
+              ['Esc', 'Schließen'],
+            ] as [string, string][]
+          ).map(([key, label]) => (
             <li key={key} className="flex items-center justify-between gap-3">
               <span className="text-zinc-700 dark:text-zinc-300">{label}</span>
               <kbd className="rounded border border-zinc-300 bg-zinc-50 px-2 py-0.5 font-mono text-xs text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">

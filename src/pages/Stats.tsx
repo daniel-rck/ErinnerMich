@@ -37,6 +37,8 @@ interface StatsPageProps {
 export function StatsPage({ embedded = false }: StatsPageProps = {}) {
   const [tab, setTab] = useState<StatsTab>('habits')
   const { wellnessToolsEnabled } = useSettings()
+  const effectiveTab: StatsTab =
+    !wellnessToolsEnabled && (tab === 'mood' || tab === 'tools') ? 'habits' : tab
 
   return (
     <div className="flex flex-col gap-[var(--space-lg)]">
@@ -51,11 +53,11 @@ export function StatsPage({ embedded = false }: StatsPageProps = {}) {
         </header>
       )}
 
-      <Tabs value={tab} onChange={(v) => setTab(v as StatsTab)}>
+      <Tabs value={effectiveTab} onChange={(v) => setTab(v as StatsTab)}>
         <Tabs.List ariaLabel="Statistik-Bereiche">
           <Tabs.Trigger value="habits">Habits</Tabs.Trigger>
           <Tabs.Trigger value="reminders">Reminder</Tabs.Trigger>
-          <Tabs.Trigger value="mood">Mood</Tabs.Trigger>
+          {wellnessToolsEnabled && <Tabs.Trigger value="mood">Mood</Tabs.Trigger>}
           {wellnessToolsEnabled && <Tabs.Trigger value="tools">Tools</Tabs.Trigger>}
         </Tabs.List>
         <div className="mt-[var(--space-md)]">
@@ -65,9 +67,11 @@ export function StatsPage({ embedded = false }: StatsPageProps = {}) {
           <Tabs.Panel value="reminders">
             <ReminderStats />
           </Tabs.Panel>
-          <Tabs.Panel value="mood">
-            <MoodStats />
-          </Tabs.Panel>
+          {wellnessToolsEnabled && (
+            <Tabs.Panel value="mood">
+              <MoodStats />
+            </Tabs.Panel>
+          )}
           {wellnessToolsEnabled && (
             <Tabs.Panel value="tools">
               <ToolStats />

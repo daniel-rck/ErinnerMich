@@ -10,6 +10,7 @@ import {
 import { ThemeToggle } from './ThemeToggle'
 import { KeyboardShortcuts } from './KeyboardShortcuts'
 import { CenterFab } from './CenterFab'
+import { useSettings } from '../lib/hooks/useSettings'
 
 interface NavEntry {
   to: string
@@ -18,12 +19,10 @@ interface NavEntry {
   end?: boolean
 }
 
-const NAV: NavEntry[] = [
-  { to: '/', label: 'Heute', icon: Sun, end: true },
-  { to: '/mood', label: 'Stimmung', icon: HeartPulse },
-  { to: '/library', label: 'Routinen', icon: Sparkles },
-  { to: '/you', label: 'Du', icon: UserIcon },
-]
+const HOME: NavEntry = { to: '/', label: 'Heute', icon: Sun, end: true }
+const MOOD: NavEntry = { to: '/mood', label: 'Stimmung', icon: HeartPulse }
+const LIBRARY: NavEntry = { to: '/library', label: 'Routinen', icon: Sparkles }
+const YOU: NavEntry = { to: '/you', label: 'Du', icon: UserIcon }
 
 function greetingFor(date: Date): string {
   const h = date.getHours()
@@ -44,6 +43,10 @@ export function AppShell() {
   const now = useMemo(() => new Date(), [])
   const greeting = greetingFor(now)
   const dateLabel = DATE_FMT.format(now)
+  const { wellnessToolsEnabled } = useSettings()
+  const nav: NavEntry[] = wellnessToolsEnabled
+    ? [HOME, MOOD, LIBRARY, YOU]
+    : [HOME, LIBRARY, YOU]
 
   return (
     <div
@@ -108,7 +111,7 @@ export function AppShell() {
         </div>
 
         <ul className="mt-[var(--space-md)] flex flex-1 flex-col gap-1">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <li key={item.to}>
               <DesktopNavLink item={item} />
             </li>
@@ -147,21 +150,30 @@ export function AppShell() {
         ].join(' ')}
       >
         <ul className="mx-auto flex max-w-md items-center justify-around px-2">
-          <li className="flex-1">
-            <MobileNavLink item={NAV[0]} />
-          </li>
-          <li className="flex-1">
-            <MobileNavLink item={NAV[1]} />
-          </li>
-          <li className="flex shrink-0 items-start justify-center px-1 pt-2">
-            <CenterFab variant="circle" />
-          </li>
-          <li className="flex-1">
-            <MobileNavLink item={NAV[2]} />
-          </li>
-          <li className="flex-1">
-            <MobileNavLink item={NAV[3]} />
-          </li>
+          {(() => {
+            // Split the nav around the centered FAB. With 4 items the split is
+            // 2 | FAB | 2; with 3 items it's 1 | FAB | 2.
+            const split = Math.ceil(nav.length / 2)
+            const left = nav.slice(0, split)
+            const right = nav.slice(split)
+            return (
+              <>
+                {left.map((item) => (
+                  <li key={item.to} className="flex-1">
+                    <MobileNavLink item={item} />
+                  </li>
+                ))}
+                <li className="flex shrink-0 items-start justify-center px-1 pt-2">
+                  <CenterFab variant="circle" />
+                </li>
+                {right.map((item) => (
+                  <li key={item.to} className="flex-1">
+                    <MobileNavLink item={item} />
+                  </li>
+                ))}
+              </>
+            )
+          })()}
         </ul>
       </nav>
     </div>

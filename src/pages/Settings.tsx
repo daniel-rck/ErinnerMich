@@ -181,11 +181,13 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Wellness-Tools
+          Stimmung &amp; Wellness
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Schatzkiste, Sorgen-Box
-          und Affirmationen — direkt in der App.
+          Stimmungs-Tracking sowie Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas,
+          Schatzkiste, Sorgen-Box und Affirmationen — direkt in der App.
+          Bei „Aus" verschwinden Stimmungs-Strip, der Stimmung-Tab und die
+          Wellness-Tools komplett aus der Oberfläche.
         </p>
         <div className="flex gap-2">
           <ChoiceButton active={wellness} onClick={() => toggleWellness(true)}>
