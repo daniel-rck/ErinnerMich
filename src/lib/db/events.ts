@@ -63,7 +63,7 @@ export async function deleteEvent(id: string): Promise<void> {
   const event = await db.get('events', id)
   await db.delete('events', id)
   if (event) {
-    broadcast({ type: 'event-added', reminderId: event.reminderId })
+    broadcast({ type: 'event-deleted', reminderId: event.reminderId })
   }
 }
 

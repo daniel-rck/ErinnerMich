@@ -4,6 +4,7 @@ export type BroadcastMessage =
   | { type: 'reminder-changed'; id: string }
   | { type: 'reminder-deleted'; id: string }
   | { type: 'event-added'; reminderId: string }
+  | { type: 'event-deleted'; reminderId: string }
   | { type: 'inventory-changed'; reminderId: string }
   | { type: 'mood-added'; id: string }
   | { type: 'mood-deleted'; id: string }

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Tabs } from '../components/ui/Tabs'
@@ -6,7 +6,20 @@ import { useSettings } from '../lib/hooks/useSettings'
 import { FADE_UP, STAGGER_CONTAINER } from '../lib/design/motion'
 import { HabitsPage } from './Habits'
 import { AllPage } from './All'
-import { ToolsPage } from './Tools'
+
+// Lazy so the wellness-tools code (incl. confetti/animations) is split into its
+// own chunk and only loaded when the Tools tab is actually opened.
+const ToolsPage = lazy(() =>
+  import('./Tools').then((m) => ({ default: m.ToolsPage })),
+)
+
+function ToolsFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+      Lade …
+    </div>
+  )
+}
 
 type LibraryTab = 'habits' | 'reminders' | 'tools' | 'all'
 
@@ -66,7 +79,9 @@ export function LibraryPage() {
             </Tabs.Panel>
             {wellnessToolsEnabled && (
               <Tabs.Panel value="tools">
-                <ToolsPage embedded />
+                <Suspense fallback={<ToolsFallback />}>
+                  <ToolsPage embedded />
+                </Suspense>
               </Tabs.Panel>
             )}
             <Tabs.Panel value="all">

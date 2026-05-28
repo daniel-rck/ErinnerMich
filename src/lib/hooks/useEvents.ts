@@ -26,7 +26,8 @@ export function useEvents(reminderId: string | null): {
     void reload()
     const unsubscribe = subscribe((message) => {
       if (
-        (message.type === 'event-added' && message.reminderId === reminderId) ||
+        ((message.type === 'event-added' || message.type === 'event-deleted') &&
+          message.reminderId === reminderId) ||
         message.type === 'db-cleared'
       ) {
         void reload()
@@ -69,7 +70,8 @@ export function useDailyProgress(
     void load()
     const unsubscribe = subscribe((message) => {
       if (
-        (message.type === 'event-added' && message.reminderId === reminderId) ||
+        ((message.type === 'event-added' || message.type === 'event-deleted') &&
+          message.reminderId === reminderId) ||
         message.type === 'db-cleared'
       ) {
         void load()
