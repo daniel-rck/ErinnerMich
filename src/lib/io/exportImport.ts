@@ -3,11 +3,20 @@ import type {
   MoodEntry,
   Reminder,
   ReminderEvent,
+  ToolEntry,
 } from '../types'
-import { dayKey, getDB, type StoredMoodEntry, type StoredReminderEvent } from '../db'
+import {
+  dayKey,
+  getDB,
+  type StoredMoodEntry,
+  type StoredReminderEvent,
+  type StoredToolEntry,
+} from '../db'
 import { broadcast } from '../db/broadcast'
 
-export const EXPORT_SCHEMA_VERSION = 1
+// v2 added `toolEntries` (wellness tool history). v1 exports are still
+// accepted on import — the missing field defaults to an empty array.
+export const EXPORT_SCHEMA_VERSION = 2
 
 export interface ErinnermichExport {
   schema: 'erinnermich'
@@ -17,6 +26,7 @@ export interface ErinnermichExport {
   events: ReminderEvent[]
   inventories: Inventory[]
   moodEntries: MoodEntry[]
+  toolEntries: ToolEntry[]
 }
 
 export interface ImportSummary {
@@ -24,6 +34,7 @@ export interface ImportSummary {
   events: number
   inventories: number
   moodEntries: number
+  toolEntries: number
 }
 
 function stripStoredEvent(stored: StoredReminderEvent): ReminderEvent {
@@ -36,13 +47,19 @@ function stripStoredMood(stored: StoredMoodEntry): MoodEntry {
   return rest
 }
 
+function stripStoredTool(stored: StoredToolEntry): ToolEntry {
+  const { loggedAtDay: _day, ...rest } = stored
+  return rest
+}
+
 export async function exportAll(): Promise<ErinnermichExport> {
   const db = await getDB()
-  const [reminders, events, inventories, moods] = await Promise.all([
+  const [reminders, events, inventories, moods, tools] = await Promise.all([
     db.getAll('reminders'),
     db.getAll('events'),
     db.getAll('inventories'),
     db.getAll('mood_entries'),
+    db.getAll('tool_entries'),
   ])
   return {
     schema: 'erinnermich',
@@ -52,6 +69,7 @@ export async function exportAll(): Promise<ErinnermichExport> {
     events: events.map(stripStoredEvent),
     inventories,
     moodEntries: moods.map(stripStoredMood),
+    toolEntries: tools.map(stripStoredTool),
   }
 }
 
@@ -88,6 +106,13 @@ export function parseExport(raw: unknown): ErinnermichExport {
       throw new ImportSchemaError(`Feld „${key}" muss ein Array sein.`)
     }
   }
+  // `toolEntries` came with schemaVersion 2. v1 exports omit it entirely —
+  // accept those and treat tool history as empty. When present it must be valid.
+  if (obj.toolEntries === undefined) {
+    obj.toolEntries = []
+  } else if (!Array.isArray(obj.toolEntries)) {
+    throw new ImportSchemaError('Feld „toolEntries" muss ein Array sein.')
+  }
   return obj as unknown as ErinnermichExport
 }
 
@@ -98,7 +123,7 @@ export async function importAll(
   const mode = options.mode ?? 'merge'
   const db = await getDB()
   const tx = db.transaction(
-    ['reminders', 'events', 'inventories', 'mood_entries'],
+    ['reminders', 'events', 'inventories', 'mood_entries', 'tool_entries'],
     'readwrite',
   )
 
@@ -107,6 +132,7 @@ export async function importAll(
     await tx.objectStore('events').clear()
     await tx.objectStore('inventories').clear()
     await tx.objectStore('mood_entries').clear()
+    await tx.objectStore('tool_entries').clear()
   }
 
   for (const reminder of data.reminders) {
@@ -129,6 +155,14 @@ export async function importAll(
     }
     await tx.objectStore('mood_entries').put(stored)
   }
+  const toolEntries = data.toolEntries ?? []
+  for (const tool of toolEntries) {
+    const stored: StoredToolEntry = {
+      ...tool,
+      loggedAtDay: dayKey(tool.loggedAt),
+    }
+    await tx.objectStore('tool_entries').put(stored)
+  }
 
   await tx.done
   if (mode === 'replace') {
@@ -137,12 +171,16 @@ export async function importAll(
   for (const reminder of data.reminders) {
     broadcast({ type: 'reminder-changed', id: reminder.id })
   }
+  for (const tool of toolEntries) {
+    broadcast({ type: 'tool-added', id: tool.id, toolKey: tool.toolKey })
+  }
 
   return {
     reminders: data.reminders.length,
     events: data.events.length,
     inventories: data.inventories.length,
     moodEntries: data.moodEntries.length,
+    toolEntries: toolEntries.length,
   }
 }
 

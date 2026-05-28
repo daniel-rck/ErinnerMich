@@ -11,6 +11,7 @@ import { createReminder } from '../../db/reminders'
 import { addEvent } from '../../db/events'
 import { setInventory } from '../../db/inventories'
 import { addMoodEntry } from '../../db/moodEntries'
+import { addToolEntry, listToolEntries } from '../../db/toolEntries'
 import { listReminders } from '../../db/reminders'
 import { listEventsForReminder } from '../../db/events'
 import { getInventory } from '../../db/inventories'
@@ -39,6 +40,11 @@ async function seed() {
     refillThreshold: 2,
   })
   await addMoodEntry({ loggedAt: 1700000000000, mood: 4 })
+  await addToolEntry({
+    toolKey: 'gratitude',
+    loggedAt: 1700000000000,
+    text: 'Sonne heute',
+  })
   return reminder
 }
 
@@ -58,6 +64,11 @@ describe('exportAll', () => {
     expect(snap.moodEntries).toHaveLength(1)
     expect(
       Object.prototype.hasOwnProperty.call(snap.moodEntries[0], 'loggedAtDay'),
+    ).toBe(false)
+    expect(snap.toolEntries).toHaveLength(1)
+    expect(snap.toolEntries[0].text).toBe('Sonne heute')
+    expect(
+      Object.prototype.hasOwnProperty.call(snap.toolEntries[0], 'loggedAtDay'),
     ).toBe(false)
   })
 })
@@ -100,6 +111,34 @@ describe('parseExport', () => {
       }),
     ).toThrow(ImportSchemaError)
   })
+
+  it('akzeptiert v1-Exporte ohne toolEntries und defaultet auf []', () => {
+    const v1 = {
+      schema: 'erinnermich',
+      schemaVersion: 1,
+      exportedAt: 0,
+      reminders: [],
+      events: [],
+      inventories: [],
+      moodEntries: [],
+    }
+    const parsed = parseExport(v1)
+    expect(parsed.toolEntries).toEqual([])
+  })
+
+  it('lehnt nicht-Array toolEntries ab', () => {
+    expect(() =>
+      parseExport({
+        schema: 'erinnermich',
+        schemaVersion: 2,
+        reminders: [],
+        events: [],
+        inventories: [],
+        moodEntries: [],
+        toolEntries: 'nope',
+      }),
+    ).toThrow(ImportSchemaError)
+  })
 })
 
 describe('importAll roundtrip', () => {
@@ -115,10 +154,12 @@ describe('importAll roundtrip', () => {
         events: [],
         inventories: [],
         moodEntries: [],
+        toolEntries: [],
       },
       { mode: 'replace' },
     )
     expect(await listReminders()).toHaveLength(0)
+    expect(await listToolEntries()).toHaveLength(0)
 
     // restore
     const summary = await importAll(snap, { mode: 'replace' })
@@ -127,12 +168,16 @@ describe('importAll roundtrip', () => {
       events: 1,
       inventories: 1,
       moodEntries: 1,
+      toolEntries: 1,
     })
     const restored = await listReminders()
     expect(restored[0].id).toBe(reminder.id)
     expect(await listEventsForReminder(reminder.id)).toHaveLength(1)
     expect((await getInventory(reminder.id))?.remaining).toBe(10)
     expect(await listMoodEntriesInRange(0, Date.now())).toHaveLength(1)
+    const tools = await listToolEntries()
+    expect(tools).toHaveLength(1)
+    expect(tools[0].text).toBe('Sonne heute')
   })
 
   it('merge-Modus überschreibt nur überlappende IDs', async () => {

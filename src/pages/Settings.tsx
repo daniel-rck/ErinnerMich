@@ -245,7 +245,7 @@ function DataIO() {
       URL.revokeObjectURL(url)
       toast.show({
         variant: 'success',
-        message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events.`,
+        message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events, ${snap.toolEntries.length} Tool-Einträge.`,
       })
     } catch (err) {
       toast.show({
@@ -278,7 +278,7 @@ function DataIO() {
       const summary = await importAll(data, { mode })
       toast.show({
         variant: 'success',
-        message: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge.`,
+        message: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge, ${summary.toolEntries} Tool-Einträge.`,
       })
     } catch (err) {
       const text =
