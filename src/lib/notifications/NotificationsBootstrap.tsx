@@ -23,6 +23,7 @@ export function NotificationsBootstrap() {
         message.type === 'reminder-changed' ||
         message.type === 'reminder-deleted' ||
         message.type === 'event-added' ||
+        message.type === 'event-deleted' ||
         message.type === 'inventory-changed' ||
         message.type === 'db-cleared'
       ) {

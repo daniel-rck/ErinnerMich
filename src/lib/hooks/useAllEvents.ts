@@ -31,6 +31,7 @@ export function useAllEvents(): {
     const unsubscribe = subscribe((message) => {
       if (
         message.type === 'event-added' ||
+        message.type === 'event-deleted' ||
         message.type === 'reminder-deleted' ||
         message.type === 'db-cleared'
       ) {
