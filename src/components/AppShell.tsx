@@ -2,6 +2,7 @@ import { HeartPulse, type LucideIcon, Sparkles, Sun, User as UserIcon } from "lu
 import { useMemo } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useSettings } from "../lib/hooks/useSettings";
+import { InstallButton } from "../lib/ui/InstallButton";
 import { CenterFab } from "./CenterFab";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { ThemeToggle } from "./ThemeToggle";
@@ -71,7 +72,10 @@ export function AppShell() {
               {greeting}
             </h1>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <InstallButton />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -114,7 +118,10 @@ export function AppShell() {
           <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
             Lokal &amp; privat
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <InstallButton />
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
