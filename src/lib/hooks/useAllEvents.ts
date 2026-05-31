@@ -1,48 +1,48 @@
-import { useEffect, useState } from 'react'
-import type { ReminderEvent } from '../types'
-import { getDB, type StoredReminderEvent } from '../db'
-import { subscribe } from '../db/broadcast'
+import { useEffect, useState } from "react";
+import { getDB, type StoredReminderEvent } from "../db";
+import { subscribe } from "../db/broadcast";
+import type { ReminderEvent } from "../types";
 
 function strip(stored: StoredReminderEvent): ReminderEvent {
-  const { triggeredAtDay: _day, ...rest } = stored
-  return rest
+  const { triggeredAtDay: _day, ...rest } = stored;
+  return rest;
 }
 
 export function useAllEvents(): {
-  events: ReminderEvent[]
-  loading: boolean
+  events: ReminderEvent[];
+  loading: boolean;
 } {
-  const [events, setEvents] = useState<ReminderEvent[]>([])
-  const [loading, setLoading] = useState(true)
+  const [events, setEvents] = useState<ReminderEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function load() {
-      const db = await getDB()
-      const stored = await db.getAll('events')
+      const db = await getDB();
+      const stored = await db.getAll("events");
       if (!cancelled) {
-        setEvents(stored.map(strip))
-        setLoading(false)
+        setEvents(stored.map(strip));
+        setLoading(false);
       }
     }
 
-    void load()
+    void load();
     const unsubscribe = subscribe((message) => {
       if (
-        message.type === 'event-added' ||
-        message.type === 'event-deleted' ||
-        message.type === 'reminder-deleted' ||
-        message.type === 'db-cleared'
+        message.type === "event-added" ||
+        message.type === "event-deleted" ||
+        message.type === "reminder-deleted" ||
+        message.type === "db-cleared"
       ) {
-        void load()
+        void load();
       }
-    })
+    });
     return () => {
-      cancelled = true
-      unsubscribe()
-    }
-  }, [])
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
 
-  return { events, loading }
+  return { events, loading };
 }

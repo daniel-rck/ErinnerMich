@@ -1,39 +1,39 @@
-import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Trash2 } from 'lucide-react'
-import { addToolEntry, deleteToolEntry } from '../../lib/db/toolEntries'
-import { useToolEntries } from '../../lib/hooks/useToolEntries'
-import { useToast } from '../ui/Toast'
+import { motion } from "framer-motion";
+import { Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { useToolEntries } from "../../lib/hooks/useToolEntries";
+import { useToast } from "../ui/Toast";
 
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function GratitudeJar() {
-  const [text, setText] = useState('')
-  const toast = useToast()
-  const { entries } = useToolEntries({ toolKey: 'gratitude' })
+  const [text, setText] = useState("");
+  const toast = useToast();
+  const { entries } = useToolEntries({ toolKey: "gratitude" });
 
-  const [now] = useState(() => Date.now())
+  const [now] = useState(() => Date.now());
   const recent = useMemo(() => {
-    const cutoff = now - SEVEN_DAYS_MS
-    return entries.filter((e) => e.loggedAt >= cutoff)
-  }, [entries, now])
+    const cutoff = now - SEVEN_DAYS_MS;
+    return entries.filter((e) => e.loggedAt >= cutoff);
+  }, [entries, now]);
 
-  const fillRatio = Math.min(1, recent.length / 21)
+  const fillRatio = Math.min(1, recent.length / 21);
 
   async function submit() {
-    const value = text.trim()
-    if (!value) return
+    const value = text.trim();
+    if (!value) return;
     await addToolEntry({
-      toolKey: 'gratitude',
+      toolKey: "gratitude",
       loggedAt: Date.now(),
       text: value,
-    })
-    setText('')
-    toast.show({ variant: 'success', message: 'Eintrag im Glas.' })
+    });
+    setText("");
+    toast.show({ variant: "success", message: "Eintrag im Glas." });
   }
 
   async function remove(id: string) {
-    await deleteToolEntry(id)
+    await deleteToolEntry(id);
   }
 
   return (
@@ -47,8 +47,8 @@ export function GratitudeJar() {
 
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          void submit()
+          e.preventDefault();
+          void submit();
         }}
         className="flex flex-col gap-2"
       >
@@ -88,9 +88,9 @@ export function GratitudeJar() {
             <div className="flex-1">
               <p className="text-sm">{e.text}</p>
               <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {new Date(e.loggedAt).toLocaleString('de-DE', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
+                {new Date(e.loggedAt).toLocaleString("de-DE", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
                 })}
               </p>
             </div>
@@ -106,7 +106,7 @@ export function GratitudeJar() {
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
 function Jar({ fill, count }: { fill: number; count: number }) {
@@ -134,16 +134,11 @@ function Jar({ fill, count }: { fill: number; count: number }) {
           y: 152 - fill * 100,
           height: fill * 100,
         }}
-        transition={{ type: 'spring', stiffness: 80, damping: 18 }}
+        transition={{ type: "spring", stiffness: 80, damping: 18 }}
       />
-      <text
-        x="60"
-        y="105"
-        textAnchor="middle"
-        className="fill-amber-950 text-2xl font-bold"
-      >
+      <text x="60" y="105" textAnchor="middle" className="fill-amber-950 text-2xl font-bold">
         {count}
       </text>
     </svg>
-  )
+  );
 }

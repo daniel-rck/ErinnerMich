@@ -1,34 +1,34 @@
-import { Sun, Moon, Monitor } from 'lucide-react'
-import { IconButton } from './ui/IconButton'
-import { useTheme } from '../lib/hooks/useTheme'
-import type { Theme } from '../lib/db/settings'
+import { Monitor, Moon, Sun } from "lucide-react";
+import type { Theme } from "../lib/db/settings";
+import { useTheme } from "../lib/hooks/useTheme";
+import { IconButton } from "./ui/IconButton";
 
-const ORDER: Theme[] = ['system', 'light', 'dark']
+const ORDER: Theme[] = ["system", "light", "dark"];
 const META: Record<Theme, { icon: typeof Sun; label: string; aria: string }> = {
   system: {
     icon: Monitor,
-    label: 'System',
-    aria: 'Modus: System (Auf hellen Modus wechseln)',
+    label: "System",
+    aria: "Modus: System (Auf hellen Modus wechseln)",
   },
   light: {
     icon: Sun,
-    label: 'Hell',
-    aria: 'Modus: Hell (Auf dunklen Modus wechseln)',
+    label: "Hell",
+    aria: "Modus: Hell (Auf dunklen Modus wechseln)",
   },
   dark: {
     icon: Moon,
-    label: 'Dunkel',
-    aria: 'Modus: Dunkel (Auf System-Modus wechseln)',
+    label: "Dunkel",
+    aria: "Modus: Dunkel (Auf System-Modus wechseln)",
   },
-}
+};
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  const current = META[theme]
+  const { theme, setTheme } = useTheme();
+  const current = META[theme];
 
   function cycle() {
-    const idx = ORDER.indexOf(theme)
-    setTheme(ORDER[(idx + 1) % ORDER.length])
+    const idx = ORDER.indexOf(theme);
+    setTheme(ORDER[(idx + 1) % ORDER.length]);
   }
 
   return (
@@ -41,5 +41,5 @@ export function ThemeToggle() {
       size="md"
       shape="circle"
     />
-  )
+  );
 }

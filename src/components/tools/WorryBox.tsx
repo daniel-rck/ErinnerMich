@@ -1,57 +1,56 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Trash2 } from 'lucide-react'
-import { addToolEntry, deleteToolEntry } from '../../lib/db/toolEntries'
-import { useToolEntries } from '../../lib/hooks/useToolEntries'
-import { useToast } from '../ui/Toast'
+import { AnimatePresence, motion } from "framer-motion";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { useToolEntries } from "../../lib/hooks/useToolEntries";
+import { useToast } from "../ui/Toast";
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function WorryBox() {
-  const [text, setText] = useState('')
-  const [autoDelete, setAutoDelete] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const toast = useToast()
-  const { entries } = useToolEntries({ toolKey: 'worry' })
+  const [text, setText] = useState("");
+  const [autoDelete, setAutoDelete] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const toast = useToast();
+  const { entries } = useToolEntries({ toolKey: "worry" });
 
   async function submit() {
-    const value = text.trim()
-    if (!value) return
-    setSubmitting(true)
-    const now = Date.now()
+    const value = text.trim();
+    if (!value) return;
+    setSubmitting(true);
+    const now = Date.now();
     try {
       await addToolEntry({
-        toolKey: 'worry',
+        toolKey: "worry",
         loggedAt: now,
         text: value,
         expiresAt: autoDelete ? now + THIRTY_DAYS_MS : undefined,
-      })
-      setText('')
+      });
+      setText("");
       toast.show({
-        variant: 'success',
-        message: 'In der Box. Du darfst jetzt loslassen.',
-      })
+        variant: "success",
+        message: "In der Box. Du darfst jetzt loslassen.",
+      });
     } catch {
       toast.show({
-        variant: 'error',
-        message: 'Konnte Sorge nicht speichern.',
-      })
+        variant: "error",
+        message: "Konnte Sorge nicht speichern.",
+      });
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   return (
     <div className="flex flex-col gap-6">
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        Schreib auf, was dich beschäftigt. Die Sorge ist hier abgelegt — du darfst
-        sie loslassen.
+        Schreib auf, was dich beschäftigt. Die Sorge ist hier abgelegt — du darfst sie loslassen.
       </p>
 
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          void submit()
+          e.preventDefault();
+          void submit();
         }}
         className="flex flex-col gap-3"
       >
@@ -94,7 +93,7 @@ export function WorryBox() {
                 initial={{ opacity: 0, scale: 0.92, y: -8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                transition={{ type: "spring", stiffness: 220, damping: 22 }}
                 className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <span className="text-lg" aria-hidden>
@@ -103,10 +102,10 @@ export function WorryBox() {
                 <div className="flex-1">
                   <p className="text-sm whitespace-pre-wrap">{e.text}</p>
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                    {new Date(e.loggedAt).toLocaleDateString('de-DE')}
+                    {new Date(e.loggedAt).toLocaleDateString("de-DE")}
                     {e.expiresAt
-                      ? ` · läuft ${new Date(e.expiresAt).toLocaleDateString('de-DE')} ab`
-                      : ''}
+                      ? ` · läuft ${new Date(e.expiresAt).toLocaleDateString("de-DE")} ab`
+                      : ""}
                   </p>
                 </div>
                 <button
@@ -128,5 +127,5 @@ export function WorryBox() {
         </ul>
       </div>
     </div>
-  )
+  );
 }

@@ -1,25 +1,25 @@
-import type { LucideIcon } from 'lucide-react'
-import type { ReactNode } from 'react'
-import { Button } from './Button'
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { Button } from "./Button";
 
 export interface EmptyStateAction {
-  label: string
-  onClick: () => void
-  icon?: LucideIcon
+  label: string;
+  onClick: () => void;
+  icon?: LucideIcon;
 }
 
 export interface EmptyStateProps {
-  icon?: LucideIcon | string
-  title: string
-  description?: ReactNode
-  primaryAction?: EmptyStateAction
-  secondaryAction?: EmptyStateAction
-  illustration?: 'spark' | 'calm' | 'celebrate'
-  className?: string
+  icon?: LucideIcon | string;
+  title: string;
+  description?: ReactNode;
+  primaryAction?: EmptyStateAction;
+  secondaryAction?: EmptyStateAction;
+  illustration?: "spark" | "calm" | "celebrate";
+  className?: string;
 }
 
-function Illustration({ kind }: { kind: 'spark' | 'calm' | 'celebrate' }) {
-  if (kind === 'spark') {
+function Illustration({ kind }: { kind: "spark" | "calm" | "celebrate" }) {
+  if (kind === "spark") {
     return (
       <svg viewBox="0 0 80 80" className="h-20 w-20" aria-hidden>
         <defs>
@@ -29,11 +29,15 @@ function Illustration({ kind }: { kind: 'spark' | 'calm' | 'celebrate' }) {
           </radialGradient>
         </defs>
         <circle cx="40" cy="40" r="38" fill="url(#ill-spark)" />
-        <path d="M40 18 L44 36 L62 40 L44 44 L40 62 L36 44 L18 40 L36 36 Z" fill="var(--color-brand-500)" opacity="0.8" />
+        <path
+          d="M40 18 L44 36 L62 40 L44 44 L40 62 L36 44 L18 40 L36 36 Z"
+          fill="var(--color-brand-500)"
+          opacity="0.8"
+        />
       </svg>
-    )
+    );
   }
-  if (kind === 'calm') {
+  if (kind === "calm") {
     return (
       <svg viewBox="0 0 80 80" className="h-20 w-20" aria-hidden>
         <defs>
@@ -43,9 +47,15 @@ function Illustration({ kind }: { kind: 'spark' | 'calm' | 'celebrate' }) {
           </linearGradient>
         </defs>
         <circle cx="40" cy="40" r="32" fill="url(#ill-calm)" />
-        <path d="M14 50 Q26 38 40 50 T66 50" fill="none" stroke="var(--color-accent-calm)" strokeWidth="3" strokeLinecap="round" />
+        <path
+          d="M14 50 Q26 38 40 50 T66 50"
+          fill="none"
+          stroke="var(--color-accent-calm)"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
       </svg>
-    )
+    );
   }
   return (
     <svg viewBox="0 0 80 80" className="h-20 w-20" aria-hidden>
@@ -70,7 +80,7 @@ function Illustration({ kind }: { kind: 'spark' | 'calm' | 'celebrate' }) {
         />
       ))}
     </svg>
-  )
+  );
 }
 
 export function EmptyState({
@@ -80,30 +90,30 @@ export function EmptyState({
   primaryAction,
   secondaryAction,
   illustration,
-  className = '',
+  className = "",
 }: EmptyStateProps) {
   return (
     <div
       className={[
-        'flex flex-col items-center justify-center gap-[var(--space-md)] py-[var(--space-2xl)] text-center',
+        "flex flex-col items-center justify-center gap-[var(--space-md)] py-[var(--space-2xl)] text-center",
         className,
-      ].join(' ')}
+      ].join(" ")}
     >
       {illustration ? (
         <Illustration kind={illustration} />
       ) : icon ? (
-        typeof icon === 'string' ? (
+        typeof icon === "string" ? (
           <div className="text-5xl" aria-hidden>
             {icon}
           </div>
         ) : (
           (() => {
-            const Icon = icon
+            const Icon = icon;
             return (
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-brand-50)] text-[color:var(--color-brand-600)]">
                 <Icon size={28} aria-hidden />
               </div>
-            )
+            );
           })()
         )
       ) : null}
@@ -125,12 +135,16 @@ export function EmptyState({
             </Button>
           )}
           {secondaryAction && (
-            <Button variant="tertiary" onClick={secondaryAction.onClick} leadingIcon={secondaryAction.icon}>
+            <Button
+              variant="tertiary"
+              onClick={secondaryAction.onClick}
+              leadingIcon={secondaryAction.icon}
+            >
               {secondaryAction.label}
             </Button>
           )}
         </div>
       )}
     </div>
-  )
+  );
 }

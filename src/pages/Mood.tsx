@@ -1,41 +1,41 @@
-import { useMemo, useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { LifeBuoy, ArrowRight, TrendingUp } from 'lucide-react'
-import { MoodStrip } from '../components/MoodStrip'
-import { TodayAffirmation } from '../components/TodayAffirmation'
-import { Sheet } from '../components/ui/Sheet'
-import { Card } from '../components/ui/Card'
-import { Sparkline } from '../components/charts/Sparkline'
-import { WeekdayBar } from '../components/charts/WeekdayBar'
-import { useMoodEntriesInRange } from '../lib/hooks/useMoodEntries'
-import { useToolEntries } from '../lib/hooks/useToolEntries'
-import { useSettings } from '../lib/hooks/useSettings'
-import { TOOLS } from '../lib/tools/registry'
-import { dailyMoodSeries, moodByWeekday } from '../lib/stats/moodAggregates'
-import { dayKey } from '../lib/db'
-import { FADE_UP, STAGGER_CONTAINER } from '../lib/design/motion'
-import type { ToolDef, ToolCategory } from '../lib/tools/registry'
+import { motion } from "framer-motion";
+import { ArrowRight, LifeBuoy, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Sparkline } from "../components/charts/Sparkline";
+import { WeekdayBar } from "../components/charts/WeekdayBar";
+import { MoodStrip } from "../components/MoodStrip";
+import { TodayAffirmation } from "../components/TodayAffirmation";
+import { Card } from "../components/ui/Card";
+import { Sheet } from "../components/ui/Sheet";
+import { dayKey } from "../lib/db";
+import { FADE_UP, STAGGER_CONTAINER } from "../lib/design/motion";
+import { useMoodEntriesInRange } from "../lib/hooks/useMoodEntries";
+import { useSettings } from "../lib/hooks/useSettings";
+import { useToolEntries } from "../lib/hooks/useToolEntries";
+import { dailyMoodSeries, moodByWeekday } from "../lib/stats/moodAggregates";
+import type { ToolCategory, ToolDef } from "../lib/tools/registry";
+import { TOOLS } from "../lib/tools/registry";
 
 const ACCENT_GRADIENT: Record<ToolCategory, string> = {
-  acute: 'from-[color:var(--color-accent-calm-soft)] to-[color:var(--color-accent-grow-soft)]',
-  reflection: 'from-[color:var(--color-accent-mood-soft)] to-[color:var(--color-accent-glow-soft)]',
-}
+  acute: "from-[color:var(--color-accent-calm-soft)] to-[color:var(--color-accent-grow-soft)]",
+  reflection: "from-[color:var(--color-accent-mood-soft)] to-[color:var(--color-accent-glow-soft)]",
+};
 
 export function MoodPage() {
-  const navigate = useNavigate()
-  const settings = useSettings()
-  const [sosOpen, setSosOpen] = useState(false)
+  const navigate = useNavigate();
+  const settings = useSettings();
+  const [sosOpen, setSosOpen] = useState(false);
 
-  const [now] = useState(() => Date.now())
-  const fromMs = useMemo(() => now - 7 * 24 * 60 * 60 * 1000, [now])
-  const { entries } = useMoodEntriesInRange(fromMs, now)
+  const [now] = useState(() => Date.now());
+  const fromMs = useMemo(() => now - 7 * 24 * 60 * 60 * 1000, [now]);
+  const { entries } = useMoodEntriesInRange(fromMs, now);
 
-  const series = useMemo(() => dailyMoodSeries(entries, 7), [entries])
+  const series = useMemo(() => dailyMoodSeries(entries, 7), [entries]);
   const sparklineData = useMemo(
     () => series.map((p) => ({ label: p.day.slice(-5), value: p.avgMood })),
     [series],
-  )
+  );
   const weekday = useMemo(
     () =>
       moodByWeekday(entries).map((p) => ({
@@ -44,9 +44,9 @@ export function MoodPage() {
         count: p.count,
       })),
     [entries],
-  )
+  );
 
-  if (!settings.wellnessToolsEnabled) return <Navigate to="/" replace />
+  if (!settings.wellnessToolsEnabled) return <Navigate to="/" replace />;
 
   return (
     <motion.div
@@ -119,7 +119,7 @@ export function MoodPage() {
               </span>
             </header>
             <div className="grid grid-cols-1 gap-[var(--space-sm)] sm:grid-cols-2">
-              {TOOLS.filter((t) => t.category === 'acute').map((t) => (
+              {TOOLS.filter((t) => t.category === "acute").map((t) => (
                 <ToolCard key={t.key} tool={t} />
               ))}
             </div>
@@ -135,7 +135,7 @@ export function MoodPage() {
               </span>
             </header>
             <div className="grid grid-cols-1 gap-[var(--space-sm)] sm:grid-cols-2">
-              {TOOLS.filter((t) => t.category === 'reflection').map((t) => (
+              {TOOLS.filter((t) => t.category === "reflection").map((t) => (
                 <ToolCard key={t.key} tool={t} />
               ))}
             </div>
@@ -146,13 +146,13 @@ export function MoodPage() {
               type="button"
               onClick={() => setSosOpen(true)}
               className={[
-                'group flex w-full items-center gap-[var(--space-md)]',
-                'rounded-[var(--radius-lg)] p-[var(--space-md)]',
-                'bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-mood-soft)]',
-                'border border-[color:var(--color-danger)]/30',
-                'transition-shadow duration-[var(--motion-base)]',
-                'hover:shadow-[var(--elev-2)]',
-              ].join(' ')}
+                "group flex w-full items-center gap-[var(--space-md)]",
+                "rounded-[var(--radius-lg)] p-[var(--space-md)]",
+                "bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-mood-soft)]",
+                "border border-[color:var(--color-danger)]/30",
+                "transition-shadow duration-[var(--motion-base)]",
+                "hover:shadow-[var(--elev-2)]",
+              ].join(" ")}
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-surface-elevated)] shadow-[var(--elev-1)]">
                 <LifeBuoy size={20} aria-hidden className="text-[color:var(--color-danger)]" />
@@ -177,19 +177,19 @@ export function MoodPage() {
 
       <Sheet open={sosOpen} onClose={() => setSosOpen(false)} title="Was brauchst du gerade?">
         <ul className="flex flex-col gap-[var(--space-xs)] pb-[var(--space-md)]">
-          {TOOLS.filter((t) => t.category === 'acute').map((tool) => (
+          {TOOLS.filter((t) => t.category === "acute").map((tool) => (
             <li key={tool.key}>
               <button
                 type="button"
                 onClick={() => {
-                  setSosOpen(false)
-                  navigate(`/tools/${tool.key}`)
+                  setSosOpen(false);
+                  navigate(`/tools/${tool.key}`);
                 }}
                 className={[
-                  'flex w-full items-center gap-3 rounded-[var(--radius-md)] p-[var(--space-sm)] text-left',
-                  'bg-[color:var(--color-surface-sunken)]',
-                  'hover:bg-[color:var(--color-border-subtle)]',
-                ].join(' ')}
+                  "flex w-full items-center gap-3 rounded-[var(--radius-md)] p-[var(--space-sm)] text-left",
+                  "bg-[color:var(--color-surface-sunken)]",
+                  "hover:bg-[color:var(--color-border-subtle)]",
+                ].join(" ")}
               >
                 <span className="text-2xl" aria-hidden>
                   {tool.icon}
@@ -208,28 +208,28 @@ export function MoodPage() {
         </ul>
       </Sheet>
     </motion.div>
-  )
+  );
 }
 
 function ToolCard({ tool }: { tool: ToolDef }) {
-  const { entries } = useToolEntries({ toolKey: tool.key })
-  const [today] = useState(() => dayKey(Date.now()))
+  const { entries } = useToolEntries({ toolKey: tool.key });
+  const [today] = useState(() => dayKey(Date.now()));
   const todayCount = useMemo(
     () => entries.filter((e) => dayKey(e.loggedAt) === today).length,
     [entries, today],
-  )
-  const totalCount = entries.length
+  );
+  const totalCount = entries.length;
   return (
     <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
       <Link
         to={`/tools/${tool.key}`}
         className={[
-          'flex items-center gap-3 rounded-[var(--radius-lg)] p-[var(--space-md)]',
-          'bg-gradient-to-br border border-[color:var(--color-border-subtle)]',
-          'shadow-[var(--elev-1)] hover:shadow-[var(--elev-2)]',
-          'transition-shadow duration-[var(--motion-base)]',
+          "flex items-center gap-3 rounded-[var(--radius-lg)] p-[var(--space-md)]",
+          "bg-gradient-to-br border border-[color:var(--color-border-subtle)]",
+          "shadow-[var(--elev-1)] hover:shadow-[var(--elev-2)]",
+          "transition-shadow duration-[var(--motion-base)]",
           ACCENT_GRADIENT[tool.category],
-        ].join(' ')}
+        ].join(" ")}
       >
         <span className="text-3xl" aria-hidden>
           {tool.icon}
@@ -243,13 +243,12 @@ function ToolCard({ tool }: { tool: ToolDef }) {
           </p>
           {totalCount > 0 && (
             <p className="mt-1 text-[length:var(--text-micro)] text-[color:var(--color-text-tertiary)]">
-              {todayCount > 0 ? `Heute: ${todayCount} · ` : ''}
+              {todayCount > 0 ? `Heute: ${todayCount} · ` : ""}
               gesamt: {totalCount}
             </p>
           )}
         </div>
       </Link>
     </motion.div>
-  )
+  );
 }
-

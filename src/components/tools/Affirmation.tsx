@@ -1,46 +1,44 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, RefreshCcw } from 'lucide-react'
-import { dayKey } from '../../lib/db/index'
+import { AnimatePresence, motion } from "framer-motion";
+import { Heart, RefreshCcw } from "lucide-react";
+import { useState } from "react";
+import { dayKey } from "../../lib/db/index";
+import { addToolEntry } from "../../lib/db/toolEntries";
 import {
   AFFIRMATIONS,
-  affirmationForDay,
   type Affirmation as AffirmationDef,
-} from '../../lib/tools/affirmations'
-import { addToolEntry } from '../../lib/db/toolEntries'
-import { useToast } from '../ui/Toast'
+  affirmationForDay,
+} from "../../lib/tools/affirmations";
+import { useToast } from "../ui/Toast";
 
 export function Affirmation() {
-  const [today] = useState(() => affirmationForDay(dayKey(Date.now())))
-  const [shown, setShown] = useState<AffirmationDef>(today)
-  const [saved, setSaved] = useState(false)
-  const toast = useToast()
+  const [today] = useState(() => affirmationForDay(dayKey(Date.now())));
+  const [shown, setShown] = useState<AffirmationDef>(today);
+  const [saved, setSaved] = useState(false);
+  const toast = useToast();
 
   function shuffle() {
-    let next = shown
+    let next = shown;
     while (next.id === shown.id) {
-      next = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)]
+      next = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
     }
-    setShown(next)
-    setSaved(false)
+    setShown(next);
+    setSaved(false);
   }
 
   async function save() {
     await addToolEntry({
-      toolKey: 'affirmation',
+      toolKey: "affirmation",
       loggedAt: Date.now(),
       affirmationId: shown.id,
       text: shown.text,
-    })
-    setSaved(true)
-    toast.show({ variant: 'success', message: 'Mit dir genommen.' })
+    });
+    setSaved(true);
+    toast.show({ variant: "success", message: "Mit dir genommen." });
   }
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Dein Satz für heute
-      </p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">Dein Satz für heute</p>
       <AnimatePresence mode="wait">
         <motion.div
           key={shown.id}
@@ -63,7 +61,7 @@ export function Affirmation() {
           disabled={saved}
           className="inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
         >
-          <Heart size={16} /> {saved ? 'Gespeichert' : 'Mit mir nehmen'}
+          <Heart size={16} /> {saved ? "Gespeichert" : "Mit mir nehmen"}
         </button>
         <button
           type="button"
@@ -78,8 +76,8 @@ export function Affirmation() {
         <button
           type="button"
           onClick={() => {
-            setShown(today)
-            setSaved(false)
+            setShown(today);
+            setSaved(false);
           }}
           className="text-xs text-zinc-500 underline hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
@@ -87,5 +85,5 @@ export function Affirmation() {
         </button>
       )}
     </div>
-  )
+  );
 }

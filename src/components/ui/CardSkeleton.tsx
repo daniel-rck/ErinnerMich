@@ -1,16 +1,16 @@
 interface CardSkeletonProps {
-  count?: number
-  variant?: 'card' | 'row'
+  count?: number;
+  variant?: "card" | "row";
 }
 
-export function CardSkeleton({ count = 3, variant = 'card' }: CardSkeletonProps) {
+export function CardSkeleton({ count = 3, variant = "card" }: CardSkeletonProps) {
   return (
     <div className="flex flex-col gap-3" aria-hidden>
       {Array.from({ length: count }).map((_, i) =>
-        variant === 'card' ? <Card key={i} /> : <Row key={i} />,
+        variant === "card" ? <Card key={i} /> : <Row key={i} />,
       )}
     </div>
-  )
+  );
 }
 
 function Card() {
@@ -28,7 +28,7 @@ function Card() {
         <div className="h-7 w-24 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
       </div>
     </div>
-  )
+  );
 }
 
 function Row() {
@@ -40,5 +40,5 @@ function Row() {
         <div className="h-2 w-1/4 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
       </div>
     </div>
-  )
+  );
 }

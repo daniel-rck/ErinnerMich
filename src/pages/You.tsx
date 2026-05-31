@@ -1,27 +1,27 @@
-import { useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Tabs } from '../components/ui/Tabs'
-import { StatsPage } from './Stats'
-import { SettingsPage } from './Settings'
-import { FADE_UP, STAGGER_CONTAINER } from '../lib/design/motion'
+import { motion } from "framer-motion";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Tabs } from "../components/ui/Tabs";
+import { FADE_UP, STAGGER_CONTAINER } from "../lib/design/motion";
+import { SettingsPage } from "./Settings";
+import { StatsPage } from "./Stats";
 
-type YouTab = 'stats' | 'settings'
-const TAB_KEYS: YouTab[] = ['stats', 'settings']
+type YouTab = "stats" | "settings";
+const TAB_KEYS: YouTab[] = ["stats", "settings"];
 
 export function YouPage() {
-  const [params, setParams] = useSearchParams()
-  const requested = params.get('tab') as YouTab | null
+  const [params, setParams] = useSearchParams();
+  const requested = params.get("tab") as YouTab | null;
   const active: YouTab = useMemo(
-    () => (requested && TAB_KEYS.includes(requested) ? requested : 'stats'),
+    () => (requested && TAB_KEYS.includes(requested) ? requested : "stats"),
     [requested],
-  )
+  );
 
   function setActive(next: string) {
-    const np = new URLSearchParams(params)
-    if (next === 'stats') np.delete('tab')
-    else np.set('tab', next)
-    setParams(np, { replace: true })
+    const np = new URLSearchParams(params);
+    if (next === "stats") np.delete("tab");
+    else np.set("tab", next);
+    setParams(np, { replace: true });
   }
 
   return (
@@ -57,5 +57,5 @@ export function YouPage() {
         </Tabs>
       </motion.div>
     </motion.div>
-  )
+  );
 }

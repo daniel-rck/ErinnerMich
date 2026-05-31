@@ -1,20 +1,16 @@
-import { useState } from 'react'
-import {
-  HABIT_TEMPLATES,
-  REMINDER_TEMPLATES,
-  type Template,
-} from '../lib/templates'
+import { useState } from "react";
+import { HABIT_TEMPLATES, REMINDER_TEMPLATES, type Template } from "../lib/templates";
 
 interface TemplatePickerProps {
-  onPick: (template: Template) => void
-  onPickBlank?: (kind: 'reminder' | 'habit') => void
+  onPick: (template: Template) => void;
+  onPickBlank?: (kind: "reminder" | "habit") => void;
 }
 
-type Tab = 'reminder' | 'habit'
+type Tab = "reminder" | "habit";
 
 export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
-  const [tab, setTab] = useState<Tab>('reminder')
-  const list = tab === 'reminder' ? REMINDER_TEMPLATES : HABIT_TEMPLATES
+  const [tab, setTab] = useState<Tab>("reminder");
+  const list = tab === "reminder" ? REMINDER_TEMPLATES : HABIT_TEMPLATES;
 
   return (
     <div className="flex flex-col gap-4">
@@ -23,10 +19,10 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
         aria-label="Vorlage-Kategorie"
         className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
       >
-        <TabButton active={tab === 'reminder'} onClick={() => setTab('reminder')}>
+        <TabButton active={tab === "reminder"} onClick={() => setTab("reminder")}>
           Erinnern
         </TabButton>
-        <TabButton active={tab === 'habit'} onClick={() => setTab('habit')}>
+        <TabButton active={tab === "habit"} onClick={() => setTab("habit")}>
           Habit / Tracken
         </TabButton>
       </div>
@@ -64,7 +60,7 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function TabButton({
@@ -72,9 +68,9 @@ function TabButton({
   onClick,
   children,
 }: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
@@ -83,13 +79,13 @@ function TabButton({
       aria-selected={active}
       onClick={onClick}
       className={
-        'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ' +
+        "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors " +
         (active
-          ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50'
-          : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100')
+          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
+          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100")
       }
     >
       {children}
     </button>
-  )
+  );
 }

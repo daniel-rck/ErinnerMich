@@ -1,59 +1,55 @@
-import { useEffect } from 'react'
-import { startScheduler, stopScheduler } from './scheduler'
-import {
-  startInventoryWatcher,
-  stopInventoryWatcher,
-} from './inventoryWatcher'
+import { useEffect } from "react";
+import { subscribe } from "../db/broadcast";
+import { refreshAppBadge } from "./appBadge";
 import {
   applyNotificationAction,
   consumeUrlNotifAction,
   isNotificationActionMessage,
-} from './clientHandler'
-import { refreshAppBadge } from './appBadge'
-import { subscribe } from '../db/broadcast'
+} from "./clientHandler";
+import { startInventoryWatcher, stopInventoryWatcher } from "./inventoryWatcher";
+import { startScheduler, stopScheduler } from "./scheduler";
 
 export function NotificationsBootstrap() {
   useEffect(() => {
-    startScheduler()
-    startInventoryWatcher()
-    void refreshAppBadge()
+    startScheduler();
+    startInventoryWatcher();
+    void refreshAppBadge();
 
     const unsubscribeBadge = subscribe((message) => {
       if (
-        message.type === 'reminder-changed' ||
-        message.type === 'reminder-deleted' ||
-        message.type === 'event-added' ||
-        message.type === 'event-deleted' ||
-        message.type === 'inventory-changed' ||
-        message.type === 'db-cleared'
+        message.type === "reminder-changed" ||
+        message.type === "reminder-deleted" ||
+        message.type === "event-added" ||
+        message.type === "event-deleted" ||
+        message.type === "inventory-changed" ||
+        message.type === "db-cleared"
       ) {
-        void refreshAppBadge()
+        void refreshAppBadge();
       }
-    })
+    });
 
-    const queued = consumeUrlNotifAction()
+    const queued = consumeUrlNotifAction();
     if (queued) {
-      void applyNotificationAction(queued)
+      void applyNotificationAction(queued);
     }
 
-    let unsubscribeSW: (() => void) | null = null
-    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    let unsubscribeSW: (() => void) | null = null;
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       const handler = (event: MessageEvent) => {
-        if (!isNotificationActionMessage(event.data)) return
-        void applyNotificationAction(event.data)
-      }
-      navigator.serviceWorker.addEventListener('message', handler)
-      unsubscribeSW = () =>
-        navigator.serviceWorker.removeEventListener('message', handler)
+        if (!isNotificationActionMessage(event.data)) return;
+        void applyNotificationAction(event.data);
+      };
+      navigator.serviceWorker.addEventListener("message", handler);
+      unsubscribeSW = () => navigator.serviceWorker.removeEventListener("message", handler);
     }
 
     return () => {
-      unsubscribeBadge()
-      unsubscribeSW?.()
-      stopScheduler()
-      stopInventoryWatcher()
-    }
-  }, [])
+      unsubscribeBadge();
+      unsubscribeSW?.();
+      stopScheduler();
+      stopInventoryWatcher();
+    };
+  }, []);
 
-  return null
+  return null;
 }

@@ -1,38 +1,36 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { ThemeProvider } from './lib/hooks/useTheme'
-import { ToastProvider } from './components/ui/Toast'
-import { ConfirmProvider } from './components/ui/Confirm'
-import { MoodLogProvider } from './components/MoodLog/MoodLogProvider'
-import { Onboarding } from './components/Onboarding'
-import { AppShell } from './components/AppShell'
-import { TodayPage } from './pages/Today'
-import { HabitsPage } from './pages/Habits'
-import { AllPage } from './pages/All'
-import { SettingsPage } from './pages/Settings'
-import { NewReminderPage } from './pages/NewReminder'
-import { EditReminderPage } from './pages/EditReminder'
-import { StatsPage } from './pages/Stats'
-import { MoodPage } from './pages/Mood'
-import { LibraryPage } from './pages/Library'
-import { YouPage } from './pages/You'
-import { ReminderDetailPage } from './pages/ReminderDetail'
-import { NotificationsBootstrap } from './lib/notifications/NotificationsBootstrap'
-import { ToolsBootstrap } from './lib/tools/ToolsBootstrap'
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AppShell } from "./components/AppShell";
+import { MoodLogProvider } from "./components/MoodLog/MoodLogProvider";
+import { Onboarding } from "./components/Onboarding";
+import { ConfirmProvider } from "./components/ui/Confirm";
+import { ToastProvider } from "./components/ui/Toast";
+import { ThemeProvider } from "./lib/hooks/useTheme";
+import { NotificationsBootstrap } from "./lib/notifications/NotificationsBootstrap";
+import { ToolsBootstrap } from "./lib/tools/ToolsBootstrap";
+import { AllPage } from "./pages/All";
+import { EditReminderPage } from "./pages/EditReminder";
+import { HabitsPage } from "./pages/Habits";
+import { LibraryPage } from "./pages/Library";
+import { MoodPage } from "./pages/Mood";
+import { NewReminderPage } from "./pages/NewReminder";
+import { ReminderDetailPage } from "./pages/ReminderDetail";
+import { SettingsPage } from "./pages/Settings";
+import { StatsPage } from "./pages/Stats";
+import { TodayPage } from "./pages/Today";
+import { YouPage } from "./pages/You";
 
-const ToolsPage = lazy(() =>
-  import('./pages/Tools').then((m) => ({ default: m.ToolsPage })),
-)
+const ToolsPage = lazy(() => import("./pages/Tools").then((m) => ({ default: m.ToolsPage })));
 const ToolSessionPage = lazy(() =>
-  import('./pages/ToolSession').then((m) => ({ default: m.ToolSessionPage })),
-)
+  import("./pages/ToolSession").then((m) => ({ default: m.ToolSessionPage })),
+);
 
 function ToolsFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center text-sm text-zinc-500">
       Lade …
     </div>
-  )
+  );
 }
 
 export function App() {
@@ -83,7 +81,7 @@ export function App() {
         </ConfirmProvider>
       </ToastProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,35 +1,35 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import autoAnimate from '@formkit/auto-animate'
-import { Flame, Plus } from 'lucide-react'
-import { useReminders } from '../lib/hooks/useReminders'
-import { HabitCard } from '../components/HabitCard'
-import { CardSkeleton } from '../components/ui/CardSkeleton'
-import { EmptyState } from '../components/ui/EmptyState'
-import { HABIT_TEMPLATES } from '../lib/templates'
-import { dayKey } from '../lib/db'
+import autoAnimate from "@formkit/auto-animate";
+import { Flame, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { HabitCard } from "../components/HabitCard";
+import { CardSkeleton } from "../components/ui/CardSkeleton";
+import { EmptyState } from "../components/ui/EmptyState";
+import { dayKey } from "../lib/db";
+import { useReminders } from "../lib/hooks/useReminders";
+import { HABIT_TEMPLATES } from "../lib/templates";
 
-const SUGGESTED_KEYS = ['water', 'steps', 'meditate']
+const SUGGESTED_KEYS = ["water", "steps", "meditate"];
 
 interface HabitsPageProps {
   /**
    * When true, omits the page header — used when rendered inside Library tabs.
    */
-  embedded?: boolean
+  embedded?: boolean;
 }
 
 export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
-  const navigate = useNavigate()
-  const [today] = useState(() => dayKey(Date.now()))
+  const navigate = useNavigate();
+  const [today] = useState(() => dayKey(Date.now()));
   const { reminders, loading } = useReminders({
-    kind: 'habit',
+    kind: "habit",
     activeOnly: true,
-  })
-  const gridRef = useRef<HTMLDivElement | null>(null)
+  });
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (gridRef.current) autoAnimate(gridRef.current)
-  }, [])
+    if (gridRef.current) autoAnimate(gridRef.current);
+  }, []);
 
   return (
     <div className="flex flex-col gap-[var(--space-md)]">
@@ -54,13 +54,13 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
           title="Erste Habit anlegen"
           description="Wähle eine Vorlage oder lege selbst etwas an."
           primaryAction={{
-            label: 'Aus Vorlage',
-            onClick: () => navigate('/new?kind=habit'),
+            label: "Aus Vorlage",
+            onClick: () => navigate("/new?kind=habit"),
             icon: Plus,
           }}
           secondaryAction={{
-            label: 'Eigener Habit',
-            onClick: () => navigate('/new?kind=habit'),
+            label: "Eigener Habit",
+            onClick: () => navigate("/new?kind=habit"),
           }}
         />
       ) : (
@@ -74,14 +74,12 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
         </>
       )}
     </div>
-  )
+  );
 }
 
 function SuggestedFooter() {
-  const navigate = useNavigate()
-  const suggested = HABIT_TEMPLATES.filter((t) =>
-    SUGGESTED_KEYS.includes(t.key),
-  ).slice(0, 3)
+  const navigate = useNavigate();
+  const suggested = HABIT_TEMPLATES.filter((t) => SUGGESTED_KEYS.includes(t.key)).slice(0, 3);
   return (
     <div className="flex flex-wrap items-center gap-2 pt-[var(--space-sm)]">
       <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
@@ -91,21 +89,19 @@ function SuggestedFooter() {
         <button
           key={t.key}
           type="button"
-          onClick={() =>
-            navigate(`/new?kind=habit&title=${encodeURIComponent(t.title)}`)
-          }
+          onClick={() => navigate(`/new?kind=habit&title=${encodeURIComponent(t.title)}`)}
           className={[
-            'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5',
-            'bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-primary)]',
-            'border border-[color:var(--color-border-subtle)]',
-            'text-[length:var(--text-caption)] font-medium',
-            'hover:bg-[color:var(--color-brand-50)] hover:border-[color:var(--color-brand-400)]',
-          ].join(' ')}
+            "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5",
+            "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-primary)]",
+            "border border-[color:var(--color-border-subtle)]",
+            "text-[length:var(--text-caption)] font-medium",
+            "hover:bg-[color:var(--color-brand-50)] hover:border-[color:var(--color-brand-400)]",
+          ].join(" ")}
         >
           <span aria-hidden>{t.icon}</span>
           {t.title}
         </button>
       ))}
     </div>
-  )
+  );
 }

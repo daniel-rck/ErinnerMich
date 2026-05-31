@@ -1,23 +1,23 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Sparkles } from 'lucide-react'
-import { dayKey } from '../lib/db/index'
-import { affirmationForDay } from '../lib/tools/affirmations'
+import { Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { dayKey } from "../lib/db/index";
+import { affirmationForDay } from "../lib/tools/affirmations";
 
 export function TodayAffirmation() {
-  const [today] = useState(() => affirmationForDay(dayKey(Date.now())))
+  const [today] = useState(() => affirmationForDay(dayKey(Date.now())));
   return (
     <Link
       to="/tools/affirmation"
       className={[
-        'group relative flex items-center gap-3 overflow-hidden',
-        'rounded-[var(--radius-lg)] p-[var(--space-md)]',
-        'bg-gradient-to-br from-[color:var(--color-accent-mood-soft)] via-[color:var(--color-surface-elevated)] to-[color:var(--color-accent-glow-soft)]',
-        'border border-[color:var(--color-border-subtle)]',
-        'shadow-[var(--elev-1)]',
-        'transition-shadow duration-[var(--motion-base)]',
-        'hover:shadow-[var(--elev-2)]',
-      ].join(' ')}
+        "group relative flex items-center gap-3 overflow-hidden",
+        "rounded-[var(--radius-lg)] p-[var(--space-md)]",
+        "bg-gradient-to-br from-[color:var(--color-accent-mood-soft)] via-[color:var(--color-surface-elevated)] to-[color:var(--color-accent-glow-soft)]",
+        "border border-[color:var(--color-border-subtle)]",
+        "shadow-[var(--elev-1)]",
+        "transition-shadow duration-[var(--motion-base)]",
+        "hover:shadow-[var(--elev-2)]",
+      ].join(" ")}
     >
       <div
         aria-hidden
@@ -30,5 +30,5 @@ export function TodayAffirmation() {
         „{today.text}“
       </p>
     </Link>
-  )
+  );
 }

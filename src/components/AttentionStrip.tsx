@@ -1,19 +1,17 @@
-import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, PackageOpen, CalendarClock } from 'lucide-react'
-import { useLowStock } from '../lib/hooks/useInventory'
-import { useExpiryRadar } from '../lib/hooks/useExpiryRadar'
-import { Card } from './ui/Card'
+import { AlertTriangle, CalendarClock, PackageOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useExpiryRadar } from "../lib/hooks/useExpiryRadar";
+import { useLowStock } from "../lib/hooks/useInventory";
+import { Card } from "./ui/Card";
 
 export function AttentionStrip() {
-  const navigate = useNavigate()
-  const { items: lowStock } = useLowStock()
-  const { items: allExpiring } = useExpiryRadar()
-  const expiring = allExpiring.filter(
-    (e) => e.daysRemaining >= 0 && e.daysRemaining <= 30,
-  )
+  const navigate = useNavigate();
+  const { items: lowStock } = useLowStock();
+  const { items: allExpiring } = useExpiryRadar();
+  const expiring = allExpiring.filter((e) => e.daysRemaining >= 0 && e.daysRemaining <= 30);
 
-  const total = lowStock.length + expiring.length
-  if (total === 0) return null
+  const total = lowStock.length + expiring.length;
+  if (total === 0) return null;
 
   return (
     <Card
@@ -36,12 +34,16 @@ export function AttentionStrip() {
               onClick={() => navigate(`/detail/${inv.reminderId}`)}
               className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
             >
-              <PackageOpen size={14} aria-hidden className="shrink-0 text-[color:var(--color-warning)]" />
+              <PackageOpen
+                size={14}
+                aria-hidden
+                className="shrink-0 text-[color:var(--color-warning)]"
+              />
               <span>
-                Vorrat niedrig:{' '}
+                Vorrat niedrig:{" "}
                 <span className="tabular-nums font-medium">
                   {inv.remaining} {inv.unit}
-                </span>{' '}
+                </span>{" "}
                 (Schwelle {inv.refillThreshold})
               </span>
             </button>
@@ -54,15 +56,19 @@ export function AttentionStrip() {
               onClick={() => navigate(`/detail/${item.reminder.id}`)}
               className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
             >
-              <CalendarClock size={14} aria-hidden className="shrink-0 text-[color:var(--color-warning)]" />
+              <CalendarClock
+                size={14}
+                aria-hidden
+                className="shrink-0 text-[color:var(--color-warning)]"
+              />
               <span>
-                <span className="font-medium">{item.reminder.title}</span> läuft
-                in {item.daysRemaining} Tag{item.daysRemaining === 1 ? '' : 'en'} ab
+                <span className="font-medium">{item.reminder.title}</span> läuft in{" "}
+                {item.daysRemaining} Tag{item.daysRemaining === 1 ? "" : "en"} ab
               </span>
             </button>
           </li>
         ))}
       </ul>
     </Card>
-  )
+  );
 }

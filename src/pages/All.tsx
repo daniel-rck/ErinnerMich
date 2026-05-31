@@ -1,93 +1,91 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { MoreVertical, Search } from 'lucide-react'
-import { useReminders } from '../lib/hooks/useReminders'
+import { MoreVertical, Search } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CardSkeleton } from "../components/ui/CardSkeleton";
+import { useToast } from "../components/ui/Toast";
+import { categoryClasses } from "../lib/categoryColors";
 import {
   archiveReminder,
   deleteReminder,
   restoreReminder,
   setReminderActive,
-} from '../lib/db/reminders'
-import { formatSchedule } from '../lib/format'
-import { categoryClasses } from '../lib/categoryColors'
-import { useToast } from '../components/ui/Toast'
-import { CardSkeleton } from '../components/ui/CardSkeleton'
-import type { Reminder, ReminderKind } from '../lib/types'
+} from "../lib/db/reminders";
+import { formatSchedule } from "../lib/format";
+import { useReminders } from "../lib/hooks/useReminders";
+import type { Reminder, ReminderKind } from "../lib/types";
 
-type Filter = 'all' | ReminderKind
+type Filter = "all" | ReminderKind;
 
-const DELETE_GRACE_MS = 5500
+const DELETE_GRACE_MS = 5500;
 
 interface AllPageProps {
   /**
    * When true, omits the page header (used inside Library tabs).
    */
-  embedded?: boolean
+  embedded?: boolean;
   /**
    * Pre-applied filter when no URL param is set — used to scope the "Reminder"
    * tab inside Library.
    */
-  defaultFilter?: ReminderKind
+  defaultFilter?: ReminderKind;
 }
 
 export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) {
-  const navigate = useNavigate()
-  const toast = useToast()
-  const [params, setParams] = useSearchParams()
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [params, setParams] = useSearchParams();
   const filter: Filter = (() => {
-    const f = params.get('filter')
-    if (f === 'reminder' || f === 'habit' || f === 'mood') return f
-    return defaultFilter ?? 'all'
-  })()
-  const search = params.get('q') ?? ''
+    const f = params.get("filter");
+    if (f === "reminder" || f === "habit" || f === "mood") return f;
+    return defaultFilter ?? "all";
+  })();
+  const search = params.get("q") ?? "";
   const { reminders, loading } = useReminders({
-    kind: filter === 'all' ? undefined : filter,
-  })
+    kind: filter === "all" ? undefined : filter,
+  });
 
   const visible = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (q.length === 0) return reminders
+    const q = search.trim().toLowerCase();
+    if (q.length === 0) return reminders;
     return reminders.filter(
-      (r) =>
-        r.title.toLowerCase().includes(q) ||
-        (r.description ?? '').toLowerCase().includes(q),
-    )
-  }, [reminders, search])
+      (r) => r.title.toLowerCase().includes(q) || (r.description ?? "").toLowerCase().includes(q),
+    );
+  }, [reminders, search]);
 
   function setFilter(next: Filter) {
-    const np = new URLSearchParams(params)
-    if (next === 'all') np.delete('filter')
-    else np.set('filter', next)
-    setParams(np, { replace: true })
+    const np = new URLSearchParams(params);
+    if (next === "all") np.delete("filter");
+    else np.set("filter", next);
+    setParams(np, { replace: true });
   }
 
   function setSearch(next: string) {
-    const np = new URLSearchParams(params)
-    if (next.length === 0) np.delete('q')
-    else np.set('q', next)
-    setParams(np, { replace: true })
+    const np = new URLSearchParams(params);
+    if (next.length === 0) np.delete("q");
+    else np.set("q", next);
+    setParams(np, { replace: true });
   }
 
   async function handleDelete(reminder: Reminder) {
-    await archiveReminder(reminder.id)
-    let cancelled = false
+    await archiveReminder(reminder.id);
+    let cancelled = false;
     const timer = setTimeout(() => {
-      if (cancelled) return
-      void deleteReminder(reminder.id)
-    }, DELETE_GRACE_MS)
+      if (cancelled) return;
+      void deleteReminder(reminder.id);
+    }, DELETE_GRACE_MS);
     toast.show({
-      variant: 'success',
+      variant: "success",
       message: `„${reminder.title}“ gelöscht`,
       durationMs: DELETE_GRACE_MS,
       action: {
-        label: 'Rückgängig',
+        label: "Rückgängig",
         onClick: () => {
-          cancelled = true
-          clearTimeout(timer)
-          void restoreReminder(reminder.id)
+          cancelled = true;
+          clearTimeout(timer);
+          void restoreReminder(reminder.id);
         },
       },
-    })
+    });
   }
 
   return (
@@ -122,25 +120,16 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         aria-label="Filter"
         className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
       >
-        <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>
+        <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
           Alle
         </FilterButton>
-        <FilterButton
-          active={filter === 'reminder'}
-          onClick={() => setFilter('reminder')}
-        >
+        <FilterButton active={filter === "reminder"} onClick={() => setFilter("reminder")}>
           Erinnerungen
         </FilterButton>
-        <FilterButton
-          active={filter === 'habit'}
-          onClick={() => setFilter('habit')}
-        >
+        <FilterButton active={filter === "habit"} onClick={() => setFilter("habit")}>
           Habits
         </FilterButton>
-        <FilterButton
-          active={filter === 'mood'}
-          onClick={() => setFilter('mood')}
-        >
+        <FilterButton active={filter === "mood"} onClick={() => setFilter("mood")}>
           Mood
         </FilterButton>
       </div>
@@ -157,16 +146,14 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
               reminder={reminder}
               onOpen={() => navigate(`/detail/${reminder.id}`)}
               onEdit={() => navigate(`/edit/${reminder.id}`)}
-              onToggleActive={() =>
-                setReminderActive(reminder.id, !reminder.active)
-              }
+              onToggleActive={() => setReminderActive(reminder.id, !reminder.active)}
               onDelete={() => handleDelete(reminder)}
             />
           ))}
         </ul>
       )}
     </div>
-  )
+  );
 }
 
 function EmptyState({ search }: { search: string }) {
@@ -175,13 +162,13 @@ function EmptyState({ search }: { search: string }) {
       <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
         Keine Treffer für „{search}“.
       </p>
-    )
+    );
   }
   return (
     <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
       Hier landen alle Reminder, Habits und Mood-Einträge.
     </p>
-  )
+  );
 }
 
 function RowItem({
@@ -191,13 +178,13 @@ function RowItem({
   onToggleActive,
   onDelete,
 }: {
-  reminder: Reminder
-  onOpen: () => void
-  onEdit: () => void
-  onToggleActive: () => void
-  onDelete: () => void
+  reminder: Reminder;
+  onOpen: () => void;
+  onEdit: () => void;
+  onToggleActive: () => void;
+  onDelete: () => void;
 }) {
-  const tone = categoryClasses(reminder.category)
+  const tone = categoryClasses(reminder.category);
 
   return (
     <li
@@ -218,7 +205,7 @@ function RowItem({
           <span className="font-medium">{reminder.title}</span>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
             {formatSchedule(reminder.schedule)}
-            {!reminder.active && ' · pausiert'}
+            {!reminder.active && " · pausiert"}
           </span>
         </div>
       </button>
@@ -229,7 +216,7 @@ function RowItem({
         onDelete={onDelete}
       />
     </li>
-  )
+  );
 }
 
 function RowMenu({
@@ -238,41 +225,38 @@ function RowMenu({
   onEdit,
   onDelete,
 }: {
-  active: boolean
-  onToggleActive: () => void
-  onEdit: () => void
-  onDelete: () => void
+  active: boolean;
+  onToggleActive: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
-  const [open, setOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const menuId = useId()
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const menuId = useId();
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     function onDocClick(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false)
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
       }
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === "Escape") setOpen(false);
     }
-    document.addEventListener('mousedown', onDocClick)
-    document.addEventListener('keydown', onKey)
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener('mousedown', onDocClick)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   function pick(action: () => void) {
     return () => {
-      setOpen(false)
-      action()
-    }
+      setOpen(false);
+      action();
+    };
   }
 
   return (
@@ -300,7 +284,7 @@ function RowMenu({
             onClick={pick(onToggleActive)}
             className="px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
           >
-            {active ? 'Pausieren' : 'Aktivieren'}
+            {active ? "Pausieren" : "Aktivieren"}
           </button>
           <button
             type="button"
@@ -321,7 +305,7 @@ function RowMenu({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function FilterButton({
@@ -329,9 +313,9 @@ function FilterButton({
   onClick,
   children,
 }: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
@@ -339,13 +323,13 @@ function FilterButton({
       aria-pressed={active}
       onClick={onClick}
       className={
-        'flex-1 rounded-md px-3 py-1.5 text-sm font-medium ' +
+        "flex-1 rounded-md px-3 py-1.5 text-sm font-medium " +
         (active
-          ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50'
-          : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100')
+          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
+          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100")
       }
     >
       {children}
     </button>
-  )
+  );
 }

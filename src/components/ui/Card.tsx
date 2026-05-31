@@ -1,13 +1,13 @@
-import { forwardRef, type ReactNode } from 'react'
-import { Surface, type SurfaceProps } from './Surface'
+import { forwardRef, type ReactNode } from "react";
+import { Surface, type SurfaceProps } from "./Surface";
 
 export interface CardProps extends SurfaceProps {
-  header?: ReactNode
-  footer?: ReactNode
+  header?: ReactNode;
+  footer?: ReactNode;
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { header, footer, children, className = '', padding = 'md', ...rest },
+  { header, footer, children, className = "", padding = "md", ...rest },
   ref,
 ) {
   if (!header && !footer) {
@@ -15,7 +15,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       <Surface ref={ref} padding={padding} className={className} {...rest}>
         {children}
       </Surface>
-    )
+    );
   }
   return (
     <Surface ref={ref} padding="none" className={className} {...rest}>
@@ -31,5 +31,5 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
         </div>
       )}
     </Surface>
-  )
-})
+  );
+});

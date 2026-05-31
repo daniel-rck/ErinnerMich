@@ -1,59 +1,59 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Image as ImageIcon, Trash2, Plus } from 'lucide-react'
-import { addToolEntry, deleteToolEntry } from '../../lib/db/toolEntries'
-import { useToolEntries } from '../../lib/hooks/useToolEntries'
-import { useToast } from '../ui/Toast'
+import { motion } from "framer-motion";
+import { Image as ImageIcon, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { useToolEntries } from "../../lib/hooks/useToolEntries";
+import { useToast } from "../ui/Toast";
 
-const MAX_IMAGE_BYTES = 250_000
-const MAX_TOTAL_BASE64 = 350_000
+const MAX_IMAGE_BYTES = 250_000;
+const MAX_TOTAL_BASE64 = 350_000;
 
 export function TreasureBox() {
-  const [text, setText] = useState('')
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
-  const [adding, setAdding] = useState(false)
-  const toast = useToast()
-  const { entries } = useToolEntries({ toolKey: 'treasure' })
+  const [text, setText] = useState("");
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const toast = useToast();
+  const { entries } = useToolEntries({ toolKey: "treasure" });
 
   async function handleFile(file: File) {
     if (file.size > MAX_IMAGE_BYTES) {
       toast.show({
-        variant: 'error',
-        message: 'Bild zu groß (max. 250 KB).',
-      })
-      return
+        variant: "error",
+        message: "Bild zu groß (max. 250 KB).",
+      });
+      return;
     }
     try {
-      const dataUrl = await readAsDataUrl(file)
+      const dataUrl = await readAsDataUrl(file);
       if (dataUrl.length > MAX_TOTAL_BASE64) {
         toast.show({
-          variant: 'error',
-          message: 'Bild zu groß nach Kodierung.',
-        })
-        return
+          variant: "error",
+          message: "Bild zu groß nach Kodierung.",
+        });
+        return;
       }
-      setImageDataUrl(dataUrl)
+      setImageDataUrl(dataUrl);
     } catch {
       toast.show({
-        variant: 'error',
-        message: 'Konnte das Bild nicht lesen.',
-      })
+        variant: "error",
+        message: "Konnte das Bild nicht lesen.",
+      });
     }
   }
 
   async function submit() {
-    const value = text.trim()
-    if (!value && !imageDataUrl) return
+    const value = text.trim();
+    if (!value && !imageDataUrl) return;
     await addToolEntry({
-      toolKey: 'treasure',
+      toolKey: "treasure",
       loggedAt: Date.now(),
       text: value || undefined,
       imageDataUrl: imageDataUrl ?? undefined,
-    })
-    setText('')
-    setImageDataUrl(null)
-    setAdding(false)
-    toast.show({ variant: 'success', message: 'Schatz gespeichert.' })
+    });
+    setText("");
+    setImageDataUrl(null);
+    setAdding(false);
+    toast.show({ variant: "success", message: "Schatz gespeichert." });
   }
 
   return (
@@ -73,8 +73,8 @@ export function TreasureBox() {
       ) : (
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            void submit()
+            e.preventDefault();
+            void submit();
           }}
           className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
         >
@@ -88,11 +88,7 @@ export function TreasureBox() {
           />
           {imageDataUrl ? (
             <div className="relative">
-              <img
-                src={imageDataUrl}
-                alt="Vorschau"
-                className="max-h-48 rounded-md object-cover"
-              />
+              <img src={imageDataUrl} alt="Vorschau" className="max-h-48 rounded-md object-cover" />
               <button
                 type="button"
                 onClick={() => setImageDataUrl(null)}
@@ -110,8 +106,8 @@ export function TreasureBox() {
                 accept="image/*"
                 className="hidden"
                 onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) void handleFile(file)
+                  const file = e.target.files?.[0];
+                  if (file) void handleFile(file);
                 }}
               />
             </label>
@@ -120,9 +116,9 @@ export function TreasureBox() {
             <button
               type="button"
               onClick={() => {
-                setAdding(false)
-                setText('')
-                setImageDataUrl(null)
+                setAdding(false);
+                setText("");
+                setImageDataUrl(null);
               }}
               className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
             >
@@ -157,7 +153,7 @@ export function TreasureBox() {
             {e.text && <p className="text-sm">{e.text}</p>}
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                {new Date(e.loggedAt).toLocaleDateString('de-DE')}
+                {new Date(e.loggedAt).toLocaleDateString("de-DE")}
               </span>
               <button
                 type="button"
@@ -177,14 +173,14 @@ export function TreasureBox() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }

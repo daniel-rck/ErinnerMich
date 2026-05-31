@@ -1,33 +1,28 @@
 interface SparklineProps {
-  data: ReadonlyArray<{ label: string; value: number | null }>
-  min?: number
-  max?: number
-  ariaLabel?: string
+  data: ReadonlyArray<{ label: string; value: number | null }>;
+  min?: number;
+  max?: number;
+  ariaLabel?: string;
 }
 
-export function Sparkline({
-  data,
-  min = 1,
-  max = 5,
-  ariaLabel = 'Verlauf',
-}: SparklineProps) {
-  const width = 320
-  const height = 64
-  const padX = 4
-  const padY = 6
-  const innerW = width - padX * 2
-  const innerH = height - padY * 2
-  const stepX = data.length > 1 ? innerW / (data.length - 1) : 0
+export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: SparklineProps) {
+  const width = 320;
+  const height = 64;
+  const padX = 4;
+  const padY = 6;
+  const innerW = width - padX * 2;
+  const innerH = height - padY * 2;
+  const stepX = data.length > 1 ? innerW / (data.length - 1) : 0;
 
   const points = data.map((p, i) => {
-    if (p.value === null) return null
-    const t = (p.value - min) / (max - min)
-    const x = padX + i * stepX
-    const y = padY + (1 - t) * innerH
-    return { x, y, label: p.label, value: p.value }
-  })
+    if (p.value === null) return null;
+    const t = (p.value - min) / (max - min);
+    const x = padX + i * stepX;
+    const y = padY + (1 - t) * innerH;
+    return { x, y, label: p.label, value: p.value };
+  });
 
-  const segments = collectSegments(points)
+  const segments = collectSegments(points);
 
   return (
     <svg
@@ -44,7 +39,7 @@ export function Sparkline({
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          points={segment.map((p) => `${p.x},${p.y}`).join(' ')}
+          points={segment.map((p) => `${p.x},${p.y}`).join(" ")}
         />
       ))}
       {points.map((p, i) =>
@@ -55,20 +50,20 @@ export function Sparkline({
         ),
       )}
     </svg>
-  )
+  );
 }
 
 function collectSegments<T>(points: ReadonlyArray<T | null>): T[][] {
-  const segments: T[][] = []
-  let current: T[] = []
+  const segments: T[][] = [];
+  let current: T[] = [];
   for (const p of points) {
     if (p === null) {
-      if (current.length > 1) segments.push(current)
-      current = []
+      if (current.length > 1) segments.push(current);
+      current = [];
     } else {
-      current.push(p)
+      current.push(p);
     }
   }
-  if (current.length > 1) segments.push(current)
-  return segments
+  if (current.length > 1) segments.push(current);
+  return segments;
 }

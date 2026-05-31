@@ -1,71 +1,71 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Bell, Flame, Smile, Send, Sparkles, BookOpen } from 'lucide-react'
-import { Sheet } from './ui/Sheet'
-import { Button } from './ui/Button'
-import { useToast } from './ui/Toast'
-import { vibrate } from './ui/Haptic'
-import { useMoodLog } from './MoodLog/MoodLogProvider'
-import { useSettings } from '../lib/hooks/useSettings'
-import { quickParse } from '../lib/schedule/quickParse'
-import { createReminder } from '../lib/db/reminders'
+import { Bell, BookOpen, Flame, Send, Smile, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createReminder } from "../lib/db/reminders";
+import { useSettings } from "../lib/hooks/useSettings";
+import { quickParse } from "../lib/schedule/quickParse";
+import { useMoodLog } from "./MoodLog/MoodLogProvider";
+import { Button } from "./ui/Button";
+import { vibrate } from "./ui/Haptic";
+import { Sheet } from "./ui/Sheet";
+import { useToast } from "./ui/Toast";
 
 interface QuickCaptureSheetProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
-  const navigate = useNavigate()
-  const toast = useToast()
-  const moodLog = useMoodLog()
-  const { wellnessToolsEnabled } = useSettings()
-  const [input, setInput] = useState('')
-  const [busy, setBusy] = useState(false)
+  const navigate = useNavigate();
+  const toast = useToast();
+  const moodLog = useMoodLog();
+  const { wellnessToolsEnabled } = useSettings();
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
 
   function goto(target: string) {
-    onClose()
-    navigate(target)
+    onClose();
+    navigate(target);
   }
 
   async function submitQuickCapture() {
-    const trimmed = input.trim()
-    if (trimmed.length === 0 || busy) return
-    setBusy(true)
+    const trimmed = input.trim();
+    if (trimmed.length === 0 || busy) return;
+    setBusy(true);
     try {
-      const parsed = quickParse(trimmed)
+      const parsed = quickParse(trimmed);
       if (!parsed) {
-        onClose()
-        navigate(`/new?kind=reminder&title=${encodeURIComponent(trimmed)}`)
-        toast.show({ message: 'Konnte Zeit nicht erkennen — bitte ergänze die Details.' })
-        setInput('')
-        return
+        onClose();
+        navigate(`/new?kind=reminder&title=${encodeURIComponent(trimmed)}`);
+        toast.show({ message: "Konnte Zeit nicht erkennen — bitte ergänze die Details." });
+        setInput("");
+        return;
       }
       const created = await createReminder({
-        kind: 'reminder',
+        kind: "reminder",
         title: parsed.title,
-        icon: '⏰',
-        category: 'other',
-        color: 'brand',
+        icon: "⏰",
+        category: "other",
+        color: "brand",
         schedule: parsed.schedule,
         streakSensitive: false,
         active: true,
-      })
-      vibrate('success')
-      onClose()
+      });
+      vibrate("success");
+      onClose();
       toast.show({
-        variant: 'success',
+        variant: "success",
         message: `„${parsed.title}“ angelegt`,
-        action: { label: 'Bearbeiten', onClick: () => navigate(`/edit/${created.id}`) },
-      })
-      setInput('')
+        action: { label: "Bearbeiten", onClick: () => navigate(`/edit/${created.id}`) },
+      });
+      setInput("");
     } catch (err) {
       toast.show({
-        variant: 'error',
-        message: err instanceof Error ? err.message : 'Anlegen fehlgeschlagen',
-      })
+        variant: "error",
+        message: err instanceof Error ? err.message : "Anlegen fehlgeschlagen",
+      });
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
@@ -74,22 +74,26 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
       <div className="flex flex-col gap-[var(--space-md)] pb-[var(--space-md)]">
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            void submitQuickCapture()
+            e.preventDefault();
+            void submitQuickCapture();
           }}
           className={[
-            'flex items-center gap-2 pl-[var(--space-md)] pr-1 py-1',
-            'rounded-full bg-[color:var(--color-surface-sunken)]',
-            'border border-[color:var(--color-border-subtle)]',
-            'focus-within:border-[color:var(--color-brand-500)]',
-          ].join(' ')}
+            "flex items-center gap-2 pl-[var(--space-md)] pr-1 py-1",
+            "rounded-full bg-[color:var(--color-surface-sunken)]",
+            "border border-[color:var(--color-border-subtle)]",
+            "focus-within:border-[color:var(--color-brand-500)]",
+          ].join(" ")}
         >
-          <Sparkles size={16} aria-hidden className="shrink-0 text-[color:var(--color-text-tertiary)]" />
+          <Sparkles
+            size={16}
+            aria-hidden
+            className="shrink-0 text-[color:var(--color-text-tertiary)]"
+          />
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder='z.B. „Mama Sonntag 18 Uhr“'
+            placeholder="z.B. „Mama Sonntag 18 Uhr“"
             aria-label="Schnell-Eintrag"
             className="min-w-0 flex-1 bg-transparent text-[length:var(--text-body)] focus:outline-none placeholder:text-[color:var(--color-text-tertiary)]"
             disabled={busy}
@@ -114,7 +118,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={Bell}
-            onClick={() => goto('/new?kind=reminder')}
+            onClick={() => goto("/new?kind=reminder")}
             fullWidth
             className="justify-start"
           >
@@ -124,7 +128,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={Flame}
-            onClick={() => goto('/new?kind=habit')}
+            onClick={() => goto("/new?kind=habit")}
             fullWidth
             className="justify-start"
           >
@@ -136,8 +140,8 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
               size="lg"
               leadingIcon={Smile}
               onClick={() => {
-                onClose()
-                moodLog.open()
+                onClose();
+                moodLog.open();
               }}
               fullWidth
               className="justify-start"
@@ -149,7 +153,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={BookOpen}
-            onClick={() => goto('/new?kind=reminder')}
+            onClick={() => goto("/new?kind=reminder")}
             fullWidth
             className="justify-start"
           >
@@ -158,5 +162,5 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
         </div>
       </div>
     </Sheet>
-  )
+  );
 }

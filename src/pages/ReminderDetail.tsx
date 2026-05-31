@@ -1,64 +1,65 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Pencil } from 'lucide-react'
-import { getReminder } from '../lib/db/reminders'
-import { useEvents } from '../lib/hooks/useEvents'
-import { getInventory } from '../lib/db/inventories'
-import { streakStats } from '../lib/stats/streaks'
-import {
-  averageDaysBetweenCompletions,
-  completionSummary,
-} from '../lib/stats/completionRate'
-import type { Inventory, Reminder, ReminderEvent } from '../lib/types'
-import { formatDate, formatSchedule, formatTime } from '../lib/format'
-import { Button } from '../components/ui/Button'
-import { Card } from '../components/ui/Card'
-import { StatTile } from '../components/ui/StatTile'
-import { categoryClasses } from '../lib/categoryColors'
+import { Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
+import { StatTile } from "../components/ui/StatTile";
+import { categoryClasses } from "../lib/categoryColors";
+import { getInventory } from "../lib/db/inventories";
+import { getReminder } from "../lib/db/reminders";
+import { formatDate, formatSchedule, formatTime } from "../lib/format";
+import { useEvents } from "../lib/hooks/useEvents";
+import { averageDaysBetweenCompletions, completionSummary } from "../lib/stats/completionRate";
+import { streakStats } from "../lib/stats/streaks";
+import type { Inventory, Reminder, ReminderEvent } from "../lib/types";
 
 export function ReminderDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [reminder, setReminder] = useState<Reminder | null>(null)
-  const [inventory, setInventory] = useState<Inventory | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { events } = useEvents(id ?? null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [reminder, setReminder] = useState<Reminder | null>(null);
+  const [inventory, setInventory] = useState<Inventory | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { events } = useEvents(id ?? null);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
     async function load() {
-      if (!id) return
-      const [r, inv] = await Promise.all([getReminder(id), getInventory(id)])
-      if (cancelled) return
-      setReminder(r ?? null)
-      setInventory(inv ?? null)
-      setLoading(false)
+      if (!id) return;
+      const [r, inv] = await Promise.all([getReminder(id), getInventory(id)]);
+      if (cancelled) return;
+      setReminder(r ?? null);
+      setInventory(inv ?? null);
+      setLoading(false);
     }
-    void load()
+    void load();
     return () => {
-      cancelled = true
-    }
-  }, [id])
+      cancelled = true;
+    };
+  }, [id]);
 
   if (loading)
-    return <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">Lade …</p>
+    return (
+      <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
+        Lade …
+      </p>
+    );
   if (!reminder) {
     return (
       <div className="flex flex-col gap-[var(--space-md)]">
         <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
           Reminder nicht gefunden.
         </p>
-        <Button variant="secondary" onClick={() => navigate('/')}>
+        <Button variant="secondary" onClick={() => navigate("/")}>
           Zurück
         </Button>
       </div>
-    )
+    );
   }
 
-  const streak = streakStats(events)
-  const completions = completionSummary(events)
-  const avgGap = averageDaysBetweenCompletions(events)
-  const tone = categoryClasses(reminder.category)
+  const streak = streakStats(events);
+  const completions = completionSummary(events);
+  const avgGap = averageDaysBetweenCompletions(events);
+  const tone = categoryClasses(reminder.category);
 
   return (
     <div className="flex flex-col gap-[var(--space-lg)]">
@@ -83,7 +84,7 @@ export function ReminderDetailPage() {
           </span>
           <div className="flex flex-1 flex-col">
             <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
-              {reminder.kind === 'habit' ? 'Habit' : reminder.kind === 'mood' ? 'Mood' : 'Reminder'}
+              {reminder.kind === "habit" ? "Habit" : reminder.kind === "mood" ? "Mood" : "Reminder"}
             </p>
             <h1 className="text-[length:var(--text-title-1)] font-semibold leading-[var(--leading-title)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
               {reminder.title}
@@ -112,7 +113,7 @@ export function ReminderDetailPage() {
       )}
 
       <section className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
-        {reminder.kind === 'habit' && (
+        {reminder.kind === "habit" && (
           <>
             <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
             <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
@@ -141,7 +142,7 @@ export function ReminderDetailPage() {
             Vorrat
           </h2>
           <p className="text-[length:var(--text-body)] text-[color:var(--color-text-primary)]">
-            {inventory.remaining} {inventory.unit} (Schwelle: {inventory.refillThreshold}{' '}
+            {inventory.remaining} {inventory.unit} (Schwelle: {inventory.refillThreshold}{" "}
             {inventory.unit})
           </p>
           {inventory.lastRefillAt && (
@@ -171,16 +172,16 @@ export function ReminderDetailPage() {
         )}
       </section>
     </div>
-  )
+  );
 }
 
 function EventRow({ event }: { event: ReminderEvent }) {
-  const ts = event.triggeredAt ?? event.scheduledFor
-  const date = ts ? new Date(ts) : null
+  const ts = event.triggeredAt ?? event.scheduledFor;
+  const date = ts ? new Date(ts) : null;
   return (
     <li className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-subtle)] px-[var(--space-md)] py-[var(--space-xs)] last:border-b-0">
       <span className="font-mono text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
-        {date ? `${formatDate(date)} ${formatTime(date)}` : '—'}
+        {date ? `${formatDate(date)} ${formatTime(date)}` : "—"}
       </span>
       <span className="flex items-center gap-2">
         <ActionPill action={event.action} />
@@ -196,33 +197,33 @@ function EventRow({ event }: { event: ReminderEvent }) {
         )}
       </span>
     </li>
-  )
+  );
 }
 
-const ACTION_LABELS: Record<ReminderEvent['action'], string> = {
-  completed: 'Erledigt',
-  snoozed: 'Snooze',
-  skipped: 'Übersprungen',
-  missed: 'Verpasst',
-  progress: 'Fortschritt',
-  dismissed: 'Verworfen',
-}
+const ACTION_LABELS: Record<ReminderEvent["action"], string> = {
+  completed: "Erledigt",
+  snoozed: "Snooze",
+  skipped: "Übersprungen",
+  missed: "Verpasst",
+  progress: "Fortschritt",
+  dismissed: "Verworfen",
+};
 
-const ACTION_CLASSES: Record<ReminderEvent['action'], string> = {
-  completed: 'bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]',
-  snoozed: 'bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]',
-  skipped: 'bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]',
-  missed: 'bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]',
-  progress: 'bg-[color:var(--color-info-soft)] text-[color:var(--color-info)]',
-  dismissed: 'bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]',
-}
+const ACTION_CLASSES: Record<ReminderEvent["action"], string> = {
+  completed: "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]",
+  snoozed: "bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]",
+  skipped: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]",
+  missed: "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]",
+  progress: "bg-[color:var(--color-info-soft)] text-[color:var(--color-info)]",
+  dismissed: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]",
+};
 
-function ActionPill({ action }: { action: ReminderEvent['action'] }) {
+function ActionPill({ action }: { action: ReminderEvent["action"] }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[length:var(--text-micro)] font-medium ${ACTION_CLASSES[action]}`}
     >
       {ACTION_LABELS[action]}
     </span>
-  )
+  );
 }

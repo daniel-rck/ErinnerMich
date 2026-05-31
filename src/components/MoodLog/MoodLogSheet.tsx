@@ -1,141 +1,129 @@
-import { useCallback, useState } from 'react'
-import { BottomSheet } from '../ui/BottomSheet'
-import { addMoodEntry } from '../../lib/db/moodEntries'
-import { useToast } from '../ui/Toast'
-import { vibrate } from '../ui/Haptic'
-import type { MoodValue } from '../../lib/types'
+import { useCallback, useState } from "react";
+import { addMoodEntry } from "../../lib/db/moodEntries";
+import type { MoodValue } from "../../lib/types";
+import { BottomSheet } from "../ui/BottomSheet";
+import { vibrate } from "../ui/Haptic";
+import { useToast } from "../ui/Toast";
 
 const MOOD_OPTIONS: {
-  value: MoodValue
-  emoji: string
-  label: string
+  value: MoodValue;
+  emoji: string;
+  label: string;
 }[] = [
-  { value: 1, emoji: '😞', label: 'Sehr schlecht' },
-  { value: 2, emoji: '😕', label: 'Eher schlecht' },
-  { value: 3, emoji: '😐', label: 'Neutral' },
-  { value: 4, emoji: '🙂', label: 'Eher gut' },
-  { value: 5, emoji: '😄', label: 'Sehr gut' },
-]
+  { value: 1, emoji: "😞", label: "Sehr schlecht" },
+  { value: 2, emoji: "😕", label: "Eher schlecht" },
+  { value: 3, emoji: "😐", label: "Neutral" },
+  { value: 4, emoji: "🙂", label: "Eher gut" },
+  { value: 5, emoji: "😄", label: "Sehr gut" },
+];
 
-const SUGGESTED_TAGS = [
-  'Schlaf',
-  'Sport',
-  'Arbeit',
-  'Familie',
-  'Stress',
-  'Sonne',
-  'Krank',
-]
+const SUGGESTED_TAGS = ["Schlaf", "Sport", "Arbeit", "Familie", "Stress", "Sonne", "Krank"];
 
 interface MoodLogSheetProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
-  const toast = useToast()
-  const [mood, setMood] = useState<MoodValue | null>(null)
-  const [tags, setTags] = useState<string[]>([])
-  const [note, setNote] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const toast = useToast();
+  const [mood, setMood] = useState<MoodValue | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [note, setNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function reset() {
-    setMood(null)
-    setTags([])
-    setNote('')
-    setSubmitting(false)
+    setMood(null);
+    setTags([]);
+    setNote("");
+    setSubmitting(false);
   }
 
   const quickSave = useCallback(
     async (value: MoodValue) => {
-      if (submitting) return
-      setSubmitting(true)
-      const loggedAt = Date.now()
+      if (submitting) return;
+      setSubmitting(true);
+      const loggedAt = Date.now();
       try {
         await addMoodEntry({
           loggedAt,
           mood: value,
-        })
-        vibrate('success')
-        toast.show({ variant: 'success', message: 'Mood gespeichert' })
-        reset()
-        onClose()
+        });
+        vibrate("success");
+        toast.show({ variant: "success", message: "Mood gespeichert" });
+        reset();
+        onClose();
       } catch (err) {
         toast.show({
-          variant: 'error',
-          message: err instanceof Error ? err.message : 'Speichern fehlgeschlagen',
-        })
-        setSubmitting(false)
+          variant: "error",
+          message: err instanceof Error ? err.message : "Speichern fehlgeschlagen",
+        });
+        setSubmitting(false);
       }
     },
     [submitting, toast, onClose],
-  )
+  );
 
   async function detailedSave() {
-    if (mood === null || submitting) return
-    setSubmitting(true)
-    const loggedAt = Date.now()
+    if (mood === null || submitting) return;
+    setSubmitting(true);
+    const loggedAt = Date.now();
     try {
       await addMoodEntry({
         loggedAt,
         mood,
         tags: tags.length > 0 ? tags : undefined,
         note: note.trim() || undefined,
-      })
-      vibrate('success')
-      toast.show({ variant: 'success', message: 'Mood gespeichert' })
-      reset()
-      onClose()
+      });
+      vibrate("success");
+      toast.show({ variant: "success", message: "Mood gespeichert" });
+      reset();
+      onClose();
     } catch (err) {
       toast.show({
-        variant: 'error',
-        message: err instanceof Error ? err.message : 'Speichern fehlgeschlagen',
-      })
-      setSubmitting(false)
+        variant: "error",
+        message: err instanceof Error ? err.message : "Speichern fehlgeschlagen",
+      });
+      setSubmitting(false);
     }
   }
 
   function toggleTag(tag: string) {
-    setTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    )
+    setTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
   }
 
   return (
     <BottomSheet
       open={open}
       onClose={() => {
-        reset()
-        onClose()
+        reset();
+        onClose();
       }}
       title="Wie geht es dir gerade?"
     >
       <div className="flex flex-col gap-5 pb-6">
         <div className="flex justify-between gap-1">
           {MOOD_OPTIONS.map((opt) => {
-            const active = mood === opt.value
+            const active = mood === opt.value;
             return (
               <button
                 key={opt.value}
                 type="button"
-                onClick={() =>
-                  mood === null ? void quickSave(opt.value) : setMood(opt.value)
-                }
+                onClick={() => (mood === null ? void quickSave(opt.value) : setMood(opt.value))}
                 aria-label={opt.label}
                 aria-pressed={active}
                 className={
-                  'flex flex-1 flex-col items-center gap-1 rounded-xl border-2 py-3 text-3xl transition ' +
+                  "flex flex-1 flex-col items-center gap-1 rounded-xl border-2 py-3 text-3xl transition " +
                   (active
-                    ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40'
-                    : 'border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600')
+                    ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40"
+                    : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
                 }
               >
                 <span aria-hidden>{opt.emoji}</span>
                 <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                  {opt.label.split(' ')[0]}
+                  {opt.label.split(" ")[0]}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
 
@@ -147,7 +135,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {SUGGESTED_TAGS.map((tag) => {
-                  const active = tags.includes(tag)
+                  const active = tags.includes(tag);
                   return (
                     <button
                       key={tag}
@@ -155,15 +143,15 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                       onClick={() => toggleTag(tag)}
                       aria-pressed={active}
                       className={
-                        'rounded-full border px-3 py-1 text-sm ' +
+                        "rounded-full border px-3 py-1 text-sm " +
                         (active
-                          ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
-                          : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600')
+                          ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                          : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
                       }
                     >
                       #{tag}
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -193,5 +181,5 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
         )}
       </div>
     </BottomSheet>
-  )
+  );
 }

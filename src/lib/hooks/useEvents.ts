@@ -1,42 +1,42 @@
-import { useCallback, useEffect, useState } from 'react'
-import type { ReminderEvent } from '../types'
-import { dailyProgress, listEventsForReminder } from '../db/events'
-import { subscribe } from '../db/broadcast'
+import { useCallback, useEffect, useState } from "react";
+import { subscribe } from "../db/broadcast";
+import { dailyProgress, listEventsForReminder } from "../db/events";
+import type { ReminderEvent } from "../types";
 
 export function useEvents(reminderId: string | null): {
-  events: ReminderEvent[]
-  loading: boolean
-  reload: () => Promise<void>
+  events: ReminderEvent[];
+  loading: boolean;
+  reload: () => Promise<void>;
 } {
-  const [events, setEvents] = useState<ReminderEvent[]>([])
-  const [loading, setLoading] = useState(true)
+  const [events, setEvents] = useState<ReminderEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
     if (!reminderId) {
-      setEvents([])
-      setLoading(false)
-      return
+      setEvents([]);
+      setLoading(false);
+      return;
     }
-    const data = await listEventsForReminder(reminderId)
-    setEvents(data)
-    setLoading(false)
-  }, [reminderId])
+    const data = await listEventsForReminder(reminderId);
+    setEvents(data);
+    setLoading(false);
+  }, [reminderId]);
 
   useEffect(() => {
-    void reload()
+    void reload();
     const unsubscribe = subscribe((message) => {
       if (
-        ((message.type === 'event-added' || message.type === 'event-deleted') &&
+        ((message.type === "event-added" || message.type === "event-deleted") &&
           message.reminderId === reminderId) ||
-        message.type === 'db-cleared'
+        message.type === "db-cleared"
       ) {
-        void reload()
+        void reload();
       }
-    })
-    return unsubscribe
-  }, [reload, reminderId])
+    });
+    return unsubscribe;
+  }, [reload, reminderId]);
 
-  return { events, loading, reload }
+  return { events, loading, reload };
 }
 
 export function useDailyProgress(
@@ -47,41 +47,41 @@ export function useDailyProgress(
     completions: 0,
     sum: 0,
     loading: true,
-  })
+  });
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function load() {
       if (!reminderId) {
-        if (!cancelled) setState({ completions: 0, sum: 0, loading: false })
-        return
+        if (!cancelled) setState({ completions: 0, sum: 0, loading: false });
+        return;
       }
-      const result = await dailyProgress(reminderId, date)
+      const result = await dailyProgress(reminderId, date);
       if (!cancelled) {
         setState({
           completions: result.completions,
           sum: result.sum,
           loading: false,
-        })
+        });
       }
     }
 
-    void load()
+    void load();
     const unsubscribe = subscribe((message) => {
       if (
-        ((message.type === 'event-added' || message.type === 'event-deleted') &&
+        ((message.type === "event-added" || message.type === "event-deleted") &&
           message.reminderId === reminderId) ||
-        message.type === 'db-cleared'
+        message.type === "db-cleared"
       ) {
-        void load()
+        void load();
       }
-    })
+    });
     return () => {
-      cancelled = true
-      unsubscribe()
-    }
-  }, [reminderId, date])
+      cancelled = true;
+      unsubscribe();
+    };
+  }, [reminderId, date]);
 
-  return state
+  return state;
 }
