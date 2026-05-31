@@ -65,7 +65,7 @@ export function TodayPage() {
       initial="hidden"
       animate="visible"
       variants={STAGGER_CONTAINER}
-      className="flex flex-col gap-[var(--space-lg)]"
+      className="flex flex-col gap-[1.5rem]"
     >
       {settings.wellnessToolsEnabled && (
         <motion.section variants={FADE_UP}>

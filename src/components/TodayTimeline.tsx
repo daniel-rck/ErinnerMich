@@ -112,7 +112,7 @@ function CardRow({
     bucket === "overdue"
       ? "border-l-4 border-l-rose-500"
       : bucket === "now"
-        ? "border-l-4 border-l-brand-500"
+        ? "border-l-4 border-l-accent-500"
         : bucket === "done"
           ? "opacity-60"
           : "";
@@ -124,7 +124,7 @@ function CardRow({
         {bucket === "overdue" && (
           <span className="text-rose-600 dark:text-rose-400">überfällig</span>
         )}
-        {bucket === "now" && <span className="text-brand-600 dark:text-brand-400">jetzt</span>}
+        {bucket === "now" && <span className="text-accent-600 dark:text-accent-400">jetzt</span>}
       </div>
       <ReminderCard
         reminder={reminder}
@@ -141,7 +141,7 @@ function bucketLabelClass(key: BucketKey): string {
     case "overdue":
       return "text-rose-600 dark:text-rose-400";
     case "now":
-      return "text-brand-600 dark:text-brand-400";
+      return "text-accent-600 dark:text-accent-400";
     case "done":
       return "text-zinc-500 dark:text-zinc-400";
     default:

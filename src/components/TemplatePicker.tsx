@@ -33,7 +33,7 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
             key={template.key}
             type="button"
             onClick={() => onPick(template)}
-            className="flex flex-col items-start gap-1 rounded-lg border border-zinc-200 bg-white p-3 text-left hover:border-brand-400 hover:bg-brand-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-500 dark:hover:bg-brand-950/30"
+            className="flex flex-col items-start gap-1 rounded-lg border border-zinc-200 bg-white p-3 text-left hover:border-accent-400 hover:bg-accent-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-accent-500 dark:hover:bg-accent-900/30"
           >
             <span className="text-2xl" aria-hidden>
               {template.icon}
@@ -50,7 +50,7 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
           <button
             type="button"
             onClick={() => onPickBlank(tab)}
-            className="flex flex-col items-start gap-1 rounded-lg border border-dashed border-zinc-300 p-3 text-left text-zinc-500 hover:border-brand-400 hover:text-brand-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-brand-400"
+            className="flex flex-col items-start gap-1 rounded-lg border border-dashed border-zinc-300 p-3 text-left text-zinc-500 hover:border-accent-400 hover:text-accent-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-accent-400"
           >
             <span className="text-2xl" aria-hidden>
               ➕

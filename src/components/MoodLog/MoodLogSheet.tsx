@@ -114,7 +114,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                 className={
                   "flex flex-1 flex-col items-center gap-1 rounded-xl border-2 py-3 text-3xl transition " +
                   (active
-                    ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40"
+                    ? "border-accent-500 bg-accent-50 dark:bg-accent-900/40"
                     : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
                 }
               >
@@ -145,7 +145,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                       className={
                         "rounded-full border px-3 py-1 text-sm " +
                         (active
-                          ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                          ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                           : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
                       }
                     >
@@ -164,7 +164,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={2}
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900"
+                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-zinc-700 dark:bg-zinc-900"
                 placeholder="Was beschäftigt dich gerade?"
               />
             </label>
@@ -173,7 +173,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
               type="button"
               onClick={() => void detailedSave()}
               disabled={submitting}
-              className="rounded-md bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+              className="rounded-md bg-accent-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
             >
               Speichern
             </button>

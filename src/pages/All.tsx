@@ -89,21 +89,21 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-md)]">
+    <div className="flex flex-col gap-[1rem]">
       {!embedded && (
         <header className="flex items-end justify-between">
-          <div className="flex flex-col gap-[var(--space-2xs)]">
-            <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+          <div className="flex flex-col gap-[0.25rem]">
+            <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
               Bibliothek
             </p>
-            <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+            <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
               Alle
             </h1>
           </div>
         </header>
       )}
 
-      <div className="flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-elevated)] px-[var(--space-sm)]">
+      <div className="flex items-center gap-2 rounded-[0.875rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-[0.75rem]">
         <Search size={16} className="text-zinc-400" aria-hidden />
         <input
           type="search"

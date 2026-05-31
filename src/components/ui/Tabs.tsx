@@ -51,7 +51,7 @@ function TabsList({ children, ariaLabel, className = "" }: TabsListProps) {
       className={[
         "inline-flex items-center gap-1 p-1",
         "bg-[color:var(--color-surface-sunken)]",
-        "rounded-[var(--radius-md)]",
+        "rounded-[0.875rem]",
         className,
       ].join(" ")}
     >
@@ -101,12 +101,12 @@ function TabsTrigger({ value, children, className = "", onClick, ...rest }: Tabs
       }}
       className={[
         "inline-flex items-center justify-center px-3 py-1.5",
-        "rounded-[var(--radius-sm)]",
-        "text-[length:var(--text-caption)] font-medium",
-        "transition-[background-color,color] duration-[var(--motion-fast)] ease-[var(--motion-ease)]",
+        "rounded-[0.5rem]",
+        "text-[length:0.8125rem] font-medium",
+        "transition-[background-color,color] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
         active
-          ? "bg-[color:var(--color-surface-elevated)] text-[color:var(--color-text-primary)] shadow-[var(--elev-1)]"
-          : "text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-text-primary)]",
+          ? "bg-[color:var(--color-surface)] text-[color:var(--color-fg)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]"
+          : "text-[color:var(--color-fg-muted)] hover:text-[color:var(--color-fg)]",
         className,
       ].join(" ")}
       {...rest}

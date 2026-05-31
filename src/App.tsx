@@ -5,7 +5,6 @@ import { MoodLogProvider } from "./components/MoodLog/MoodLogProvider";
 import { Onboarding } from "./components/Onboarding";
 import { ConfirmProvider } from "./components/ui/Confirm";
 import { ToastProvider } from "./components/ui/Toast";
-import { ThemeProvider } from "./lib/hooks/useTheme";
 import { NotificationsBootstrap } from "./lib/notifications/NotificationsBootstrap";
 import { ToolsBootstrap } from "./lib/tools/ToolsBootstrap";
 import { AllPage } from "./pages/All";
@@ -35,52 +34,50 @@ function ToolsFallback() {
 
 export function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <BrowserRouter>
-            <MoodLogProvider>
-              <NotificationsBootstrap />
-              <ToolsBootstrap />
-              <Onboarding />
-              <Routes>
-                <Route element={<AppShell />}>
-                  <Route index element={<TodayPage />} />
-                  {/* New IA destinations */}
-                  <Route path="mood" element={<MoodPage />} />
-                  <Route path="library" element={<LibraryPage />} />
-                  <Route path="you" element={<YouPage />} />
-                  {/* Legacy routes — kept for back-compat, also reachable */}
-                  <Route path="habits" element={<HabitsPage />} />
-                  <Route path="all" element={<AllPage />} />
-                  <Route path="stats" element={<StatsPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="new" element={<NewReminderPage />} />
-                  <Route path="edit/:id" element={<EditReminderPage />} />
-                  <Route path="detail/:id" element={<ReminderDetailPage />} />
-                  <Route
-                    path="tools"
-                    element={
-                      <Suspense fallback={<ToolsFallback />}>
-                        <ToolsPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="tools/:toolKey"
-                    element={
-                      <Suspense fallback={<ToolsFallback />}>
-                        <ToolSessionPage />
-                      </Suspense>
-                    }
-                  />
-                </Route>
-              </Routes>
-            </MoodLogProvider>
-          </BrowserRouter>
-        </ConfirmProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ToastProvider>
+      <ConfirmProvider>
+        <BrowserRouter>
+          <MoodLogProvider>
+            <NotificationsBootstrap />
+            <ToolsBootstrap />
+            <Onboarding />
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route index element={<TodayPage />} />
+                {/* New IA destinations */}
+                <Route path="mood" element={<MoodPage />} />
+                <Route path="library" element={<LibraryPage />} />
+                <Route path="you" element={<YouPage />} />
+                {/* Legacy routes — kept for back-compat, also reachable */}
+                <Route path="habits" element={<HabitsPage />} />
+                <Route path="all" element={<AllPage />} />
+                <Route path="stats" element={<StatsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="new" element={<NewReminderPage />} />
+                <Route path="edit/:id" element={<EditReminderPage />} />
+                <Route path="detail/:id" element={<ReminderDetailPage />} />
+                <Route
+                  path="tools"
+                  element={
+                    <Suspense fallback={<ToolsFallback />}>
+                      <ToolsPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="tools/:toolKey"
+                  element={
+                    <Suspense fallback={<ToolsFallback />}>
+                      <ToolSessionPage />
+                    </Suspense>
+                  }
+                />
+              </Route>
+            </Routes>
+          </MoodLogProvider>
+        </BrowserRouter>
+      </ConfirmProvider>
+    </ToastProvider>
   );
 }
 

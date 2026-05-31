@@ -1,6 +1,5 @@
 import { Monitor, Moon, Sun } from "lucide-react";
-import type { Theme } from "../lib/db/settings";
-import { useTheme } from "../lib/hooks/useTheme";
+import { type Theme, useTheme } from "../lib/ui/useTheme";
 import { IconButton } from "./ui/IconButton";
 
 const ORDER: Theme[] = ["system", "light", "dark"];

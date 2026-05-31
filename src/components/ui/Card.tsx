@@ -20,13 +20,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   return (
     <Surface ref={ref} padding="none" className={className} {...rest}>
       {header && (
-        <div className="flex items-center justify-between gap-3 px-[var(--space-md)] pt-[var(--space-md)] pb-[var(--space-sm)]">
+        <div className="flex items-center justify-between gap-3 px-[1rem] pt-[1rem] pb-[0.75rem]">
           {header}
         </div>
       )}
-      <div className="px-[var(--space-md)] pb-[var(--space-md)]">{children}</div>
+      <div className="px-[1rem] pb-[1rem]">{children}</div>
       {footer && (
-        <div className="border-t border-[color:var(--color-border-subtle)] px-[var(--space-md)] py-[var(--space-sm)]">
+        <div className="border-t border-[color:var(--color-border)] px-[1rem] py-[0.75rem]">
           {footer}
         </div>
       )}

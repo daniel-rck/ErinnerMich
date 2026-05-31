@@ -29,13 +29,13 @@ export function YouPage() {
       initial="hidden"
       animate="visible"
       variants={STAGGER_CONTAINER}
-      className="flex flex-col gap-[var(--space-lg)]"
+      className="flex flex-col gap-[1.5rem]"
     >
-      <motion.header variants={FADE_UP} className="flex flex-col gap-[var(--space-2xs)]">
-        <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+      <motion.header variants={FADE_UP} className="flex flex-col gap-[0.25rem]">
+        <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Profil
         </p>
-        <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+        <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
           Du
         </h1>
       </motion.header>
@@ -46,7 +46,7 @@ export function YouPage() {
             <Tabs.Trigger value="stats">Statistik</Tabs.Trigger>
             <Tabs.Trigger value="settings">Einstellungen</Tabs.Trigger>
           </Tabs.List>
-          <div className="mt-[var(--space-md)]">
+          <div className="mt-[1rem]">
             <Tabs.Panel value="stats">
               <StatsPage embedded />
             </Tabs.Panel>

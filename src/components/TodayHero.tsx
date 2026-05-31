@@ -108,21 +108,21 @@ export function TodayHero() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-gradient-to-br from-[color:var(--color-brand-400)] to-[color:var(--color-accent-mood)] opacity-15 blur-3xl"
+        className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-gradient-to-br from-[color:var(--color-accent-400)] to-[color:var(--color-accent-500)] opacity-15 blur-3xl"
       />
       <div className="relative flex items-center gap-5">
         <ProgressRing ratio={ratio} done={stats.doneTotal} due={stats.dueTotal} />
         <div className="flex flex-1 flex-col gap-1">
-          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             {stats.dueTotal === 0 ? "Heute" : `${stats.doneTotal} / ${stats.dueTotal} erledigt`}
           </p>
-          <h2 className="text-[length:var(--text-title-1)] font-semibold leading-[var(--leading-title)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+          <h2 className="text-[length:1.625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-[color:var(--color-fg)]">
             {microcopy(ratio, stats.dueTotal)}
           </h2>
         </div>
       </div>
 
-      <div className="relative mt-[var(--space-lg)] grid grid-cols-3 gap-2">
+      <div className="relative mt-[1.5rem] grid grid-cols-3 gap-2">
         <StatTile
           label="Erledigt"
           value={stats.doneTotal}
@@ -169,9 +169,9 @@ function ProgressRing({ ratio, done, due }: { ratio: number; done: number; due: 
       <svg width={size} height={size} className="-rotate-90">
         <defs>
           <linearGradient id="hero-ring-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--color-brand-400)" />
-            <stop offset="60%" stopColor="var(--color-brand-600)" />
-            <stop offset="100%" stopColor="var(--color-accent-mood)" />
+            <stop offset="0%" stopColor="var(--color-accent-400)" />
+            <stop offset="60%" stopColor="var(--color-accent-600)" />
+            <stop offset="100%" stopColor="var(--color-accent-500)" />
           </linearGradient>
         </defs>
         <circle
@@ -180,7 +180,7 @@ function ProgressRing({ ratio, done, due }: { ratio: number; done: number; due: 
           r={radius}
           fill="none"
           strokeWidth={stroke}
-          stroke="var(--color-border-subtle)"
+          stroke="var(--color-border)"
         />
         <motion.circle
           cx={size / 2}
@@ -197,10 +197,10 @@ function ProgressRing({ ratio, done, due }: { ratio: number; done: number; due: 
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[length:var(--text-display)] font-semibold leading-none tabular-nums text-[color:var(--color-text-primary)]">
+        <span className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-none tabular-nums text-[color:var(--color-fg)]">
           {done}
         </span>
-        <span className="mt-0.5 text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+        <span className="mt-0.5 text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
           / {due}
         </span>
       </div>

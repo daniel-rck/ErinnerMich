@@ -41,13 +41,13 @@ export function StatsPage({ embedded = false }: StatsPageProps = {}) {
     !wellnessToolsEnabled && (tab === "mood" || tab === "tools") ? "habits" : tab;
 
   return (
-    <div className="flex flex-col gap-[var(--space-lg)]">
+    <div className="flex flex-col gap-[1.5rem]">
       {!embedded && (
-        <header className="flex flex-col gap-[var(--space-2xs)]">
-          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <header className="flex flex-col gap-[0.25rem]">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Du
           </p>
-          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+          <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
             Statistik
           </h1>
         </header>
@@ -60,7 +60,7 @@ export function StatsPage({ embedded = false }: StatsPageProps = {}) {
           {wellnessToolsEnabled && <Tabs.Trigger value="mood">Mood</Tabs.Trigger>}
           {wellnessToolsEnabled && <Tabs.Trigger value="tools">Tools</Tabs.Trigger>}
         </Tabs.List>
-        <div className="mt-[var(--space-md)]">
+        <div className="mt-[1rem]">
           <Tabs.Panel value="habits">
             <HabitStats />
           </Tabs.Panel>
@@ -106,21 +106,21 @@ function ToolStats() {
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-md)]">
+    <div className="flex flex-col gap-[1rem]">
       {TOOLS.map((tool) => {
         const list = byTool.get(tool.key) ?? [];
         if (list.length === 0) return null;
         const heatmap = buildToolHeatmap(list.map((e) => e.loggedAt));
         return (
           <Card key={tool.key} variant="raised" radius="lg" padding="md">
-            <header className="mb-[var(--space-sm)] flex items-center gap-3">
+            <header className="mb-[0.75rem] flex items-center gap-3">
               <span className="text-2xl" aria-hidden>
                 {tool.icon}
               </span>
-              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+              <h2 className="text-[length:1rem] font-semibold text-[color:var(--color-fg)]">
                 {tool.title}
               </h2>
-              <span className="ml-auto text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+              <span className="ml-auto text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
                 {list.length} {list.length === 1 ? "Session" : "Sessions"}
               </span>
             </header>
@@ -156,7 +156,7 @@ function HabitStats() {
   if (reminders.length === 0) return <Empty>Noch keine Habits.</Empty>;
 
   return (
-    <div className="flex flex-col gap-[var(--space-md)]">
+    <div className="flex flex-col gap-[1rem]">
       {reminders.map((habit) => {
         const habitEvents = eventsByReminder.get(habit.id) ?? [];
         const streak = streakStats(habitEvents);
@@ -165,15 +165,15 @@ function HabitStats() {
         const heatmapValues = buildHeatmapValues(habitEvents);
         return (
           <Card key={habit.id} variant="raised" radius="lg" padding="md">
-            <header className="mb-[var(--space-sm)] flex items-center gap-3">
+            <header className="mb-[0.75rem] flex items-center gap-3">
               <span className="text-2xl" aria-hidden>
                 {habit.icon}
               </span>
-              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+              <h2 className="text-[length:1rem] font-semibold text-[color:var(--color-fg)]">
                 {habit.title}
               </h2>
             </header>
-            <div className="mb-[var(--space-md)] grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+            <div className="mb-[1rem] grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
               <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
               <StatTile
                 label="Mit Freeze"
@@ -210,7 +210,7 @@ function ReminderStats() {
   if (reminders.length === 0) return <Empty>Noch keine Reminder.</Empty>;
 
   return (
-    <div className="flex flex-col gap-[var(--space-sm)]">
+    <div className="flex flex-col gap-[0.75rem]">
       {reminders.map((reminder) => {
         const reminderEvents = eventsByReminder.get(reminder.id) ?? [];
         const completed = completedCount(reminderEvents);
@@ -218,15 +218,15 @@ function ReminderStats() {
         const summary = completionSummary(reminderEvents);
         return (
           <Card key={reminder.id} variant="raised" radius="lg" padding="md">
-            <header className="mb-[var(--space-sm)] flex items-center gap-3">
+            <header className="mb-[0.75rem] flex items-center gap-3">
               <span className="text-xl" aria-hidden>
                 {reminder.icon}
               </span>
-              <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+              <h2 className="text-[length:1rem] font-semibold text-[color:var(--color-fg)]">
                 {reminder.title}
               </h2>
             </header>
-            <div className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
               <StatTile label="Erledigt" value={completed} accent="grow" size="sm" />
               <StatTile
                 label="30-Tage"
@@ -278,8 +278,8 @@ function MoodStats() {
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-md)]">
-      <section className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+    <div className="flex flex-col gap-[1rem]">
+      <section className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
         <StatTile label="Einträge" value={overview.count} accent="brand" size="sm" />
         <StatTile
           label="Ø Mood"
@@ -308,7 +308,7 @@ function MoodStats() {
       </section>
 
       <Card variant="raised" radius="lg" padding="md">
-        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Verlauf (30 Tage)
         </h2>
         <Sparkline
@@ -318,7 +318,7 @@ function MoodStats() {
       </Card>
 
       <Card variant="raised" radius="lg" padding="md">
-        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Ø Mood pro Wochentag
         </h2>
         <WeekdayBar
@@ -328,17 +328,17 @@ function MoodStats() {
 
       {tags.length > 0 && (
         <Card variant="raised" radius="lg" padding="md">
-          <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+          <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Tags
           </h2>
-          <ul className="flex flex-col gap-1 text-[length:var(--text-body)]">
+          <ul className="flex flex-col gap-1 text-[length:0.9375rem]">
             {tags.slice(0, 8).map((tag) => (
               <li
                 key={tag.tag}
-                className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-subtle)] py-1 last:border-b-0"
+                className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border)] py-1 last:border-b-0"
               >
-                <span className="font-mono text-[color:var(--color-text-primary)]">{tag.tag}</span>
-                <span className="tabular-nums text-[color:var(--color-text-secondary)]">
+                <span className="font-mono text-[color:var(--color-fg)]">{tag.tag}</span>
+                <span className="tabular-nums text-[color:var(--color-fg-muted)]">
                   {tag.count}× · Ø {tag.avgMood.toFixed(1)}
                 </span>
               </li>
@@ -365,15 +365,15 @@ function CorrelationInsights({
 
   return (
     <Card variant="raised" radius="lg" padding="md">
-      <header className="mb-[var(--space-sm)] flex items-baseline justify-between gap-3">
-        <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+      <header className="mb-[0.75rem] flex items-baseline justify-between gap-3">
+        <h2 className="text-[length:1rem] font-semibold text-[color:var(--color-fg)]">
           Was wirkt auf deine Stimmung?
         </h2>
-        <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+        <span className="text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
           aus den letzten 30 Tagen
         </span>
       </header>
-      <ul className="flex flex-col gap-[var(--space-xs)]">
+      <ul className="flex flex-col gap-[0.5rem]">
         {meaningful.map((c) => {
           const positive = (c.r ?? 0) > 0;
           const intensity = Math.abs(c.r ?? 0);
@@ -381,7 +381,7 @@ function CorrelationInsights({
             <li
               key={c.habitId}
               className={[
-                "flex items-start gap-3 rounded-[var(--radius-md)] border-l-4 p-[var(--space-sm)]",
+                "flex items-start gap-3 rounded-[0.875rem] border-l-4 p-[0.75rem]",
                 positive
                   ? "border-l-[color:var(--color-success)] bg-[color:var(--color-success-soft)]"
                   : "border-l-[color:var(--color-danger)] bg-[color:var(--color-danger-soft)]",
@@ -390,15 +390,15 @@ function CorrelationInsights({
               <span className="text-2xl" aria-hidden>
                 {c.habitIcon}
               </span>
-              <div className="flex flex-col gap-0.5 text-[length:var(--text-body)]">
-                <p className="text-[color:var(--color-text-primary)]">
+              <div className="flex flex-col gap-0.5 text-[length:0.9375rem]">
+                <p className="text-[color:var(--color-fg)]">
                   An Tagen mit <strong>{c.habitTitle}</strong> warst du im Schnitt{" "}
                   <strong>
                     {(intensity * 1.5).toFixed(1)} Punkte {positive ? "glücklicher" : "gestresster"}
                   </strong>
                   .
                 </p>
-                <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+                <p className="text-[length:0.8125rem] text-[color:var(--color-fg-muted)]">
                   {c.pairs} überlappende Tage · Stärke {intensity > 0.6 ? "stark" : "mittel"}
                 </p>
               </div>
@@ -411,14 +411,12 @@ function CorrelationInsights({
 }
 
 function Loading() {
-  return (
-    <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">Lade …</p>
-  );
+  return <p className="text-[length:0.9375rem] text-[color:var(--color-fg-subtle)]">Lade …</p>;
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-lg)] text-center text-[length:var(--text-body)] text-[color:var(--color-text-secondary)]">
+    <p className="rounded-[0.875rem] border border-dashed border-[color:var(--color-border)] p-[1.5rem] text-center text-[length:0.9375rem] text-[color:var(--color-fg-muted)]">
       {children}
     </p>
   );

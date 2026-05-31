@@ -188,7 +188,7 @@ export function ReminderForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
         >
           {initial ? "Speichern" : "Anlegen"}
         </button>
@@ -207,7 +207,7 @@ export function ReminderForm({
 }
 
 const inputClass =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-900";
+  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-zinc-700 dark:bg-zinc-900";
 
 function FieldGroup({
   label,
@@ -327,7 +327,7 @@ function DailyEditor({
       <button
         type="button"
         onClick={addTime}
-        className="inline-flex items-center gap-1 rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-brand-400 hover:text-brand-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-brand-500 dark:hover:text-brand-300"
+        className="inline-flex items-center gap-1 rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-accent-400 hover:text-accent-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-accent-500 dark:hover:text-accent-300"
       >
         <Plus size={14} />
         Zeit hinzufügen
@@ -360,7 +360,7 @@ function WeeklyEditor({
             className={
               "rounded-md border px-3 py-1.5 text-sm " +
               (schedule.days.includes(value)
-                ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                 : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
             }
           >
@@ -396,7 +396,7 @@ function MonthlyEditor({
             className={
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.dayOfMonth === day
-                ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                 : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
             }
             aria-pressed={schedule.dayOfMonth === day}
@@ -481,7 +481,7 @@ function YearlyEditor({
             className={
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.day === day
-                ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                 : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
             }
             aria-pressed={schedule.day === day}
@@ -504,7 +504,7 @@ function YearlyEditor({
                 className={
                   "rounded-full border px-3 py-1 text-xs " +
                   (active
-                    ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                    ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                     : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
                 }
                 aria-pressed={active}
@@ -541,7 +541,7 @@ function ElapsedEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                   : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
               }
               aria-pressed={active}
@@ -585,7 +585,7 @@ function IntervalEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                   : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
               }
               aria-pressed={active}
@@ -661,7 +661,7 @@ function HabitGoalEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
                   : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
               }
               aria-pressed={active}

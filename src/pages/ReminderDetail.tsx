@@ -38,15 +38,11 @@ export function ReminderDetailPage() {
   }, [id]);
 
   if (loading)
-    return (
-      <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
-        Lade …
-      </p>
-    );
+    return <p className="text-[length:0.9375rem] text-[color:var(--color-fg-subtle)]">Lade …</p>;
   if (!reminder) {
     return (
-      <div className="flex flex-col gap-[var(--space-md)]">
-        <p className="text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
+      <div className="flex flex-col gap-[1rem]">
+        <p className="text-[length:0.9375rem] text-[color:var(--color-fg-subtle)]">
           Reminder nicht gefunden.
         </p>
         <Button variant="secondary" onClick={() => navigate("/")}>
@@ -62,7 +58,7 @@ export function ReminderDetailPage() {
   const tone = categoryClasses(reminder.category);
 
   return (
-    <div className="flex flex-col gap-[var(--space-lg)]">
+    <div className="flex flex-col gap-[1.5rem]">
       {/* Hero */}
       <Card
         variant="raised"
@@ -73,23 +69,23 @@ export function ReminderDetailPage() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br from-[color:var(--color-brand-400)] to-[color:var(--color-accent-mood)] opacity-10 blur-3xl"
+          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br from-[color:var(--color-accent-400)] to-[color:var(--color-accent-500)] opacity-10 blur-3xl"
         />
-        <div className="relative flex items-start gap-[var(--space-md)]">
+        <div className="relative flex items-start gap-[1rem]">
           <span
-            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[var(--radius-lg)] text-4xl ${tone.iconBg}`}
+            className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.25rem] text-4xl ${tone.iconBg}`}
             aria-hidden
           >
             {reminder.icon}
           </span>
           <div className="flex flex-1 flex-col">
-            <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+            <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
               {reminder.kind === "habit" ? "Habit" : reminder.kind === "mood" ? "Mood" : "Reminder"}
             </p>
-            <h1 className="text-[length:var(--text-title-1)] font-semibold leading-[var(--leading-title)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+            <h1 className="text-[length:1.625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-[color:var(--color-fg)]">
               {reminder.title}
             </h1>
-            <p className="mt-1 text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+            <p className="mt-1 text-[length:0.8125rem] text-[color:var(--color-fg-muted)]">
               {formatSchedule(reminder.schedule)}
             </p>
           </div>
@@ -106,13 +102,13 @@ export function ReminderDetailPage() {
 
       {reminder.description && (
         <Card variant="sunken" radius="md" padding="md">
-          <p className="text-[length:var(--text-body)] text-[color:var(--color-text-primary)]">
+          <p className="text-[length:0.9375rem] text-[color:var(--color-fg)]">
             {reminder.description}
           </p>
         </Card>
       )}
 
-      <section className="grid grid-cols-2 gap-[var(--space-xs)] sm:grid-cols-4">
+      <section className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
         {reminder.kind === "habit" && (
           <>
             <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
@@ -138,27 +134,27 @@ export function ReminderDetailPage() {
 
       {inventory && (
         <Card variant="raised" radius="lg" padding="md">
-          <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+          <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Vorrat
           </h2>
-          <p className="text-[length:var(--text-body)] text-[color:var(--color-text-primary)]">
+          <p className="text-[length:0.9375rem] text-[color:var(--color-fg)]">
             {inventory.remaining} {inventory.unit} (Schwelle: {inventory.refillThreshold}{" "}
             {inventory.unit})
           </p>
           {inventory.lastRefillAt && (
-            <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+            <p className="text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
               Letztes Auffüllen: {formatDate(new Date(inventory.lastRefillAt))}
             </p>
           )}
         </Card>
       )}
 
-      <section className="flex flex-col gap-[var(--space-xs)]">
-        <h2 className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+      <section className="flex flex-col gap-[0.5rem]">
+        <h2 className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Verlauf ({events.length} Einträge)
         </h2>
         {events.length === 0 ? (
-          <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-md)] text-[length:var(--text-body)] text-[color:var(--color-text-tertiary)]">
+          <p className="rounded-[0.875rem] border border-dashed border-[color:var(--color-border)] p-[1rem] text-[length:0.9375rem] text-[color:var(--color-fg-subtle)]">
             Noch keine Aktivität.
           </p>
         ) : (
@@ -179,19 +175,19 @@ function EventRow({ event }: { event: ReminderEvent }) {
   const ts = event.triggeredAt ?? event.scheduledFor;
   const date = ts ? new Date(ts) : null;
   return (
-    <li className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-subtle)] px-[var(--space-md)] py-[var(--space-xs)] last:border-b-0">
-      <span className="font-mono text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+    <li className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border)] px-[1rem] py-[0.5rem] last:border-b-0">
+      <span className="font-mono text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
         {date ? `${formatDate(date)} ${formatTime(date)}` : "—"}
       </span>
       <span className="flex items-center gap-2">
         <ActionPill action={event.action} />
         {event.progress && (
-          <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+          <span className="text-[length:0.8125rem] text-[color:var(--color-fg-muted)]">
             +{event.progress.value} {event.progress.unit}
           </span>
         )}
         {event.note && (
-          <span className="text-[length:var(--text-caption)] italic text-[color:var(--color-text-secondary)]">
+          <span className="text-[length:0.8125rem] italic text-[color:var(--color-fg-muted)]">
             „{event.note}“
           </span>
         )}
@@ -212,16 +208,16 @@ const ACTION_LABELS: Record<ReminderEvent["action"], string> = {
 const ACTION_CLASSES: Record<ReminderEvent["action"], string> = {
   completed: "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]",
   snoozed: "bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]",
-  skipped: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]",
+  skipped: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg-muted)]",
   missed: "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]",
   progress: "bg-[color:var(--color-info-soft)] text-[color:var(--color-info)]",
-  dismissed: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-secondary)]",
+  dismissed: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg-muted)]",
 };
 
 function ActionPill({ action }: { action: ReminderEvent["action"] }) {
   return (
     <span
-      className={`rounded-full px-2 py-0.5 text-[length:var(--text-micro)] font-medium ${ACTION_CLASSES[action]}`}
+      className={`rounded-full px-2 py-0.5 text-[length:0.6875rem] font-medium ${ACTION_CLASSES[action]}`}
     >
       {ACTION_LABELS[action]}
     </span>

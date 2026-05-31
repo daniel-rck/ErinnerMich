@@ -32,14 +32,14 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-[var(--space-md)]">
+    <div className="flex flex-col gap-[1rem]">
       {!embedded && (
         <header className="flex items-end justify-between">
-          <div className="flex flex-col gap-[var(--space-2xs)]">
-            <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+          <div className="flex flex-col gap-[0.25rem]">
+            <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
               Bibliothek
             </p>
-            <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+            <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
               Habits
             </h1>
           </div>
@@ -65,7 +65,7 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
         />
       ) : (
         <>
-          <div ref={gridRef} className="grid gap-[var(--space-sm)] sm:grid-cols-2">
+          <div ref={gridRef} className="grid gap-[0.75rem] sm:grid-cols-2">
             {reminders.map((reminder) => (
               <HabitCard key={reminder.id} reminder={reminder} today={today} />
             ))}
@@ -81,8 +81,8 @@ function SuggestedFooter() {
   const navigate = useNavigate();
   const suggested = HABIT_TEMPLATES.filter((t) => SUGGESTED_KEYS.includes(t.key)).slice(0, 3);
   return (
-    <div className="flex flex-wrap items-center gap-2 pt-[var(--space-sm)]">
-      <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+    <div className="flex flex-wrap items-center gap-2 pt-[0.75rem]">
+      <span className="text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
         Vorschläge:
       </span>
       {suggested.map((t) => (
@@ -92,10 +92,10 @@ function SuggestedFooter() {
           onClick={() => navigate(`/new?kind=habit&title=${encodeURIComponent(t.title)}`)}
           className={[
             "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5",
-            "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-primary)]",
-            "border border-[color:var(--color-border-subtle)]",
-            "text-[length:var(--text-caption)] font-medium",
-            "hover:bg-[color:var(--color-brand-50)] hover:border-[color:var(--color-brand-400)]",
+            "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",
+            "border border-[color:var(--color-border)]",
+            "text-[length:0.8125rem] font-medium",
+            "hover:bg-[color:var(--color-accent-50)] hover:border-[color:var(--color-accent-400)]",
           ].join(" ")}
         >
           <span aria-hidden>{t.icon}</span>

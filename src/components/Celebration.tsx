@@ -66,7 +66,7 @@ export function Celebration({ open, streak, onClose }: CelebrationProps) {
               type="button"
               onClick={onClose}
               autoFocus
-              className="mt-2 rounded-md bg-brand-600 px-5 py-2 text-sm font-medium text-white hover:bg-brand-700"
+              className="mt-2 rounded-md bg-accent-600 px-5 py-2 text-sm font-medium text-white hover:bg-accent-700"
             >
               Weiter so
             </button>

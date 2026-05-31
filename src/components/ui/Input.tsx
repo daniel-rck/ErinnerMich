@@ -7,19 +7,19 @@ import {
 
 const BASE = [
   "w-full",
-  "bg-[color:var(--color-surface-elevated)]",
-  "text-[length:var(--text-body)] text-[color:var(--color-text-primary)]",
-  "placeholder:text-[color:var(--color-text-tertiary)]",
-  "border border-[color:var(--color-border-strong)]",
-  "rounded-[var(--radius-md)]",
-  "px-[var(--space-sm)] py-[var(--space-xs)]",
-  "transition-[border-color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease)]",
-  "focus:border-[color:var(--color-brand-500)]",
+  "bg-[color:var(--color-surface)]",
+  "text-[length:0.9375rem] text-[color:var(--color-fg)]",
+  "placeholder:text-[color:var(--color-fg-subtle)]",
+  "border border-[color:var(--color-border)]",
+  "rounded-[0.875rem]",
+  "px-[0.75rem] py-[0.5rem]",
+  "transition-[border-color,box-shadow] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
+  "focus:border-[color:var(--color-accent-500)]",
   "aria-[invalid=true]:border-[color:var(--color-danger)]",
   "disabled:opacity-60 disabled:cursor-not-allowed",
 ].join(" ");
 
-const HEIGHT = "min-h-[var(--tap-target)]";
+const HEIGHT = "min-h-[48px]";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className = "", type = "text", ...rest }, ref) {
@@ -37,7 +37,7 @@ export const Textarea = forwardRef<
     <textarea
       ref={ref}
       rows={rows}
-      className={[BASE, "py-[var(--space-sm)] resize-y", className].join(" ")}
+      className={[BASE, "py-[0.75rem] resize-y", className].join(" ")}
       {...rest}
     />
   );

@@ -22,7 +22,7 @@ export function AttentionStrip() {
       as="section"
       className="bg-[color:var(--color-warning-soft)] border-[color:var(--color-warning)]/30"
     >
-      <header className="mb-[var(--space-xs)] flex items-center gap-2 text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-warning)]">
+      <header className="mb-[0.5rem] flex items-center gap-2 text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-warning)]">
         <AlertTriangle size={14} aria-hidden />
         Achtung
       </header>
@@ -32,7 +32,7 @@ export function AttentionStrip() {
             <button
               type="button"
               onClick={() => navigate(`/detail/${inv.reminderId}`)}
-              className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
+              className="flex w-full items-center gap-2 rounded-[0.5rem] px-2 py-1.5 text-left text-[length:0.9375rem] text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface)]"
             >
               <PackageOpen
                 size={14}
@@ -54,7 +54,7 @@ export function AttentionStrip() {
             <button
               type="button"
               onClick={() => navigate(`/detail/${item.reminder.id}`)}
-              className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-elevated)]"
+              className="flex w-full items-center gap-2 rounded-[0.5rem] px-2 py-1.5 text-left text-[length:0.9375rem] text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface)]"
             >
               <CalendarClock
                 size={14}

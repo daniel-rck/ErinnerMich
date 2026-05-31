@@ -8,7 +8,6 @@ import {
   writeNotificationOnboardingDone,
   writeWellnessToolsEnabled,
 } from "../lib/db/settings";
-import { useTheme } from "../lib/hooks/useTheme";
 import {
   exportAll,
   exportFilename,
@@ -22,6 +21,7 @@ import {
   isIosWithoutStandalone,
 } from "../lib/notifications/permission";
 import { rearmAll, schedulerStatus, showTestNotification } from "../lib/notifications/scheduler";
+import { useTheme } from "../lib/ui/useTheme";
 
 interface SettingsPageProps {
   embedded?: boolean;
@@ -68,13 +68,13 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-xl)]">
+    <div className="flex flex-col gap-[2rem]">
       {!embedded && (
-        <header className="flex flex-col gap-[var(--space-2xs)]">
-          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <header className="flex flex-col gap-[0.25rem]">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Du
           </p>
-          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+          <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
             Einstellungen
           </h1>
         </header>
@@ -122,7 +122,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
             <button
               type="button"
               onClick={requestPermission}
-              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
             >
               Berechtigung anfragen
             </button>
@@ -279,7 +279,7 @@ function DataIO() {
           type="button"
           onClick={doExport}
           disabled={busy}
-          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
         >
           Export (JSON)
         </button>
@@ -383,7 +383,7 @@ function ChoiceButton({
       className={
         "rounded-md border px-3 py-1.5 text-sm " +
         (active
-          ? "border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100"
+          ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
           : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
       }
     >

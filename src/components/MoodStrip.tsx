@@ -81,15 +81,15 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
   }
 
   return (
-    <section aria-label="Stimmung loggen" className="flex flex-col gap-[var(--space-xs)]">
+    <section aria-label="Stimmung loggen" className="flex flex-col gap-[0.5rem]">
       <div className="flex items-center justify-between">
-        <h3 className="text-[length:var(--text-caption)] font-medium text-[color:var(--color-text-secondary)]">
+        <h3 className="text-[length:0.8125rem] font-medium text-[color:var(--color-fg-muted)]">
           Wie geht's dir gerade?
         </h3>
         <button
           type="button"
           onClick={open}
-          className="text-[length:var(--text-caption)] font-medium text-[color:var(--color-brand-600)] hover:underline no-min-tap"
+          className="text-[length:0.8125rem] font-medium text-[color:var(--color-accent-600)] hover:underline no-min-tap"
         >
           Mit Notiz loggen
         </button>
@@ -108,13 +108,13 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
             whileTap={{ scale: 0.92 }}
             className={[
               "flex h-12 flex-1 items-center justify-center",
-              "rounded-[var(--radius-md)]",
-              "bg-[color:var(--color-surface-elevated)]",
-              "border border-[color:var(--color-border-subtle)]",
+              "rounded-[0.875rem]",
+              "bg-[color:var(--color-surface)]",
+              "border border-[color:var(--color-border)]",
               "text-3xl",
-              "shadow-[var(--elev-1)]",
-              "transition-colors duration-[var(--motion-fast)]",
-              "hover:border-[color:var(--color-brand-400)] hover:bg-[color:var(--color-brand-50)]",
+              "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+              "transition-colors duration-[140ms]",
+              "hover:border-[color:var(--color-accent-400)] hover:bg-[color:var(--color-accent-50)]",
             ].join(" ")}
           >
             <span aria-hidden>{MOOD_EMOJI[v]}</span>

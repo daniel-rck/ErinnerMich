@@ -73,22 +73,22 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
   // <article> when prefers-reduced-motion is set.
   const cardInner = (
     <>
-      <header className="flex items-start gap-[var(--space-sm)]">
+      <header className="flex items-start gap-[0.75rem]">
         <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] ${tone.iconBg} text-2xl`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.875rem] ${tone.iconBg} text-2xl`}
           aria-hidden
         >
           {reminder.icon}
         </span>
         <div className="flex flex-1 flex-col">
-          <h3 className="text-[length:var(--text-body)] font-semibold leading-tight text-[color:var(--color-text-primary)]">
+          <h3 className="text-[length:0.9375rem] font-semibold leading-tight text-[color:var(--color-fg)]">
             {reminder.title}
           </h3>
-          <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+          <p className="text-[length:0.8125rem] text-[color:var(--color-fg-muted)]">
             {formatSchedule(reminder.schedule)}
           </p>
           {lowStock && inventory && (
-            <p className="mt-1 inline-flex items-center gap-1 text-[length:var(--text-caption)] text-[color:var(--color-warning)]">
+            <p className="mt-1 inline-flex items-center gap-1 text-[length:0.8125rem] text-[color:var(--color-warning)]">
               <AlertTriangle size={12} aria-hidden />
               Nur noch {inventory.remaining} {inventory.unit}
             </p>
@@ -96,18 +96,18 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
         </div>
       </header>
 
-      <div className="flex flex-wrap items-center gap-[var(--space-xs)]">
+      <div className="flex flex-wrap items-center gap-[0.5rem]">
         <motion.button
           type="button"
           onClick={() => void complete()}
           whileTap={{ scale: 0.94 }}
           className={[
             "inline-flex items-center gap-1.5",
-            "h-9 px-3 rounded-[var(--radius-md)]",
-            "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)]",
-            "shadow-[var(--elev-brand)]",
-            "text-[length:var(--text-caption)] font-semibold",
-            "hover:bg-[color:var(--color-brand-700)]",
+            "h-9 px-3 rounded-[0.875rem]",
+            "bg-[color:var(--color-accent-600)] text-[color:white]",
+            "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+            "text-[length:0.8125rem] font-semibold",
+            "hover:bg-[color:var(--color-accent-700)]",
           ].join(" ")}
         >
           <Check size={14} aria-hidden />
@@ -121,8 +121,8 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
             aria-label="Bearbeiten"
             className={[
               "ml-auto inline-flex items-center gap-1.5",
-              "h-9 px-3 rounded-[var(--radius-md)]",
-              "text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]",
+              "h-9 px-3 rounded-[0.875rem]",
+              "text-[length:0.8125rem] text-[color:var(--color-fg-muted)]",
               "hover:bg-[color:var(--color-surface-sunken)]",
             ].join(" ")}
           >
@@ -137,8 +137,8 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
             aria-label="Löschen"
             className={[
               "inline-flex items-center gap-1.5",
-              "h-9 px-3 rounded-[var(--radius-md)]",
-              "text-[length:var(--text-caption)] text-[color:var(--color-danger)]",
+              "h-9 px-3 rounded-[0.875rem]",
+              "text-[length:0.8125rem] text-[color:var(--color-danger)]",
               "hover:bg-[color:var(--color-danger-soft)]",
             ].join(" ")}
           >
@@ -151,12 +151,12 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
   );
 
   const cardClass = [
-    "flex flex-col gap-[var(--space-sm)]",
-    "p-[var(--space-md)] rounded-[var(--radius-lg)]",
-    "bg-[color:var(--color-surface-elevated)]",
-    "border border-[color:var(--color-border-subtle)] border-l-4",
+    "flex flex-col gap-[0.75rem]",
+    "p-[1rem] rounded-[1.25rem]",
+    "bg-[color:var(--color-surface)]",
+    "border border-[color:var(--color-border)] border-l-4",
     tone.borderL,
-    "shadow-[var(--elev-1)]",
+    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
   ].join(" ");
 
   if (reducedMotion) {
@@ -170,7 +170,7 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-      className="relative overflow-hidden rounded-[var(--radius-lg)]"
+      className="relative overflow-hidden rounded-[1.25rem]"
       style={{ background: swipe.background }}
     >
       <motion.article
@@ -192,10 +192,10 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
 function SwipeHint() {
   return (
     <div
-      className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[var(--space-sm)]"
+      className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[0.75rem]"
       aria-hidden
     >
-      <span className="flex items-center gap-1 text-[length:var(--text-caption)] font-medium text-[color:var(--color-success)] opacity-0 transition-opacity">
+      <span className="flex items-center gap-1 text-[length:0.8125rem] font-medium text-[color:var(--color-success)] opacity-0 transition-opacity">
         <Check size={14} />
         Erledigt
       </span>
@@ -237,10 +237,10 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
         aria-controls={popoverId}
         className={[
           "inline-flex items-center gap-1.5",
-          "h-9 px-3 rounded-[var(--radius-md)]",
-          "bg-[color:var(--color-surface-elevated)]",
-          "border border-[color:var(--color-border-strong)]",
-          "text-[length:var(--text-caption)] font-medium text-[color:var(--color-text-primary)]",
+          "h-9 px-3 rounded-[0.875rem]",
+          "bg-[color:var(--color-surface)]",
+          "border border-[color:var(--color-border)]",
+          "text-[length:0.8125rem] font-medium text-[color:var(--color-fg)]",
           "hover:bg-[color:var(--color-surface-sunken)]",
         ].join(" ")}
       >
@@ -253,10 +253,10 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
           aria-label="Snooze-Optionen"
           className={[
             "absolute z-10 mt-1 flex min-w-[14rem] flex-col py-1",
-            "rounded-[var(--radius-md)]",
-            "bg-[color:var(--color-surface-elevated)]",
-            "border border-[color:var(--color-border-subtle)]",
-            "shadow-[var(--elev-2)]",
+            "rounded-[0.875rem]",
+            "bg-[color:var(--color-surface)]",
+            "border border-[color:var(--color-border)]",
+            "shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)]",
           ].join(" ")}
         >
           {options.map(({ key, label, at }) => (
@@ -267,7 +267,7 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
                 onPick(at, label);
                 setOpen(false);
               }}
-              className="block w-full px-3 py-1.5 text-left text-[length:var(--text-body)] text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-sunken)]"
+              className="block w-full px-3 py-1.5 text-left text-[length:0.9375rem] text-[color:var(--color-fg)] hover:bg-[color:var(--color-surface-sunken)]"
             >
               {label}
             </button>

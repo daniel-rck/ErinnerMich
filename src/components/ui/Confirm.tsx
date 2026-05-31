@@ -54,7 +54,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 "rounded-md px-4 py-2 text-sm font-medium text-white " +
                 (pending?.options.destructive
                   ? "bg-rose-600 hover:bg-rose-700"
-                  : "bg-brand-600 hover:bg-brand-700")
+                  : "bg-accent-600 hover:bg-accent-700")
               }
             >
               {pending?.options.confirmLabel ?? "Bestätigen"}

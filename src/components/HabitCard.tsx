@@ -93,7 +93,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
           <button
             type="button"
             onClick={() => bump(1, "completed")}
-            className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+            className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
             disabled={completions > 0}
           >
             {completions > 0 ? "Erledigt" : "Erledigt markieren"}
@@ -104,7 +104,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(1, "progress")}
-              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
             >
               +1 {goal.unit}
             </button>
@@ -122,7 +122,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(15, "progress")}
-              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
             >
               +15 min
             </button>
@@ -165,7 +165,7 @@ function Last7Strip({ days }: { days: { key: string; done: boolean }[] }) {
           key={d.key}
           className={
             "h-1.5 flex-1 rounded-full " +
-            (d.done ? "bg-brand-500 dark:bg-brand-400" : "bg-zinc-200 dark:bg-zinc-800")
+            (d.done ? "bg-accent-500 dark:bg-accent-400" : "bg-zinc-200 dark:bg-zinc-800")
           }
         />
       ))}
@@ -240,7 +240,7 @@ function ProgressRing({
           strokeWidth={stroke}
           strokeDasharray={circumference}
           strokeLinecap="round"
-          className={ringClass ?? "stroke-brand-500"}
+          className={ringClass ?? "stroke-accent-500"}
           initial={false}
           animate={{ strokeDashoffset: dashOffset }}
           transition={{ duration: 0.5, ease: "easeOut" }}

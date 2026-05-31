@@ -77,7 +77,7 @@ function ToastViewport({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: str
                   toast.action!.onClick();
                   dismiss(toast.id);
                 }}
-                className="-my-1 rounded-md px-2 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-950/40"
+                className="-my-1 rounded-md px-2 py-1 text-sm font-medium text-accent-700 hover:bg-accent-50 dark:text-accent-300 dark:hover:bg-accent-900/40"
               >
                 {toast.action.label}
               </button>
@@ -113,7 +113,7 @@ function ToastIcon({ variant }: { variant: ToastVariant }) {
     return <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />;
   if (variant === "error")
     return <AlertCircle size={18} className="mt-0.5 shrink-0 text-rose-600" />;
-  return <Info size={18} className="mt-0.5 shrink-0 text-brand-600" />;
+  return <Info size={18} className="mt-0.5 shrink-0 text-accent-600" />;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

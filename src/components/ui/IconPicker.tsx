@@ -272,12 +272,12 @@ export function IconPicker({
         aria-label={ariaLabel}
         className={[
           "flex h-14 w-14 items-center justify-center",
-          "rounded-[var(--radius-md)]",
-          "bg-[color:var(--color-surface-elevated)]",
-          "border border-[color:var(--color-border-strong)]",
+          "rounded-[0.875rem]",
+          "bg-[color:var(--color-surface)]",
+          "border border-[color:var(--color-border)]",
           "text-3xl leading-none",
-          "transition-[border-color,background-color] duration-[var(--motion-fast)]",
-          "hover:border-[color:var(--color-brand-400)]",
+          "transition-[border-color,background-color] duration-[140ms]",
+          "hover:border-[color:var(--color-accent-400)]",
           "disabled:opacity-60 disabled:cursor-not-allowed",
         ].join(" ")}
       >
@@ -285,12 +285,12 @@ export function IconPicker({
       </button>
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Symbol wählen">
-        <div className="flex flex-col gap-[var(--space-md)] pb-[var(--space-md)]">
+        <div className="flex flex-col gap-[1rem] pb-[1rem]">
           <div className="relative">
             <Search
               size={16}
               aria-hidden
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-text-tertiary)]"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-fg-subtle)]"
             />
             <Input
               type="search"
@@ -303,14 +303,14 @@ export function IconPicker({
           </div>
 
           {filteredCategories.length === 0 ? (
-            <p className="rounded-[var(--radius-md)] border border-dashed border-[color:var(--color-border-strong)] p-[var(--space-md)] text-center text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+            <p className="rounded-[0.875rem] border border-dashed border-[color:var(--color-border)] p-[1rem] text-center text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
               Keine Symbole für „{query}“
             </p>
           ) : (
-            <div className="flex max-h-[min(50vh,420px)] flex-col gap-[var(--space-md)] overflow-y-auto pr-1">
+            <div className="flex max-h-[min(50vh,420px)] flex-col gap-[1rem] overflow-y-auto pr-1">
               {filteredCategories.map((category) => (
-                <section key={category.key} className="flex flex-col gap-[var(--space-xs)]">
-                  <h3 className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+                <section key={category.key} className="flex flex-col gap-[0.5rem]">
+                  <h3 className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
                     {category.label}
                   </h3>
                   <div
@@ -329,11 +329,11 @@ export function IconPicker({
                           aria-pressed={selected}
                           className={[
                             "flex h-11 items-center justify-center",
-                            "rounded-[var(--radius-md)]",
+                            "rounded-[0.875rem]",
                             "text-2xl leading-none",
-                            "transition-[background-color,box-shadow] duration-[var(--motion-fast)]",
+                            "transition-[background-color,box-shadow] duration-[140ms]",
                             selected
-                              ? "bg-[color:var(--color-brand-50)] ring-2 ring-[color:var(--color-brand-500)]"
+                              ? "bg-[color:var(--color-accent-50)] ring-2 ring-[color:var(--color-accent-500)]"
                               : "hover:bg-[color:var(--color-surface-sunken)]",
                           ].join(" ")}
                         >
@@ -347,10 +347,10 @@ export function IconPicker({
             </div>
           )}
 
-          <div className="flex flex-col gap-[var(--space-xs)] pt-[var(--space-sm)] border-t border-[color:var(--color-border-subtle)]">
+          <div className="flex flex-col gap-[0.5rem] pt-[0.75rem] border-t border-[color:var(--color-border)]">
             <label
               htmlFor="icon-picker-custom"
-              className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]"
+              className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]"
             >
               Eigenes Emoji
             </label>
@@ -371,17 +371,17 @@ export function IconPicker({
                 }}
                 disabled={custom.trim().length === 0}
                 className={[
-                  "h-11 px-4 rounded-[var(--radius-md)]",
-                  "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)]",
-                  "text-[length:var(--text-caption)] font-medium",
-                  "hover:bg-[color:var(--color-brand-700)]",
+                  "h-11 px-4 rounded-[0.875rem]",
+                  "bg-[color:var(--color-accent-600)] text-[color:white]",
+                  "text-[length:0.8125rem] font-medium",
+                  "hover:bg-[color:var(--color-accent-700)]",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
                 ].join(" ")}
               >
                 Übernehmen
               </button>
             </div>
-            <p className="text-[length:var(--text-micro)] text-[color:var(--color-text-tertiary)]">
+            <p className="text-[length:0.6875rem] text-[color:var(--color-fg-subtle)]">
               {totalMatches} Symbole verfügbar
             </p>
           </div>

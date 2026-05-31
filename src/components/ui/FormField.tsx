@@ -42,10 +42,10 @@ export function FormField({
   };
 
   return (
-    <div className="flex flex-col gap-[var(--space-2xs)]">
+    <div className="flex flex-col gap-[0.25rem]">
       <label
         htmlFor={fieldId}
-        className="flex items-center justify-between text-[length:var(--text-caption)] font-medium text-[color:var(--color-text-secondary)]"
+        className="flex items-center justify-between text-[length:0.8125rem] font-medium text-[color:var(--color-fg-muted)]"
       >
         <span>
           {label}
@@ -56,24 +56,18 @@ export function FormField({
           )}
         </span>
         {optional && !required && (
-          <span className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase text-[color:var(--color-text-tertiary)]">
+          <span className="text-[length:0.6875rem] tracking-[0.06em] uppercase text-[color:var(--color-fg-subtle)]">
             optional
           </span>
         )}
       </label>
       {cloned}
       {error ? (
-        <p
-          id={errorId}
-          className="text-[length:var(--text-caption)] text-[color:var(--color-danger)]"
-        >
+        <p id={errorId} className="text-[length:0.8125rem] text-[color:var(--color-danger)]">
           {error}
         </p>
       ) : hint ? (
-        <p
-          id={hintId}
-          className="text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]"
-        >
+        <p id={hintId} className="text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
           {hint}
         </p>
       ) : null}

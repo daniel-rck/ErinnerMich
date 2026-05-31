@@ -16,26 +16,26 @@ export interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const VARIANT: Record<SurfaceVariant, string> = {
-  flat: "bg-[color:var(--color-surface-elevated)]",
+  flat: "bg-[color:var(--color-surface)]",
   raised:
-    "bg-[color:var(--color-surface-elevated)] shadow-[var(--elev-1)] border border-[color:var(--color-border-subtle)]",
+    "bg-[color:var(--color-surface)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)] border border-[color:var(--color-border)]",
   glass: "surface-glass",
-  sunken: "bg-[color:var(--color-surface-sunken)] border border-[color:var(--color-border-subtle)]",
-  outline: "bg-transparent border border-[color:var(--color-border-subtle)]",
+  sunken: "bg-[color:var(--color-surface-sunken)] border border-[color:var(--color-border)]",
+  outline: "bg-transparent border border-[color:var(--color-border)]",
 };
 
 const RADIUS: Record<SurfaceRadius, string> = {
-  sm: "rounded-[var(--radius-sm)]",
-  md: "rounded-[var(--radius-md)]",
-  lg: "rounded-[var(--radius-lg)]",
-  xl: "rounded-[var(--radius-xl)]",
+  sm: "rounded-[0.5rem]",
+  md: "rounded-[0.875rem]",
+  lg: "rounded-[1.25rem]",
+  xl: "rounded-[1.75rem]",
 };
 
 const PADDING: Record<SurfacePadding, string> = {
   none: "",
-  sm: "p-[var(--space-sm)]",
-  md: "p-[var(--space-md)]",
-  lg: "p-[var(--space-lg)]",
+  sm: "p-[0.75rem]",
+  md: "p-[1rem]",
+  lg: "p-[1.5rem]",
 };
 
 export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(function Surface(

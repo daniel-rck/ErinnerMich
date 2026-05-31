@@ -20,26 +20,26 @@ interface ToolsOverviewProps {
 
 export function ToolsOverview({ embedded = false }: ToolsOverviewProps = {}) {
   return (
-    <div className="flex flex-col gap-[var(--space-lg)]">
+    <div className="flex flex-col gap-[1.5rem]">
       {!embedded && (
-        <header className="flex flex-col gap-[var(--space-2xs)]">
-          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <header className="flex flex-col gap-[0.25rem]">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Wellness
           </p>
-          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+          <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
             Tools
           </h1>
-          <p className="text-[length:var(--text-body)] text-[color:var(--color-text-secondary)]">
+          <p className="text-[length:0.9375rem] text-[color:var(--color-fg-muted)]">
             Kleine Übungen für zwischendurch — wann immer du sie brauchst.
           </p>
         </header>
       )}
 
       <section>
-        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Akut
         </h2>
-        <div className="grid grid-cols-1 gap-[var(--space-sm)] sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-[0.75rem] sm:grid-cols-2">
           {TOOLS.filter((t) => t.category === "acute").map((t) => (
             <ToolCard key={t.key} tool={t} />
           ))}
@@ -47,10 +47,10 @@ export function ToolsOverview({ embedded = false }: ToolsOverviewProps = {}) {
       </section>
 
       <section>
-        <h2 className="mb-[var(--space-xs)] text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Reflexion
         </h2>
-        <div className="grid grid-cols-1 gap-[var(--space-sm)] sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-[0.75rem] sm:grid-cols-2">
           {TOOLS.filter((t) => t.category === "reflection").map((t) => (
             <ToolCard key={t.key} tool={t} />
           ))}
@@ -74,20 +74,20 @@ function ToolCard({ tool }: { tool: ToolDef }) {
     <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
       <Link
         to={`/tools/${tool.key}`}
-        className={`flex items-center gap-3 rounded-[var(--radius-lg)] bg-gradient-to-br p-[var(--space-md)] border border-[color:var(--color-border-subtle)] shadow-[var(--elev-1)] transition-shadow hover:shadow-[var(--elev-2)] ${bg}`}
+        className={`flex items-center gap-3 rounded-[1.25rem] bg-gradient-to-br p-[1rem] border border-[color:var(--color-border)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)] transition-shadow hover:shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)] ${bg}`}
       >
         <span className="text-3xl" aria-hidden>
           {tool.icon}
         </span>
         <div className="flex-1">
-          <h3 className="text-[length:var(--text-body)] font-semibold text-[color:var(--color-text-primary)]">
+          <h3 className="text-[length:0.9375rem] font-semibold text-[color:var(--color-fg)]">
             {tool.title}
           </h3>
-          <p className="mt-0.5 text-[length:var(--text-caption)] text-[color:var(--color-text-secondary)]">
+          <p className="mt-0.5 text-[length:0.8125rem] text-[color:var(--color-fg-muted)]">
             {tool.blurb}
           </p>
           {totalCount > 0 && (
-            <p className="mt-1 text-[length:var(--text-micro)] text-[color:var(--color-text-tertiary)]">
+            <p className="mt-1 text-[length:0.6875rem] text-[color:var(--color-fg-subtle)]">
               {todayCount > 0 ? `Heute: ${todayCount} · ` : ""}
               gesamt: {totalCount}
             </p>

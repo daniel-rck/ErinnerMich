@@ -20,22 +20,22 @@ const ICON_PX: Record<IconButtonSize, number> = { sm: 16, md: 20, lg: 22 };
 
 const TONE: Record<IconButtonTone, string> = {
   neutral: [
-    "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-primary)]",
-    "hover:bg-[color:var(--color-border-subtle)]",
-    "active:bg-[color:var(--color-border-strong)]",
+    "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",
+    "hover:bg-[color:var(--color-border)]",
+    "active:bg-[color:var(--color-border)]",
   ].join(" "),
   brand: [
-    "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)]",
-    "shadow-[var(--elev-brand)]",
-    "hover:bg-[color:var(--color-brand-700)] active:bg-[color:var(--color-brand-800)]",
+    "bg-[color:var(--color-accent-600)] text-[color:white]",
+    "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+    "hover:bg-[color:var(--color-accent-700)] active:bg-[color:var(--color-accent-800)]",
   ].join(" "),
   danger: [
     "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]",
     "hover:brightness-95 active:brightness-90",
   ].join(" "),
   glass: [
-    "surface-glass-strong text-[color:var(--color-text-primary)]",
-    "hover:bg-[color:var(--color-surface-elevated)]",
+    "surface-glass-strong text-[color:var(--color-fg)]",
+    "hover:bg-[color:var(--color-surface)]",
   ].join(" "),
 };
 
@@ -64,8 +64,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       }}
       className={[
         "inline-flex items-center justify-center select-none",
-        shape === "circle" ? "rounded-full" : "rounded-[var(--radius-md)]",
-        "transition-[background-color,box-shadow,transform,filter] duration-[var(--motion-fast)] ease-[var(--motion-ease)]",
+        shape === "circle" ? "rounded-full" : "rounded-[0.875rem]",
+        "transition-[background-color,box-shadow,transform,filter] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         TONE[tone],
         className,

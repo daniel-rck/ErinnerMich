@@ -71,23 +71,23 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
 
   return (
     <Sheet open={open} onClose={onClose} title="Was möchtest du anlegen?">
-      <div className="flex flex-col gap-[var(--space-md)] pb-[var(--space-md)]">
+      <div className="flex flex-col gap-[1rem] pb-[1rem]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             void submitQuickCapture();
           }}
           className={[
-            "flex items-center gap-2 pl-[var(--space-md)] pr-1 py-1",
+            "flex items-center gap-2 pl-[1rem] pr-1 py-1",
             "rounded-full bg-[color:var(--color-surface-sunken)]",
-            "border border-[color:var(--color-border-subtle)]",
-            "focus-within:border-[color:var(--color-brand-500)]",
+            "border border-[color:var(--color-border)]",
+            "focus-within:border-[color:var(--color-accent-500)]",
           ].join(" ")}
         >
           <Sparkles
             size={16}
             aria-hidden
-            className="shrink-0 text-[color:var(--color-text-tertiary)]"
+            className="shrink-0 text-[color:var(--color-fg-subtle)]"
           />
           <input
             type="text"
@@ -95,7 +95,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             onChange={(e) => setInput(e.target.value)}
             placeholder="z.B. „Mama Sonntag 18 Uhr“"
             aria-label="Schnell-Eintrag"
-            className="min-w-0 flex-1 bg-transparent text-[length:var(--text-body)] focus:outline-none placeholder:text-[color:var(--color-text-tertiary)]"
+            className="min-w-0 flex-1 bg-transparent text-[length:0.9375rem] focus:outline-none placeholder:text-[color:var(--color-fg-subtle)]"
             disabled={busy}
             autoFocus
           />
@@ -103,13 +103,13 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             type="submit"
             disabled={busy || input.trim().length === 0}
             aria-label="Anlegen"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)] disabled:opacity-40 transition-colors hover:bg-[color:var(--color-brand-700)] no-min-tap"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--color-accent-600)] text-[color:white] disabled:opacity-40 transition-colors hover:bg-[color:var(--color-accent-700)] no-min-tap"
           >
             <Send size={16} />
           </button>
         </form>
 
-        <div className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <div className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Oder
         </div>
 

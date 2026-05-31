@@ -24,26 +24,26 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     key: "welcome",
-    icon: <Sparkles size={28} className="text-brand-600" />,
+    icon: <Sparkles size={28} className="text-accent-600" />,
     title: "Willkommen bei ErinnerMich",
     body: "Erinnern. Reflektieren. Durchatmen. Eine sanfte App für Erinnerungen, Habits, Stimmung — und wenn du magst, kleine Wellness-Tools.",
   },
   {
     key: "privacy",
-    icon: <Lock size={28} className="text-brand-600" />,
+    icon: <Lock size={28} className="text-accent-600" />,
     title: "Deine Daten bleiben bei dir",
     body: "Alles wird ausschließlich lokal in deinem Browser gespeichert. Kein Account, kein Tracking, DSGVO-konform.",
   },
   {
     key: "wellness",
-    icon: <HeartPulse size={28} className="text-brand-600" />,
+    icon: <HeartPulse size={28} className="text-accent-600" />,
     title: "Wellness-Tools nutzen?",
     body: "Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Sorgen-Box, Schatzkiste und Affirmationen — direkt in der App. Kannst du jederzeit in den Einstellungen umstellen.",
     kind: "choice",
   },
   {
     key: "notify",
-    icon: <Bell size={28} className="text-brand-600" />,
+    icon: <Bell size={28} className="text-accent-600" />,
     title: "Erinnerungen rechtzeitig erhalten",
     body: "Wenn du möchtest, fragen wir gleich nach Benachrichtigungs-Berechtigung. Ohne Erlaubnis arbeitet die App ohne Push.",
   },
@@ -126,7 +126,7 @@ export function Onboarding() {
               transition={{ duration: 0.18 }}
               className="flex flex-col items-center gap-4 px-6 pt-8 pb-4 text-center"
             >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-950/40">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-50 dark:bg-accent-900/40">
                 {SLIDES[step].icon}
               </div>
               <h2 id="onboarding-title" className="text-xl font-semibold">
@@ -138,7 +138,7 @@ export function Onboarding() {
                   <button
                     type="button"
                     onClick={() => chooseWellness(true)}
-                    className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+                    className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700"
                   >
                     Ja, aktivieren
                   </button>
@@ -175,7 +175,7 @@ export function Onboarding() {
                     <button
                       type="button"
                       onClick={() => void pickStarter(t.key)}
-                      className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-left hover:border-brand-400 hover:bg-brand-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-500 dark:hover:bg-brand-950/40"
+                      className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-left hover:border-accent-400 hover:bg-accent-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-accent-500 dark:hover:bg-accent-900/40"
                     >
                       <span className="text-2xl" aria-hidden>
                         {t.icon}
@@ -214,7 +214,7 @@ export function Onboarding() {
                   (onPicker || i < step
                     ? "w-2 bg-zinc-300 dark:bg-zinc-700"
                     : i === step
-                      ? "w-6 bg-brand-500"
+                      ? "w-6 bg-accent-500"
                       : "w-2 bg-zinc-300 dark:bg-zinc-700")
                 }
               />
@@ -227,7 +227,7 @@ export function Onboarding() {
               <button
                 type="button"
                 onClick={() => void nextStep()}
-                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+                className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700"
               >
                 Weiter
               </button>

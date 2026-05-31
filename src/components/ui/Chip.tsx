@@ -17,36 +17,30 @@ export interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
 }
 
-const NEUTRAL_SELECTED =
-  "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)] border-transparent";
+const NEUTRAL_SELECTED = "bg-[color:var(--color-accent-600)] text-[color:white] border-transparent";
 const NEUTRAL_IDLE =
-  "bg-[color:var(--color-surface-elevated)] text-[color:var(--color-text-primary)] border-[color:var(--color-border-strong)] hover:bg-[color:var(--color-surface-sunken)]";
+  "bg-[color:var(--color-surface)] text-[color:var(--color-fg)] border-[color:var(--color-border)] hover:bg-[color:var(--color-surface-sunken)]";
 
 const TONE: Record<ChipTone, { selected: string; idle: string }> = {
   neutral: { selected: NEUTRAL_SELECTED, idle: NEUTRAL_IDLE },
   brand: {
-    selected:
-      "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)] border-transparent",
-    idle: "bg-[color:var(--color-brand-50)] text-[color:var(--color-brand-700)] border-transparent hover:bg-[color:var(--color-brand-100)]",
+    selected: "bg-[color:var(--color-accent-600)] text-[color:white] border-transparent",
+    idle: "bg-[color:var(--color-accent-50)] text-[color:var(--color-accent-700)] border-transparent hover:bg-[color:var(--color-accent-100)]",
   },
   success: {
-    selected:
-      "bg-[color:var(--color-success)] text-[color:var(--color-text-on-brand)] border-transparent",
+    selected: "bg-[color:var(--color-success)] text-[color:white] border-transparent",
     idle: "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)] border-transparent",
   },
   warning: {
-    selected:
-      "bg-[color:var(--color-warning)] text-[color:var(--color-text-on-brand)] border-transparent",
+    selected: "bg-[color:var(--color-warning)] text-[color:white] border-transparent",
     idle: "bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)] border-transparent",
   },
   danger: {
-    selected:
-      "bg-[color:var(--color-danger)] text-[color:var(--color-text-on-brand)] border-transparent",
+    selected: "bg-[color:var(--color-danger)] text-[color:white] border-transparent",
     idle: "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)] border-transparent",
   },
   info: {
-    selected:
-      "bg-[color:var(--color-info)] text-[color:var(--color-text-on-brand)] border-transparent",
+    selected: "bg-[color:var(--color-info)] text-[color:white] border-transparent",
     idle: "bg-[color:var(--color-info-soft)] text-[color:var(--color-info)] border-transparent",
   },
 };
@@ -67,15 +61,13 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
   ref,
 ) {
   const sizing =
-    size === "sm"
-      ? "h-7 px-2.5 text-[length:var(--text-micro)]"
-      : "h-9 px-3 text-[length:var(--text-caption)]";
+    size === "sm" ? "h-7 px-2.5 text-[length:0.6875rem]" : "h-9 px-3 text-[length:0.8125rem]";
   let palette = TONE[tone].idle;
   if (selected) palette = TONE[tone].selected;
   if (category) {
     const cc = categoryClasses(category);
     palette = selected
-      ? `${cc.iconBg} ${cc.text} border-transparent ring-2 ring-[color:var(--color-brand-500)]`
+      ? `${cc.iconBg} ${cc.text} border-transparent ring-2 ring-[color:var(--color-accent-500)]`
       : `${cc.bg} ${cc.text} border-transparent`;
   }
   return (
@@ -86,7 +78,7 @@ export const Chip = forwardRef<HTMLButtonElement, ChipProps>(function Chip(
       className={[
         "inline-flex items-center gap-1.5 select-none border",
         "rounded-full font-medium",
-        "transition-[background-color,color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease)]",
+        "transition-[background-color,color,box-shadow] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         sizing,
         palette,

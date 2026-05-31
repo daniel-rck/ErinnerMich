@@ -17,41 +17,41 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const SIZE: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-[length:var(--text-caption)] gap-1.5",
-  md: "h-11 px-4 text-[length:var(--text-body)] gap-2",
-  lg: "h-[52px] px-6 text-[length:var(--text-body)] gap-2 font-semibold",
+  sm: "h-9 px-3 text-[length:0.8125rem] gap-1.5",
+  md: "h-11 px-4 text-[length:0.9375rem] gap-2",
+  lg: "h-[52px] px-6 text-[length:0.9375rem] gap-2 font-semibold",
 };
 
 const ICON_SIZE: Record<ButtonSize, number> = { sm: 14, md: 16, lg: 18 };
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary: [
-    "bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)]",
-    "shadow-[var(--elev-brand)]",
-    "hover:bg-[color:var(--color-brand-700)]",
-    "active:bg-[color:var(--color-brand-800)]",
-    "disabled:bg-[color:var(--color-brand-300)] disabled:shadow-none",
+    "bg-[color:var(--color-accent-600)] text-[color:white]",
+    "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+    "hover:bg-[color:var(--color-accent-700)]",
+    "active:bg-[color:var(--color-accent-800)]",
+    "disabled:bg-[color:var(--color-accent-300)] disabled:shadow-none",
   ].join(" "),
   secondary: [
-    "bg-[color:var(--color-surface-elevated)] text-[color:var(--color-text-primary)]",
-    "border border-[color:var(--color-border-strong)]",
-    "shadow-[var(--elev-1)]",
+    "bg-[color:var(--color-surface)] text-[color:var(--color-fg)]",
+    "border border-[color:var(--color-border)]",
+    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
     "hover:bg-[color:var(--color-surface-sunken)]",
     "active:bg-[color:var(--color-surface-sunken)]",
   ].join(" "),
   tertiary: [
-    "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-text-primary)]",
-    "hover:bg-[color:var(--color-border-subtle)]",
-    "active:bg-[color:var(--color-border-strong)]",
+    "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",
+    "hover:bg-[color:var(--color-border)]",
+    "active:bg-[color:var(--color-border)]",
   ].join(" "),
   ghost: [
-    "bg-transparent text-[color:var(--color-text-primary)]",
+    "bg-transparent text-[color:var(--color-fg)]",
     "hover:bg-[color:var(--color-surface-sunken)]",
-    "active:bg-[color:var(--color-border-subtle)]",
+    "active:bg-[color:var(--color-border)]",
   ].join(" "),
   danger: [
-    "bg-[color:var(--color-danger)] text-[color:var(--color-text-on-brand)]",
-    "shadow-[var(--elev-1)]",
+    "bg-[color:var(--color-danger)] text-[color:white]",
+    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
     "hover:brightness-95 active:brightness-90",
   ].join(" "),
 };
@@ -86,8 +86,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       }}
       className={[
         "inline-flex items-center justify-center select-none",
-        "rounded-[var(--radius-md)]",
-        "transition-[background-color,box-shadow,transform,filter] duration-[var(--motion-fast)] ease-[var(--motion-ease)]",
+        "rounded-[0.875rem]",
+        "transition-[background-color,box-shadow,transform,filter] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         SIZE[size],
         VARIANT[variant],
