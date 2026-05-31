@@ -1,103 +1,112 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, Hand, Ear, FlaskConical, UtensilsCrossed, ChevronRight, ChevronLeft, Check } from 'lucide-react'
-import { addToolEntry } from '../../lib/db/toolEntries'
-import { useToast } from '../ui/Toast'
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Ear,
+  Eye,
+  FlaskConical,
+  Hand,
+  UtensilsCrossed,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { addToolEntry } from "../../lib/db/toolEntries";
+import { useToast } from "../ui/Toast";
 
 interface Step {
-  count: number
-  icon: typeof Eye
-  prompt: string
-  hint: string
+  count: number;
+  icon: typeof Eye;
+  prompt: string;
+  hint: string;
 }
 
 const STEPS: Step[] = [
   {
     count: 5,
     icon: Eye,
-    prompt: '5 Dinge, die du siehst',
-    hint: 'Schau dich um — Möbel, Farben, Licht, kleine Details.',
+    prompt: "5 Dinge, die du siehst",
+    hint: "Schau dich um — Möbel, Farben, Licht, kleine Details.",
   },
   {
     count: 4,
     icon: Hand,
-    prompt: '4 Dinge, die du fühlst',
-    hint: 'Fußboden, Stoff der Kleidung, Temperatur, Atem.',
+    prompt: "4 Dinge, die du fühlst",
+    hint: "Fußboden, Stoff der Kleidung, Temperatur, Atem.",
   },
   {
     count: 3,
     icon: Ear,
-    prompt: '3 Geräusche, die du hörst',
-    hint: 'Verkehr, Atmung, Lüftung, Vögel.',
+    prompt: "3 Geräusche, die du hörst",
+    hint: "Verkehr, Atmung, Lüftung, Vögel.",
   },
   {
     count: 2,
     icon: FlaskConical,
-    prompt: '2 Dinge, die du riechst',
-    hint: 'Kaffee, frische Luft, Seife — oder atme bewusst durch die Nase.',
+    prompt: "2 Dinge, die du riechst",
+    hint: "Kaffee, frische Luft, Seife — oder atme bewusst durch die Nase.",
   },
   {
     count: 1,
     icon: UtensilsCrossed,
-    prompt: '1 Ding, das du schmeckst',
-    hint: 'Mund, Zahnpasta, ein Schluck Wasser.',
+    prompt: "1 Ding, das du schmeckst",
+    hint: "Mund, Zahnpasta, ein Schluck Wasser.",
   },
-]
+];
 
 export function Grounding() {
-  const [stepIndex, setStepIndex] = useState(0)
+  const [stepIndex, setStepIndex] = useState(0);
   const [inputs, setInputs] = useState<string[][]>(() =>
-    STEPS.map((s) => Array.from({ length: s.count }, () => '')),
-  )
-  const startRef = useRef<number | null>(null)
-  const toast = useToast()
+    STEPS.map((s) => Array.from({ length: s.count }, () => "")),
+  );
+  const startRef = useRef<number | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
-    startRef.current = Date.now()
-  }, [])
+    startRef.current = Date.now();
+  }, []);
 
-  const step = STEPS[stepIndex]
-  const StepIcon = step.icon
-  const isLast = stepIndex === STEPS.length - 1
+  const step = STEPS[stepIndex];
+  const StepIcon = step.icon;
+  const isLast = stepIndex === STEPS.length - 1;
 
   function updateInput(i: number, value: string) {
     setInputs((prev) => {
-      const next = prev.map((arr) => arr.slice())
-      next[stepIndex][i] = value
-      return next
-    })
+      const next = prev.map((arr) => arr.slice());
+      next[stepIndex][i] = value;
+      return next;
+    });
   }
 
   async function finish() {
-    const now = Date.now()
-    const start = startRef.current ?? now
-    const durationSec = Math.round((now - start) / 1000)
+    const now = Date.now();
+    const start = startRef.current ?? now;
+    const durationSec = Math.round((now - start) / 1000);
     const text = STEPS.map((s, i) => {
-      const filled = inputs[i].filter((v) => v.trim().length > 0)
-      return filled.length ? `${s.prompt}: ${filled.join(', ')}` : null
+      const filled = inputs[i].filter((v) => v.trim().length > 0);
+      return filled.length ? `${s.prompt}: ${filled.join(", ")}` : null;
     })
       .filter((line): line is string => Boolean(line))
-      .join('\n')
+      .join("\n");
     try {
       await addToolEntry({
-        toolKey: 'grounding',
+        toolKey: "grounding",
         loggedAt: now,
         durationSec,
         text: text || undefined,
-      })
+      });
       toast.show({
-        variant: 'success',
-        message: 'Erdungsübung abgeschlossen.',
-      })
+        variant: "success",
+        message: "Erdungsübung abgeschlossen.",
+      });
     } catch {
       toast.show({
-        variant: 'error',
-        message: 'Konnte Erdungsübung nicht speichern.',
-      })
+        variant: "error",
+        message: "Konnte Erdungsübung nicht speichern.",
+      });
     }
-    setStepIndex(0)
-    setInputs(STEPS.map((s) => Array.from({ length: s.count }, () => '')))
-    startRef.current = now
+    setStepIndex(0);
+    setInputs(STEPS.map((s) => Array.from({ length: s.count }, () => "")));
+    startRef.current = now;
   }
 
   return (
@@ -110,10 +119,8 @@ export function Grounding() {
           <span
             key={i}
             className={
-              'h-1.5 flex-1 rounded-full transition-colors ' +
-              (i <= stepIndex
-                ? 'bg-emerald-500'
-                : 'bg-zinc-200 dark:bg-zinc-800')
+              "h-1.5 flex-1 rounded-full transition-colors " +
+              (i <= stepIndex ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800")
             }
           />
         ))}
@@ -134,21 +141,17 @@ export function Grounding() {
             </div>
             <div>
               <h2 className="text-lg font-semibold">{step.prompt}</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                {step.hint}
-              </p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">{step.hint}</p>
             </div>
           </div>
 
           <ul className="flex flex-col gap-2">
             {Array.from({ length: step.count }).map((_, i) => (
               <li key={i} className="flex items-center gap-2">
-                <span className="w-6 text-sm font-medium text-zinc-400">
-                  {i + 1}.
-                </span>
+                <span className="w-6 text-sm font-medium text-zinc-400">{i + 1}.</span>
                 <input
                   type="text"
-                  value={inputs[stepIndex][i] ?? ''}
+                  value={inputs[stepIndex][i] ?? ""}
                   onChange={(e) => updateInput(i, e.target.value)}
                   placeholder="optional"
                   className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
@@ -187,5 +190,5 @@ export function Grounding() {
         )}
       </div>
     </div>
-  )
+  );
 }

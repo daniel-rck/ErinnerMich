@@ -1,36 +1,30 @@
-import { useEffect, useId, type ReactNode } from 'react'
-import { AnimatePresence, motion, useDragControls } from 'framer-motion'
+import { AnimatePresence, motion, useDragControls } from "framer-motion";
+import { type ReactNode, useEffect, useId } from "react";
 
 interface BottomSheetProps {
-  open: boolean
-  onClose: () => void
-  title?: string
-  children: ReactNode
-  labelledBy?: string
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+  labelledBy?: string;
 }
 
-export function BottomSheet({
-  open,
-  onClose,
-  title,
-  children,
-  labelledBy,
-}: BottomSheetProps) {
-  const controls = useDragControls()
-  const titleId = useId()
+export function BottomSheet({ open, onClose, title, children, labelledBy }: BottomSheetProps) {
+  const controls = useDragControls();
+  const titleId = useId();
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
+      if (event.key === "Escape") onClose();
     }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
-  }, [open, onClose])
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
 
   return (
     <AnimatePresence>
@@ -57,12 +51,12 @@ export function BottomSheet({
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.4 }}
             onDragEnd={(_, info) => {
-              if (info.offset.y > 120 || info.velocity.y > 600) onClose()
+              if (info.offset.y > 120 || info.velocity.y > 600) onClose();
             }}
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 380, damping: 36 }}
             className="relative w-full max-w-2xl rounded-t-3xl border-t border-zinc-200 bg-white pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div
@@ -77,12 +71,10 @@ export function BottomSheet({
                 {title}
               </h2>
             )}
-            <div className="max-h-[75vh] overflow-y-auto px-5 pb-2">
-              {children}
-            </div>
+            <div className="max-h-[75vh] overflow-y-auto px-5 pb-2">{children}</div>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

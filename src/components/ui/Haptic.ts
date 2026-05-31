@@ -1,11 +1,6 @@
-import { readSettings } from '../../lib/db/settings'
+import { readSettings } from "../../lib/db/settings";
 
-export type HapticPattern =
-  | 'tick'
-  | 'success'
-  | 'milestone'
-  | 'warning'
-  | 'long'
+export type HapticPattern = "tick" | "success" | "milestone" | "warning" | "long";
 
 const PATTERNS: Record<HapticPattern, number | number[]> = {
   tick: 12,
@@ -13,14 +8,14 @@ const PATTERNS: Record<HapticPattern, number | number[]> = {
   milestone: [40, 60, 40, 60, 80],
   warning: [20, 30, 20],
   long: 200,
-}
+};
 
 export function vibrate(pattern: HapticPattern): void {
-  if (typeof navigator === 'undefined') return
-  if (typeof navigator.vibrate !== 'function') return
-  if (!readSettings().hapticsEnabled) return
+  if (typeof navigator === "undefined") return;
+  if (typeof navigator.vibrate !== "function") return;
+  if (!readSettings().hapticsEnabled) return;
   try {
-    navigator.vibrate(PATTERNS[pattern])
+    navigator.vibrate(PATTERNS[pattern]);
   } catch {
     /* no-op */
   }

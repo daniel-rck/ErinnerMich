@@ -1,23 +1,23 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import { type ReactNode, useEffect, useId, useRef } from "react";
 
 interface ModalProps {
-  open: boolean
-  onClose: () => void
-  title?: string
-  children: ReactNode
-  footer?: ReactNode
-  labelledBy?: string
-  size?: 'sm' | 'md' | 'lg'
-  hideClose?: boolean
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  labelledBy?: string;
+  size?: "sm" | "md" | "lg";
+  hideClose?: boolean;
 }
 
-const SIZE_CLASS: Record<NonNullable<ModalProps['size']>, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-2xl',
-}
+const SIZE_CLASS: Record<NonNullable<ModalProps["size"]>, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-2xl",
+};
 
 export function Modal({
   open,
@@ -26,27 +26,27 @@ export function Modal({
   children,
   footer,
   labelledBy,
-  size = 'md',
+  size = "md",
   hideClose = false,
 }: ModalProps) {
-  const dialogRef = useRef<HTMLDivElement | null>(null)
-  const titleId = useId()
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const titleId = useId();
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
+      if (event.key === "Escape") onClose();
     }
-    document.addEventListener('keydown', onKey)
-    const previouslyFocused = document.activeElement as HTMLElement | null
-    dialogRef.current?.focus()
-    document.body.style.overflow = 'hidden'
+    document.addEventListener("keydown", onKey);
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-      previouslyFocused?.focus?.()
-    }
-  }, [open, onClose])
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+      previouslyFocused?.focus?.();
+    };
+  }, [open, onClose]);
 
   return (
     <AnimatePresence>
@@ -72,7 +72,7 @@ export function Modal({
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 4 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+            transition={{ type: "spring", stiffness: 360, damping: 28 }}
             className={`relative w-full rounded-2xl border border-zinc-200 bg-white shadow-2xl outline-none dark:border-zinc-800 dark:bg-zinc-900 ${SIZE_CLASS[size]}`}
           >
             {(title || !hideClose) && (
@@ -106,5 +106,5 @@ export function Modal({
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

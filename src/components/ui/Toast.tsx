@@ -1,71 +1,53 @@
-import {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { ulid } from 'ulid'
-import { CheckCircle2, Info, AlertCircle, X } from 'lucide-react'
-import {
-  ToastContext,
-  type Toast,
-  type ToastInput,
-  type ToastVariant,
-} from './toastContext'
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
+import { type ReactNode, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { ulid } from "ulid";
+import { type Toast, ToastContext, type ToastInput, type ToastVariant } from "./toastContext";
 
-const DEFAULT_DURATION = 5000
+const DEFAULT_DURATION = 5000;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([])
-  const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const dismiss = useCallback((id: string) => {
-    const t = timers.current.get(id)
+    const t = timers.current.get(id);
     if (t) {
-      clearTimeout(t)
-      timers.current.delete(id)
+      clearTimeout(t);
+      timers.current.delete(id);
     }
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-  }, [])
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
 
   const show = useCallback(
     (input: ToastInput): string => {
-      const id = ulid()
+      const id = ulid();
       const toast: Toast = {
         id,
-        variant: input.variant ?? 'info',
+        variant: input.variant ?? "info",
         message: input.message,
         action: input.action,
         durationMs: input.durationMs ?? DEFAULT_DURATION,
-      }
-      setToasts((prev) => [...prev, toast])
-      const timer = setTimeout(() => dismiss(id), toast.durationMs)
-      timers.current.set(id, timer)
-      return id
+      };
+      setToasts((prev) => [...prev, toast]);
+      const timer = setTimeout(() => dismiss(id), toast.durationMs);
+      timers.current.set(id, timer);
+      return id;
     },
     [dismiss],
-  )
+  );
 
-  const value = useMemo(() => ({ toasts, show, dismiss }), [toasts, show, dismiss])
+  const value = useMemo(() => ({ toasts, show, dismiss }), [toasts, show, dismiss]);
 
   return (
     <ToastContext.Provider value={value}>
       {children}
       <ToastViewport toasts={toasts} dismiss={dismiss} />
     </ToastContext.Provider>
-  )
+  );
 }
 
-function ToastViewport({
-  toasts,
-  dismiss,
-}: {
-  toasts: Toast[]
-  dismiss: (id: string) => void
-}) {
+function ToastViewport({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: string) => void }) {
   return (
     <div
       aria-live="polite"
@@ -80,8 +62,8 @@ function ToastViewport({
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-            role={toast.variant === 'error' ? 'alert' : 'status'}
+            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            role={toast.variant === "error" ? "alert" : "status"}
             className="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border bg-white px-4 py-3 text-sm shadow-lg dark:bg-zinc-900"
             data-variant={toast.variant}
             style={borderForVariant(toast.variant)}
@@ -92,10 +74,10 @@ function ToastViewport({
               <button
                 type="button"
                 onClick={() => {
-                  toast.action!.onClick()
-                  dismiss(toast.id)
+                  toast.action!.onClick();
+                  dismiss(toast.id);
                 }}
-                className="-my-1 rounded-md px-2 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-950/40"
+                className="-my-1 rounded-md px-2 py-1 text-sm font-medium text-accent-700 hover:bg-accent-50 dark:text-accent-300 dark:hover:bg-accent-900/40"
               >
                 {toast.action.label}
               </button>
@@ -112,31 +94,31 @@ function ToastViewport({
         ))}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 function borderForVariant(variant: ToastVariant): React.CSSProperties {
   switch (variant) {
-    case 'success':
-      return { borderColor: 'rgb(16 185 129 / 0.4)' }
-    case 'error':
-      return { borderColor: 'rgb(244 63 94 / 0.4)' }
+    case "success":
+      return { borderColor: "rgb(16 185 129 / 0.4)" };
+    case "error":
+      return { borderColor: "rgb(244 63 94 / 0.4)" };
     default:
-      return { borderColor: 'rgb(212 212 216 / 0.6)' }
+      return { borderColor: "rgb(212 212 216 / 0.6)" };
   }
 }
 
 function ToastIcon({ variant }: { variant: ToastVariant }) {
-  if (variant === 'success')
-    return <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />
-  if (variant === 'error')
-    return <AlertCircle size={18} className="mt-0.5 shrink-0 text-rose-600" />
-  return <Info size={18} className="mt-0.5 shrink-0 text-brand-600" />
+  if (variant === "success")
+    return <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />;
+  if (variant === "error")
+    return <AlertCircle size={18} className="mt-0.5 shrink-0 text-rose-600" />;
+  return <Info size={18} className="mt-0.5 shrink-0 text-accent-600" />;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
-  const ctx = useContext(ToastContext)
-  if (!ctx) throw new Error('useToast muss innerhalb von <ToastProvider> stehen')
-  return ctx
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error("useToast muss innerhalb von <ToastProvider> stehen");
+  return ctx;
 }

@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { useState } from 'react'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Tabs } from '../Tabs'
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useState } from "react";
+import { describe, expect, it } from "vitest";
+import { Tabs } from "../Tabs";
 
 function Harness() {
-  const [tab, setTab] = useState('a')
+  const [tab, setTab] = useState("a");
   return (
     <Tabs value={tab} onChange={setTab}>
       <Tabs.List ariaLabel="Beispiel">
@@ -17,39 +17,39 @@ function Harness() {
       <Tabs.Panel value="b">Inhalt B</Tabs.Panel>
       <Tabs.Panel value="c">Inhalt C</Tabs.Panel>
     </Tabs>
-  )
+  );
 }
 
-describe('Tabs', () => {
-  it('renders tablist with correct ARIA', () => {
-    render(<Harness />)
-    expect(screen.getByRole('tablist', { name: 'Beispiel' })).toBeInTheDocument()
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
-  })
+describe("Tabs", () => {
+  it("renders tablist with correct ARIA", () => {
+    render(<Harness />);
+    expect(screen.getByRole("tablist", { name: "Beispiel" })).toBeInTheDocument();
+    expect(screen.getAllByRole("tab")).toHaveLength(3);
+  });
 
-  it('switches panel on click', async () => {
-    render(<Harness />)
-    expect(screen.getByText('Inhalt A')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('tab', { name: 'Zwei' }))
-    expect(screen.getByText('Inhalt B')).toBeInTheDocument()
-    expect(screen.queryByText('Inhalt A')).not.toBeInTheDocument()
-  })
+  it("switches panel on click", async () => {
+    render(<Harness />);
+    expect(screen.getByText("Inhalt A")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("tab", { name: "Zwei" }));
+    expect(screen.getByText("Inhalt B")).toBeInTheDocument();
+    expect(screen.queryByText("Inhalt A")).not.toBeInTheDocument();
+  });
 
-  it('navigates with arrow keys', async () => {
-    render(<Harness />)
-    const first = screen.getByRole('tab', { name: 'Eins' })
-    first.focus()
-    await userEvent.keyboard('{ArrowRight}')
-    expect(screen.getByText('Inhalt B')).toBeInTheDocument()
-    await userEvent.keyboard('{ArrowRight}')
-    expect(screen.getByText('Inhalt C')).toBeInTheDocument()
-    await userEvent.keyboard('{ArrowLeft}')
-    expect(screen.getByText('Inhalt B')).toBeInTheDocument()
-  })
+  it("navigates with arrow keys", async () => {
+    render(<Harness />);
+    const first = screen.getByRole("tab", { name: "Eins" });
+    first.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    expect(screen.getByText("Inhalt B")).toBeInTheDocument();
+    await userEvent.keyboard("{ArrowRight}");
+    expect(screen.getByText("Inhalt C")).toBeInTheDocument();
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(screen.getByText("Inhalt B")).toBeInTheDocument();
+  });
 
-  it('marks active tab with aria-selected', () => {
-    render(<Harness />)
-    expect(screen.getByRole('tab', { name: 'Eins' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByRole('tab', { name: 'Zwei' })).toHaveAttribute('aria-selected', 'false')
-  })
-})
+  it("marks active tab with aria-selected", () => {
+    render(<Harness />);
+    expect(screen.getByRole("tab", { name: "Eins" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Zwei" })).toHaveAttribute("aria-selected", "false");
+  });
+});

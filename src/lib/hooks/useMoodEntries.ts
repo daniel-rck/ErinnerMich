@@ -1,67 +1,63 @@
-import { useCallback, useEffect, useState } from 'react'
-import type { MoodEntry } from '../types'
-import {
-  dailyMoodAverage,
-  listMoodEntriesForDay,
-  listMoodEntriesInRange,
-} from '../db/moodEntries'
-import { subscribe } from '../db/broadcast'
+import { useCallback, useEffect, useState } from "react";
+import { subscribe } from "../db/broadcast";
+import { dailyMoodAverage, listMoodEntriesForDay, listMoodEntriesInRange } from "../db/moodEntries";
+import type { MoodEntry } from "../types";
 
 export function useMoodEntriesInRange(
   fromMs: number,
   toMs: number,
 ): { entries: MoodEntry[]; loading: boolean; reload: () => Promise<void> } {
-  const [entries, setEntries] = useState<MoodEntry[]>([])
-  const [loading, setLoading] = useState(true)
+  const [entries, setEntries] = useState<MoodEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
-    const data = await listMoodEntriesInRange(fromMs, toMs)
-    setEntries(data)
-    setLoading(false)
-  }, [fromMs, toMs])
+    const data = await listMoodEntriesInRange(fromMs, toMs);
+    setEntries(data);
+    setLoading(false);
+  }, [fromMs, toMs]);
 
   useEffect(() => {
-    void reload()
+    void reload();
     const unsubscribe = subscribe((message) => {
       if (
-        message.type === 'mood-added' ||
-        message.type === 'mood-deleted' ||
-        message.type === 'db-cleared'
+        message.type === "mood-added" ||
+        message.type === "mood-deleted" ||
+        message.type === "db-cleared"
       ) {
-        void reload()
+        void reload();
       }
-    })
-    return unsubscribe
-  }, [reload])
+    });
+    return unsubscribe;
+  }, [reload]);
 
-  return { entries, loading, reload }
+  return { entries, loading, reload };
 }
 
 export function useMoodEntriesForDay(day: string) {
-  const [entries, setEntries] = useState<MoodEntry[]>([])
-  const [loading, setLoading] = useState(true)
+  const [entries, setEntries] = useState<MoodEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
-    const data = await listMoodEntriesForDay(day)
-    setEntries(data)
-    setLoading(false)
-  }, [day])
+    const data = await listMoodEntriesForDay(day);
+    setEntries(data);
+    setLoading(false);
+  }, [day]);
 
   useEffect(() => {
-    void reload()
+    void reload();
     const unsubscribe = subscribe((message) => {
       if (
-        message.type === 'mood-added' ||
-        message.type === 'mood-deleted' ||
-        message.type === 'db-cleared'
+        message.type === "mood-added" ||
+        message.type === "mood-deleted" ||
+        message.type === "db-cleared"
       ) {
-        void reload()
+        void reload();
       }
-    })
-    return unsubscribe
-  }, [reload])
+    });
+    return unsubscribe;
+  }, [reload]);
 
-  return { entries, loading, reload }
+  return { entries, loading, reload };
 }
 
 export function useDailyMoodAverage(day: string) {
@@ -70,31 +66,31 @@ export function useDailyMoodAverage(day: string) {
     avgEnergy: null as number | null,
     count: 0,
     loading: true,
-  })
+  });
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function load() {
-      const result = await dailyMoodAverage(day)
-      if (!cancelled) setState({ ...result, loading: false })
+      const result = await dailyMoodAverage(day);
+      if (!cancelled) setState({ ...result, loading: false });
     }
 
-    void load()
+    void load();
     const unsubscribe = subscribe((message) => {
       if (
-        message.type === 'mood-added' ||
-        message.type === 'mood-deleted' ||
-        message.type === 'db-cleared'
+        message.type === "mood-added" ||
+        message.type === "mood-deleted" ||
+        message.type === "db-cleared"
       ) {
-        void load()
+        void load();
       }
-    })
+    });
     return () => {
-      cancelled = true
-      unsubscribe()
-    }
-  }, [day])
+      cancelled = true;
+      unsubscribe();
+    };
+  }, [day]);
 
-  return state
+  return state;
 }

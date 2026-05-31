@@ -1,81 +1,75 @@
-import { useCallback, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Plus, Flame, ChevronRight } from 'lucide-react'
-import { useReminders } from '../lib/hooks/useReminders'
-import { useAllEvents } from '../lib/hooks/useAllEvents'
-import { addEvent } from '../lib/db/events'
-import {
-  currentStreak,
-  successfulDayKeys,
-} from '../lib/stats/streaks'
-import { dayKey } from '../lib/db'
-import { dayKeyForDate } from '../lib/stats/dayKey'
-import { isMilestone } from '../lib/stats/streakMilestones'
-import { vibrate } from './ui/Haptic'
-import { Celebration } from './Celebration'
-import type { Reminder, ReminderEvent } from '../lib/types'
+import { motion } from "framer-motion";
+import { ChevronRight, Flame, Plus } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { dayKey } from "../lib/db";
+import { addEvent } from "../lib/db/events";
+import { useAllEvents } from "../lib/hooks/useAllEvents";
+import { useReminders } from "../lib/hooks/useReminders";
+import { dayKeyForDate } from "../lib/stats/dayKey";
+import { isMilestone } from "../lib/stats/streakMilestones";
+import { currentStreak, successfulDayKeys } from "../lib/stats/streaks";
+import type { Reminder, ReminderEvent } from "../lib/types";
+import { Celebration } from "./Celebration";
+import { vibrate } from "./ui/Haptic";
 
 interface HabitRailProps {
   /** Cap how many habits to render in the rail. Default 6. */
-  limit?: number
+  limit?: number;
 }
 
 export function HabitRail({ limit = 6 }: HabitRailProps) {
-  const { reminders } = useReminders({ kind: 'habit', activeOnly: true })
-  const { events } = useAllEvents()
-  const [today] = useState(() => dayKey(Date.now()))
-  const [celebrateStreak, setCelebrateStreak] = useState<number | null>(null)
+  const { reminders } = useReminders({ kind: "habit", activeOnly: true });
+  const { events } = useAllEvents();
+  const [today] = useState(() => dayKey(Date.now()));
+  const [celebrateStreak, setCelebrateStreak] = useState<number | null>(null);
 
   const eventsByReminder = useMemo(() => {
-    const map = new Map<string, ReminderEvent[]>()
+    const map = new Map<string, ReminderEvent[]>();
     for (const e of events) {
-      const list = map.get(e.reminderId) ?? []
-      list.push(e)
-      map.set(e.reminderId, list)
+      const list = map.get(e.reminderId) ?? [];
+      list.push(e);
+      map.set(e.reminderId, list);
     }
-    return map
-  }, [events])
+    return map;
+  }, [events]);
 
-  const items = useMemo(() => reminders.slice(0, limit), [reminders, limit])
+  const items = useMemo(() => reminders.slice(0, limit), [reminders, limit]);
 
   const bump = useCallback(
     async (reminder: Reminder) => {
-      const habitEvents = eventsByReminder.get(reminder.id) ?? []
-      const now = Date.now()
-      const todayKey = dayKeyForDate(new Date(now))
-      const wasTodayDone = successfulDayKeys(habitEvents).has(todayKey)
-      const streakBefore = currentStreak(habitEvents, new Date(now))
+      const habitEvents = eventsByReminder.get(reminder.id) ?? [];
+      const now = Date.now();
+      const todayKey = dayKeyForDate(new Date(now));
+      const wasTodayDone = successfulDayKeys(habitEvents).has(todayKey);
+      const streakBefore = currentStreak(habitEvents, new Date(now));
       await addEvent({
         reminderId: reminder.id,
-        action: 'completed',
+        action: "completed",
         triggeredAt: now,
-      })
-      const newStreak = wasTodayDone ? streakBefore : streakBefore + 1
+      });
+      const newStreak = wasTodayDone ? streakBefore : streakBefore + 1;
       if (!wasTodayDone && isMilestone(newStreak)) {
-        vibrate('milestone')
-        setCelebrateStreak(newStreak)
+        vibrate("milestone");
+        setCelebrateStreak(newStreak);
       } else {
-        vibrate('tick')
+        vibrate("tick");
       }
     },
     [eventsByReminder],
-  )
+  );
 
-  if (items.length === 0) return null
+  if (items.length === 0) return null;
 
   return (
-    <section
-      aria-label="Habits"
-      className="flex flex-col gap-[var(--space-sm)]"
-    >
+    <section aria-label="Habits" className="flex flex-col gap-[0.75rem]">
       <header className="flex items-center justify-between">
-        <h2 className="text-[length:var(--text-title-3)] font-semibold text-[color:var(--color-text-primary)]">
+        <h2 className="text-[length:1rem] font-semibold text-[color:var(--color-fg)]">
           Heutige Habits
         </h2>
         <Link
           to="/library"
-          className="inline-flex items-center gap-1 text-[length:var(--text-caption)] font-medium text-[color:var(--color-brand-600)] hover:underline no-min-tap"
+          className="inline-flex items-center gap-1 text-[length:0.8125rem] font-medium text-[color:var(--color-accent-600)] hover:underline no-min-tap"
         >
           Alle
           <ChevronRight size={14} aria-hidden />
@@ -83,16 +77,16 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
       </header>
       <ul
         className={[
-          'flex gap-[var(--space-sm)] overflow-x-auto',
-          'snap-x snap-mandatory',
-          '-mx-[var(--space-md)] px-[var(--space-md)] pb-1',
-          'scroll-pl-[var(--space-md)]',
-        ].join(' ')}
+          "flex gap-[0.75rem] overflow-x-auto",
+          "snap-x snap-mandatory",
+          "-mx-[1rem] px-[1rem] pb-1",
+          "scroll-pl-[1rem]",
+        ].join(" ")}
       >
         {items.map((reminder) => {
-          const habitEvents = eventsByReminder.get(reminder.id) ?? []
-          const todayDone = successfulDayKeys(habitEvents).has(today)
-          const streak = currentStreak(habitEvents, new Date())
+          const habitEvents = eventsByReminder.get(reminder.id) ?? [];
+          const todayDone = successfulDayKeys(habitEvents).has(today);
+          const streak = currentStreak(habitEvents, new Date());
           return (
             <li key={reminder.id} className="snap-start">
               <HabitMiniCard
@@ -102,7 +96,7 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
                 onBump={() => void bump(reminder)}
               />
             </li>
-          )
+          );
         })}
       </ul>
 
@@ -112,26 +106,26 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
         onClose={() => setCelebrateStreak(null)}
       />
     </section>
-  )
+  );
 }
 
 interface HabitMiniCardProps {
-  reminder: Reminder
-  done: boolean
-  streak: number
-  onBump: () => void
+  reminder: Reminder;
+  done: boolean;
+  streak: number;
+  onBump: () => void;
 }
 
 function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
   return (
     <article
       className={[
-        'flex w-36 shrink-0 flex-col items-center gap-2',
-        'rounded-[var(--radius-lg)] p-[var(--space-sm)]',
-        'bg-[color:var(--color-surface-elevated)]',
-        'border border-[color:var(--color-border-subtle)]',
-        'shadow-[var(--elev-1)]',
-      ].join(' ')}
+        "flex w-36 shrink-0 flex-col items-center gap-2",
+        "rounded-[1.25rem] p-[0.75rem]",
+        "bg-[color:var(--color-surface)]",
+        "border border-[color:var(--color-border)]",
+        "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+      ].join(" ")}
     >
       <div className="flex w-full items-center justify-between">
         <span className="text-2xl leading-none" aria-hidden>
@@ -139,7 +133,7 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
         </span>
         {streak > 0 && (
           <span
-            className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--color-warning-soft)] px-1.5 py-0.5 text-[length:var(--text-micro)] font-medium text-[color:var(--color-warning)]"
+            className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--color-warning-soft)] px-1.5 py-0.5 text-[length:0.6875rem] font-medium text-[color:var(--color-warning)]"
             aria-label={`${streak} Tage Streak`}
           >
             <Flame size={10} aria-hidden />
@@ -149,7 +143,7 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
       </div>
       <Link
         to={`/detail/${reminder.id}`}
-        className="line-clamp-2 w-full text-center text-[length:var(--text-caption)] font-medium leading-tight text-[color:var(--color-text-primary)] no-min-tap"
+        className="line-clamp-2 w-full text-center text-[length:0.8125rem] font-medium leading-tight text-[color:var(--color-fg)] no-min-tap"
       >
         {reminder.title}
       </Link>
@@ -159,18 +153,18 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
         whileTap={{ scale: 0.92 }}
         aria-label={`${reminder.title} +1`}
         className={[
-          'mt-auto inline-flex items-center justify-center gap-1',
-          'h-9 w-full rounded-[var(--radius-md)]',
-          'text-[length:var(--text-caption)] font-medium',
-          'transition-colors duration-[var(--motion-fast)]',
+          "mt-auto inline-flex items-center justify-center gap-1",
+          "h-9 w-full rounded-[0.875rem]",
+          "text-[length:0.8125rem] font-medium",
+          "transition-colors duration-[140ms]",
           done
-            ? 'bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]'
-            : 'bg-[color:var(--color-brand-600)] text-[color:var(--color-text-on-brand)] hover:bg-[color:var(--color-brand-700)]',
-        ].join(' ')}
+            ? "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]"
+            : "bg-[color:var(--color-accent-600)] text-[color:white] hover:bg-[color:var(--color-accent-700)]",
+        ].join(" ")}
       >
         <Plus size={14} aria-hidden />
-        {done ? 'Erledigt' : '+1'}
+        {done ? "Erledigt" : "+1"}
       </motion.button>
     </article>
-  )
+  );
 }

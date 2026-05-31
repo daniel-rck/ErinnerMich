@@ -1,147 +1,23 @@
-@import 'tailwindcss';
+/*
+ * ErinnerMich global stylesheet.
+ * Design tokens come from the shared web-base foundation (src/lib/ui/theme.css):
+ * accent (--accent-h: 285), surface/fg/border, semantic, radii, shadows, and the
+ * data-theme dark mode. Only app-level globals and a couple of derived tokens live here.
+ */
+@import "./lib/ui/theme.css";
 
-@variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-sans:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
-  /* Brand ramp (OKLCH violet, hue 295) */
-  --color-brand-50: oklch(97% 0.02 295);
-  --color-brand-100: oklch(94% 0.04 295);
-  --color-brand-200: oklch(88% 0.08 295);
-  --color-brand-300: oklch(80% 0.13 295);
-  --color-brand-400: oklch(70% 0.18 295);
-  --color-brand-500: oklch(60% 0.22 295);
-  --color-brand-600: oklch(54% 0.22 295);
-  --color-brand-700: oklch(46% 0.22 295);
-  --color-brand-800: oklch(38% 0.18 295);
-  --color-brand-900: oklch(30% 0.14 295);
-  --color-brand-950: oklch(20% 0.1 295);
-
-  /* Accent ramps — gradient sources for mood, wellness, and tool cards */
-  --color-accent-mood: oklch(72% 0.18 25);
-  --color-accent-mood-soft: oklch(94% 0.05 25);
-  --color-accent-calm: oklch(72% 0.13 215);
-  --color-accent-calm-soft: oklch(94% 0.04 215);
-  --color-accent-grow: oklch(72% 0.16 145);
-  --color-accent-grow-soft: oklch(94% 0.05 145);
-  --color-accent-glow: oklch(78% 0.15 85);
-  --color-accent-glow-soft: oklch(95% 0.05 85);
-
-  /* Semantic surfaces (overridden in :root.dark) */
-  --color-surface: oklch(99% 0.005 295);
-  --color-surface-elevated: oklch(100% 0 0);
-  --color-surface-sunken: oklch(96% 0.008 295);
-  --color-surface-glass: oklch(100% 0 0 / 0.72);
-  --color-surface-glass-strong: oklch(100% 0 0 / 0.88);
-  --color-border-subtle: oklch(92% 0.005 295);
-  --color-border-strong: oklch(85% 0.01 295);
-  --color-text-primary: oklch(20% 0.01 295);
-  --color-text-secondary: oklch(45% 0.01 295);
-  --color-text-tertiary: oklch(60% 0.01 295);
-  --color-text-on-brand: oklch(99% 0 0);
-
-  /* Status */
-  --color-success: oklch(60% 0.15 145);
-  --color-success-soft: oklch(94% 0.05 145);
-  --color-warning: oklch(72% 0.17 75);
-  --color-warning-soft: oklch(95% 0.05 75);
-  --color-danger: oklch(58% 0.21 25);
-  --color-danger-soft: oklch(94% 0.05 25);
-  --color-info: oklch(65% 0.13 240);
-  --color-info-soft: oklch(94% 0.04 240);
-
-  /* Spacing scale (semantic) */
-  --space-2xs: 0.25rem;
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-
-  /* Radii */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-xl: 1.75rem;
-  --radius-pill: 9999px;
-
-  /* Elevation */
-  --elev-0: 0 0 0 1px var(--color-border-subtle);
-  --elev-1: 0 1px 2px oklch(20% 0.01 295 / 0.06), 0 1px 1px oklch(20% 0.01 295 / 0.04);
-  --elev-2: 0 4px 12px oklch(20% 0.01 295 / 0.08), 0 2px 4px oklch(20% 0.01 295 / 0.04);
-  --elev-3: 0 12px 32px oklch(20% 0.01 295 / 0.14), 0 4px 8px oklch(20% 0.01 295 / 0.06);
-  --elev-brand: 0 8px 24px oklch(54% 0.22 295 / 0.32);
-
-  /* Typography scale (fluid display, fixed body) */
-  --text-display: clamp(2rem, 5vw, 2.75rem);
-  --text-title-1: 1.625rem;
-  --text-title-2: 1.25rem;
-  --text-title-3: 1rem;
-  --text-body: 0.9375rem;
-  --text-caption: 0.8125rem;
-  --text-micro: 0.6875rem;
-  --leading-display: 1.1;
-  --leading-title: 1.25;
-  --leading-body: 1.5;
-  --tracking-tight: -0.02em;
-  --tracking-flat: 0em;
-  --tracking-caps: 0.06em;
-
-  /* Motion */
-  --motion-fast: 140ms;
-  --motion-base: 240ms;
-  --motion-slow: 420ms;
-  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
-  --motion-spring-soft: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  /* Layout */
-  --tap-target: 48px;
-  --side-nav-w: 15rem;
-}
-
-:root.dark {
-  --color-surface: oklch(20% 0.008 295);
-  --color-surface-elevated: oklch(24% 0.01 295);
-  --color-surface-sunken: oklch(16% 0.006 295);
-  --color-surface-glass: oklch(24% 0.01 295 / 0.62);
-  --color-surface-glass-strong: oklch(24% 0.01 295 / 0.82);
-  --color-border-subtle: oklch(28% 0.008 295);
-  --color-border-strong: oklch(36% 0.01 295);
-  --color-text-primary: oklch(96% 0.005 295);
-  --color-text-secondary: oklch(72% 0.008 295);
-  --color-text-tertiary: oklch(55% 0.008 295);
-
-  --color-accent-mood-soft: oklch(30% 0.08 25 / 0.4);
-  --color-accent-calm-soft: oklch(30% 0.07 215 / 0.4);
-  --color-accent-grow-soft: oklch(30% 0.08 145 / 0.4);
-  --color-accent-glow-soft: oklch(30% 0.08 85 / 0.4);
-  --color-success-soft: oklch(30% 0.08 145 / 0.4);
-  --color-warning-soft: oklch(30% 0.08 75 / 0.4);
-  --color-danger-soft: oklch(30% 0.08 25 / 0.4);
-  --color-info-soft: oklch(30% 0.07 240 / 0.4);
-
-  --elev-1: 0 1px 2px oklch(0% 0 0 / 0.4), 0 1px 1px oklch(0% 0 0 / 0.3);
-  --elev-2: 0 4px 12px oklch(0% 0 0 / 0.5), 0 2px 4px oklch(0% 0 0 / 0.3);
-  --elev-3: 0 12px 32px oklch(0% 0 0 / 0.6), 0 4px 8px oklch(0% 0 0 / 0.4);
-  --elev-brand: 0 8px 24px oklch(60% 0.22 295 / 0.45);
+/* Soft semantic tints derived from the base colors, auto-adapting to light/dark. */
+:root {
+  --color-success-soft: color-mix(in oklab, var(--color-success) 16%, var(--color-surface));
+  --color-warning-soft: color-mix(in oklab, var(--color-warning) 18%, var(--color-surface));
+  --color-danger-soft: color-mix(in oklab, var(--color-danger) 16%, var(--color-surface));
+  --color-info-soft: color-mix(in oklab, var(--color-info) 16%, var(--color-surface));
 }
 
 html,
 body,
 #root {
   height: 100%;
-}
-
-body {
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -153,10 +29,10 @@ body {
   }
 }
 
-:where(button, a, [role='button'], [role='menuitem'], input, select, textarea):focus-visible {
-  outline: 2px solid var(--color-brand-500);
+:where(button, a, [role="button"], [role="menuitem"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-accent-500);
   outline-offset: 3px;
-  border-radius: var(--radius-sm);
+  border-radius: 0.5rem;
 }
 
 .skip-link {
@@ -167,33 +43,33 @@ body {
 }
 
 .skip-link:focus {
-  left: var(--space-md);
-  top: var(--space-md);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-elevated);
-  color: var(--color-text-primary);
-  border: 2px solid var(--color-brand-500);
-  box-shadow: var(--elev-2);
+  left: 1rem;
+  top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  color: var(--color-fg);
+  border: 2px solid var(--color-accent-500);
+  box-shadow: var(--shadow-md);
 }
 
 @media (pointer: coarse) {
-  :where(button, a, [role='button']):not(.no-min-tap) {
-    min-height: var(--tap-target);
+  :where(button, a, [role="button"]):not(.no-min-tap) {
+    min-height: 48px;
   }
 }
 
-/* Utility: glass surface (used by AppShell top-bar and contextual chips) */
+/* Glass surfaces (AppShell top bar + bottom nav), expressed in web-base tokens. */
 .surface-glass {
-  background-color: var(--color-surface-glass);
+  background-color: color-mix(in oklab, var(--color-surface) 80%, transparent);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border);
 }
 
 .surface-glass-strong {
-  background-color: var(--color-surface-glass-strong);
+  background-color: color-mix(in oklab, var(--color-surface) 88%, transparent);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border);
 }

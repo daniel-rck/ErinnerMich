@@ -1,94 +1,80 @@
-import { useState } from 'react'
-import { useTheme } from '../lib/hooks/useTheme'
+import { useState } from "react";
+import { useConfirm } from "../components/ui/Confirm";
+import { useToast } from "../components/ui/Toast";
 import {
+  type LandingTab,
   readSettings,
   writeLandingTab,
   writeNotificationOnboardingDone,
   writeWellnessToolsEnabled,
-  type LandingTab,
-} from '../lib/db/settings'
+} from "../lib/db/settings";
+import {
+  exportAll,
+  exportFilename,
+  ImportSchemaError,
+  importAll,
+  parseExport,
+} from "../lib/io/exportImport";
 import {
   ensureNotificationPermission,
   getNotificationSupport,
   isIosWithoutStandalone,
-} from '../lib/notifications/permission'
-import {
-  rearmAll,
-  schedulerStatus,
-  showTestNotification,
-} from '../lib/notifications/scheduler'
-import {
-  exportAll,
-  exportFilename,
-  importAll,
-  ImportSchemaError,
-  parseExport,
-} from '../lib/io/exportImport'
-import { useToast } from '../components/ui/Toast'
-import { useConfirm } from '../components/ui/Confirm'
+} from "../lib/notifications/permission";
+import { rearmAll, schedulerStatus, showTestNotification } from "../lib/notifications/scheduler";
+import { useTheme } from "../lib/ui/useTheme";
 
 interface SettingsPageProps {
-  embedded?: boolean
+  embedded?: boolean;
 }
 
 export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
-  const { theme, setTheme } = useTheme()
-  const toast = useToast()
-  const [landing, setLanding] = useState<LandingTab>(
-    () => readSettings().defaultLandingTab,
-  )
-  const [wellness, setWellness] = useState<boolean>(
-    () => readSettings().wellnessToolsEnabled,
-  )
-  const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
-    () => {
-      const support = getNotificationSupport()
-      return support.state === 'unsupported' ? 'unsupported' : support.permission
-    },
-  )
-  const [showIosHint, setShowIosHint] = useState<boolean>(() =>
-    isIosWithoutStandalone(),
-  )
-  const status = schedulerStatus()
+  const { theme, setTheme } = useTheme();
+  const toast = useToast();
+  const [landing, setLanding] = useState<LandingTab>(() => readSettings().defaultLandingTab);
+  const [wellness, setWellness] = useState<boolean>(() => readSettings().wellnessToolsEnabled);
+  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(() => {
+    const support = getNotificationSupport();
+    return support.state === "unsupported" ? "unsupported" : support.permission;
+  });
+  const [showIosHint, setShowIosHint] = useState<boolean>(() => isIosWithoutStandalone());
+  const status = schedulerStatus();
 
   function pickLanding(next: LandingTab) {
-    setLanding(next)
-    writeLandingTab(next)
+    setLanding(next);
+    writeLandingTab(next);
   }
 
   function toggleWellness(next: boolean) {
-    setWellness(next)
-    writeWellnessToolsEnabled(next)
+    setWellness(next);
+    writeWellnessToolsEnabled(next);
   }
 
   async function requestPermission() {
-    const result = await ensureNotificationPermission()
-    setPermission(result)
-    if (result === 'granted') {
-      writeNotificationOnboardingDone(true)
-      await rearmAll()
+    const result = await ensureNotificationPermission();
+    setPermission(result);
+    if (result === "granted") {
+      writeNotificationOnboardingDone(true);
+      await rearmAll();
     }
   }
 
   async function triggerTest() {
-    if (permission !== 'granted') return
-    const ok = await showTestNotification(10_000)
+    if (permission !== "granted") return;
+    const ok = await showTestNotification(10_000);
     toast.show({
-      variant: ok ? 'success' : 'error',
-      message: ok
-        ? 'Test-Benachrichtigung in ~10s.'
-        : 'Konnte Test-Benachrichtigung nicht planen.',
-    })
+      variant: ok ? "success" : "error",
+      message: ok ? "Test-Benachrichtigung in ~10s." : "Konnte Test-Benachrichtigung nicht planen.",
+    });
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-xl)]">
+    <div className="flex flex-col gap-[2rem]">
       {!embedded && (
-        <header className="flex flex-col gap-[var(--space-2xs)]">
-          <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+        <header className="flex flex-col gap-[0.25rem]">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
             Du
           </p>
-          <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+          <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
             Einstellungen
           </h1>
         </header>
@@ -99,16 +85,10 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
           Erscheinungsbild
         </h2>
         <div className="flex gap-2">
-          <ChoiceButton
-            active={theme === 'light'}
-            onClick={() => setTheme('light')}
-          >
+          <ChoiceButton active={theme === "light"} onClick={() => setTheme("light")}>
             Hell
           </ChoiceButton>
-          <ChoiceButton
-            active={theme === 'dark'}
-            onClick={() => setTheme('dark')}
-          >
+          <ChoiceButton active={theme === "dark"} onClick={() => setTheme("dark")}>
             Dunkel
           </ChoiceButton>
         </div>
@@ -119,13 +99,13 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
           Standard-Startseite
         </h2>
         <div className="flex flex-wrap gap-2">
-          <ChoiceButton active={landing === 'today'} onClick={() => pickLanding('today')}>
+          <ChoiceButton active={landing === "today"} onClick={() => pickLanding("today")}>
             Heute
           </ChoiceButton>
-          <ChoiceButton active={landing === 'habits'} onClick={() => pickLanding('habits')}>
+          <ChoiceButton active={landing === "habits"} onClick={() => pickLanding("habits")}>
             Habits
           </ChoiceButton>
-          <ChoiceButton active={landing === 'mood'} onClick={() => pickLanding('mood')}>
+          <ChoiceButton active={landing === "mood"} onClick={() => pickLanding("mood")}>
             Mood
           </ChoiceButton>
         </div>
@@ -138,11 +118,11 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
         <NotificationStatus permission={permission} status={status} />
 
         <div className="flex flex-wrap gap-2">
-          {permission === 'default' && (
+          {permission === "default" && (
             <button
               type="button"
               onClick={requestPermission}
-              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
             >
               Berechtigung anfragen
             </button>
@@ -150,7 +130,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
           <button
             type="button"
             onClick={triggerTest}
-            disabled={permission !== 'granted'}
+            disabled={permission !== "granted"}
             className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
           >
             Test in 10s
@@ -164,10 +144,11 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
             iOS: Zum Homescreen hinzufügen
           </h2>
           <p className="text-amber-900/80 dark:text-amber-100/80">
-            Auf iPhone/iPad liefert der Browser nur dann Push-Benachrichtigungen,
-            wenn ErinnerMich als Web-App installiert ist. Tippe auf <em>Teilen</em>
-            {' → '}<em>Zum Home-Bildschirm</em>. Web Push wird in Phase 7 als
-            verschlüsselter Multi-Device-Sync nachgereicht.
+            Auf iPhone/iPad liefert der Browser nur dann Push-Benachrichtigungen, wenn ErinnerMich
+            als Web-App installiert ist. Tippe auf <em>Teilen</em>
+            {" → "}
+            <em>Zum Home-Bildschirm</em>. Web Push wird in Phase 7 als verschlüsselter
+            Multi-Device-Sync nachgereicht.
           </p>
           <button
             type="button"
@@ -184,10 +165,9 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
           Stimmung &amp; Wellness
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Stimmungs-Tracking sowie Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas,
-          Schatzkiste, Sorgen-Box und Affirmationen — direkt in der App.
-          Bei „Aus" verschwinden Stimmungs-Strip, der Stimmung-Tab und die
-          Wellness-Tools komplett aus der Oberfläche.
+          Stimmungs-Tracking sowie Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Schatzkiste,
+          Sorgen-Box und Affirmationen — direkt in der App. Bei „Aus" verschwinden Stimmungs-Strip,
+          der Stimmung-Tab und die Wellness-Tools komplett aus der Oberfläche.
         </p>
         <div className="flex gap-2">
           <ChoiceButton active={wellness} onClick={() => toggleWellness(true)}>
@@ -206,90 +186,86 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
           Datenschutz
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Alle Daten bleiben ausschließlich in deinem Browser (IndexedDB +
-          localStorage). Es gibt keine Cookies, kein Analytics, keine
-          Tracker. DSGVO-konform per Default.
+          Alle Daten bleiben ausschließlich in deinem Browser (IndexedDB + localStorage). Es gibt
+          keine Cookies, kein Analytics, keine Tracker. DSGVO-konform per Default.
         </p>
       </section>
 
       <section className="flex flex-col gap-2 border-t border-zinc-200 pt-6 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-        <p>
-          ErinnerMich · Daten werden ausschließlich lokal in deinem Browser
-          gespeichert.
-        </p>
+        <p>ErinnerMich · Daten werden ausschließlich lokal in deinem Browser gespeichert.</p>
         <p>Keine Cookies · Kein Tracking · DSGVO-konform</p>
       </section>
     </div>
-  )
+  );
 }
 
 function DataIO() {
-  const [busy, setBusy] = useState(false)
-  const toast = useToast()
-  const confirm = useConfirm()
+  const [busy, setBusy] = useState(false);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   async function doExport() {
-    setBusy(true)
+    setBusy(true);
     try {
-      const snap = await exportAll()
+      const snap = await exportAll();
       const blob = new Blob([JSON.stringify(snap, null, 2)], {
-        type: 'application/json',
-      })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = exportFilename()
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(url)
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = exportFilename();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
       toast.show({
-        variant: 'success',
+        variant: "success",
         message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events, ${snap.toolEntries.length} Tool-Einträge.`,
-      })
+      });
     } catch (err) {
       toast.show({
-        variant: 'error',
-        message: err instanceof Error ? err.message : 'Export fehlgeschlagen.',
-      })
+        variant: "error",
+        message: err instanceof Error ? err.message : "Export fehlgeschlagen.",
+      });
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
-  async function handleFile(file: File, mode: 'merge' | 'replace') {
-    setBusy(true)
+  async function handleFile(file: File, mode: "merge" | "replace") {
+    setBusy(true);
     try {
-      const text = await file.text()
-      const data = parseExport(JSON.parse(text))
-      if (mode === 'replace') {
+      const text = await file.text();
+      const data = parseExport(JSON.parse(text));
+      if (mode === "replace") {
         const ok = await confirm({
-          title: 'Daten ersetzen?',
+          title: "Daten ersetzen?",
           message:
-            'Alle bestehenden Daten werden überschrieben. Dieser Schritt ist nicht rückgängig.',
-          confirmLabel: 'Ersetzen',
+            "Alle bestehenden Daten werden überschrieben. Dieser Schritt ist nicht rückgängig.",
+          confirmLabel: "Ersetzen",
           destructive: true,
-        })
+        });
         if (!ok) {
-          setBusy(false)
-          return
+          setBusy(false);
+          return;
         }
       }
-      const summary = await importAll(data, { mode })
+      const summary = await importAll(data, { mode });
       toast.show({
-        variant: 'success',
+        variant: "success",
         message: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge, ${summary.toolEntries} Tool-Einträge.`,
-      })
+      });
     } catch (err) {
       const text =
         err instanceof ImportSchemaError
           ? `Schema-Fehler: ${err.message}`
           : err instanceof Error
             ? err.message
-            : 'Import fehlgeschlagen.'
-      toast.show({ variant: 'error', message: text })
+            : "Import fehlgeschlagen.";
+      toast.show({ variant: "error", message: text });
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
@@ -303,7 +279,7 @@ function DataIO() {
           type="button"
           onClick={doExport}
           disabled={busy}
-          className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
         >
           Export (JSON)
         </button>
@@ -315,7 +291,7 @@ function DataIO() {
         </ImportButton>
       </div>
     </section>
-  )
+  );
 }
 
 function ImportButton({
@@ -324,16 +300,16 @@ function ImportButton({
   disabled,
   children,
 }: {
-  mode: 'merge' | 'replace'
-  onFile: (file: File, mode: 'merge' | 'replace') => Promise<void>
-  disabled?: boolean
-  children: React.ReactNode
+  mode: "merge" | "replace";
+  onFile: (file: File, mode: "merge" | "replace") => Promise<void>;
+  disabled?: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <label
       className={
-        'inline-flex cursor-pointer items-center gap-1 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 ' +
-        (disabled ? 'pointer-events-none opacity-50' : '')
+        "inline-flex cursor-pointer items-center gap-1 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 " +
+        (disabled ? "pointer-events-none opacity-50" : "")
       }
     >
       <input
@@ -341,57 +317,54 @@ function ImportButton({
         accept="application/json,.json"
         className="hidden"
         onChange={(event) => {
-          const file = event.target.files?.[0]
-          if (file) void onFile(file, mode)
-          event.target.value = ''
+          const file = event.target.files?.[0];
+          if (file) void onFile(file, mode);
+          event.target.value = "";
         }}
       />
       {children}
     </label>
-  )
+  );
 }
 
 function NotificationStatus({
   permission,
   status,
 }: {
-  permission: NotificationPermission | 'unsupported'
-  status: ReturnType<typeof schedulerStatus>
+  permission: NotificationPermission | "unsupported";
+  status: ReturnType<typeof schedulerStatus>;
 }) {
-  if (permission === 'unsupported') {
+  if (permission === "unsupported") {
     return (
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
         Dein Browser unterstützt keine Benachrichtigungen.
       </p>
-    )
+    );
   }
-  if (permission === 'denied') {
+  if (permission === "denied") {
     return (
       <p className="text-sm text-rose-700 dark:text-rose-300">
-        Benachrichtigungen sind blockiert. Aktiviere sie in den
-        Browser-Einstellungen, um Reminder zu erhalten.
+        Benachrichtigungen sind blockiert. Aktiviere sie in den Browser-Einstellungen, um Reminder
+        zu erhalten.
       </p>
-    )
+    );
   }
-  if (permission === 'default') {
+  if (permission === "default") {
     return (
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        Bitte erlaube Benachrichtigungen, damit deine Reminder rechtzeitig
-        ausgelöst werden.
+        Bitte erlaube Benachrichtigungen, damit deine Reminder rechtzeitig ausgelöst werden.
       </p>
-    )
+    );
   }
   const modeLabel =
-    status.mode === 'triggers'
-      ? 'Notification Triggers (im Hintergrund)'
-      : status.mode === 'in-tab'
-        ? 'setTimeout-Fallback (nur bei offenem Tab)'
-        : 'nicht verfügbar'
+    status.mode === "triggers"
+      ? "Notification Triggers (im Hintergrund)"
+      : status.mode === "in-tab"
+        ? "setTimeout-Fallback (nur bei offenem Tab)"
+        : "nicht verfügbar";
   return (
-    <p className="text-sm text-emerald-700 dark:text-emerald-300">
-      Aktiv · Modus: {modeLabel}
-    </p>
-  )
+    <p className="text-sm text-emerald-700 dark:text-emerald-300">Aktiv · Modus: {modeLabel}</p>
+  );
 }
 
 function ChoiceButton({
@@ -399,22 +372,22 @@ function ChoiceButton({
   onClick,
   children,
 }: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={
-        'rounded-md border px-3 py-1.5 text-sm ' +
+        "rounded-md border px-3 py-1.5 text-sm " +
         (active
-          ? 'border-brand-500 bg-brand-100 text-brand-900 dark:bg-brand-950/40 dark:text-brand-100'
-          : 'border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800')
+          ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
+          : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
       }
     >
       {children}
     </button>
-  )
+  );
 }

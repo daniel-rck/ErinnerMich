@@ -1,48 +1,46 @@
-import { lazy, Suspense, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Tabs } from '../components/ui/Tabs'
-import { useSettings } from '../lib/hooks/useSettings'
-import { FADE_UP, STAGGER_CONTAINER } from '../lib/design/motion'
-import { HabitsPage } from './Habits'
-import { AllPage } from './All'
+import { motion } from "framer-motion";
+import { lazy, Suspense, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Tabs } from "../components/ui/Tabs";
+import { FADE_UP, STAGGER_CONTAINER } from "../lib/design/motion";
+import { useSettings } from "../lib/hooks/useSettings";
+import { AllPage } from "./All";
+import { HabitsPage } from "./Habits";
 
 // Lazy so the wellness-tools code (incl. confetti/animations) is split into its
 // own chunk and only loaded when the Tools tab is actually opened.
-const ToolsPage = lazy(() =>
-  import('./Tools').then((m) => ({ default: m.ToolsPage })),
-)
+const ToolsPage = lazy(() => import("./Tools").then((m) => ({ default: m.ToolsPage })));
 
 function ToolsFallback() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center text-[length:var(--text-caption)] text-[color:var(--color-text-tertiary)]">
+    <div className="flex min-h-[40vh] items-center justify-center text-[length:0.8125rem] text-[color:var(--color-fg-subtle)]">
       Lade …
     </div>
-  )
+  );
 }
 
-type LibraryTab = 'habits' | 'reminders' | 'tools' | 'all'
+type LibraryTab = "habits" | "reminders" | "tools" | "all";
 
-const TAB_KEYS: LibraryTab[] = ['habits', 'reminders', 'tools', 'all']
+const TAB_KEYS: LibraryTab[] = ["habits", "reminders", "tools", "all"];
 
 export function LibraryPage() {
-  const [params, setParams] = useSearchParams()
-  const { wellnessToolsEnabled } = useSettings()
+  const [params, setParams] = useSearchParams();
+  const { wellnessToolsEnabled } = useSettings();
 
-  const requested = params.get('tab') as LibraryTab | null
+  const requested = params.get("tab") as LibraryTab | null;
   const active: LibraryTab = useMemo(() => {
     if (requested && TAB_KEYS.includes(requested)) {
-      if (requested === 'tools' && !wellnessToolsEnabled) return 'habits'
-      return requested
+      if (requested === "tools" && !wellnessToolsEnabled) return "habits";
+      return requested;
     }
-    return 'habits'
-  }, [requested, wellnessToolsEnabled])
+    return "habits";
+  }, [requested, wellnessToolsEnabled]);
 
   function setActive(next: string) {
-    const np = new URLSearchParams(params)
-    if (next === 'habits') np.delete('tab')
-    else np.set('tab', next)
-    setParams(np, { replace: true })
+    const np = new URLSearchParams(params);
+    if (next === "habits") np.delete("tab");
+    else np.set("tab", next);
+    setParams(np, { replace: true });
   }
 
   return (
@@ -50,13 +48,13 @@ export function LibraryPage() {
       initial="hidden"
       animate="visible"
       variants={STAGGER_CONTAINER}
-      className="flex flex-col gap-[var(--space-lg)]"
+      className="flex flex-col gap-[1.5rem]"
     >
-      <motion.header variants={FADE_UP} className="flex flex-col gap-[var(--space-2xs)]">
-        <p className="text-[length:var(--text-micro)] tracking-[var(--tracking-caps)] uppercase font-medium text-[color:var(--color-text-tertiary)]">
+      <motion.header variants={FADE_UP} className="flex flex-col gap-[0.25rem]">
+        <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
           Bibliothek
         </p>
-        <h1 className="text-[length:var(--text-display)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-tight)] text-[color:var(--color-text-primary)]">
+        <h1 className="text-[length:clamp(2rem,5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-[color:var(--color-fg)]">
           Routinen
         </h1>
       </motion.header>
@@ -70,7 +68,7 @@ export function LibraryPage() {
             <Tabs.Trigger value="all">Alle</Tabs.Trigger>
           </Tabs.List>
 
-          <div className="mt-[var(--space-md)]">
+          <div className="mt-[1rem]">
             <Tabs.Panel value="habits">
               <HabitsPage embedded />
             </Tabs.Panel>
@@ -91,5 +89,5 @@ export function LibraryPage() {
         </Tabs>
       </motion.div>
     </motion.div>
-  )
+  );
 }

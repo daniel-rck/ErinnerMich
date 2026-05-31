@@ -1,20 +1,20 @@
 interface WeekdayBarProps {
-  data: ReadonlyArray<{ label: string; value: number | null; count: number }>
-  max?: number
-  ariaLabel?: string
+  data: ReadonlyArray<{ label: string; value: number | null; count: number }>;
+  max?: number;
+  ariaLabel?: string;
 }
 
 export function WeekdayBar({
   data,
   max = 5,
-  ariaLabel = 'Wochentags-Auswertung',
+  ariaLabel = "Wochentags-Auswertung",
 }: WeekdayBarProps) {
-  const barWidth = 32
-  const gap = 12
-  const chartHeight = 80
-  const labelHeight = 20
-  const width = data.length * (barWidth + gap)
-  const height = chartHeight + labelHeight
+  const barWidth = 32;
+  const gap = 12;
+  const chartHeight = 80;
+  const labelHeight = 20;
+  const width = data.length * (barWidth + gap);
+  const height = chartHeight + labelHeight;
 
   return (
     <svg
@@ -24,14 +24,10 @@ export function WeekdayBar({
       className="block w-full"
     >
       {data.map((point, i) => {
-        const x = i * (barWidth + gap)
-        const value = point.value ?? 0
-        const barHeight =
-          point.value === null ? 0 : (value / max) * chartHeight
-        const fill =
-          point.value === null
-            ? '#e4e4e7'
-            : interpolateMoodColor(point.value, max)
+        const x = i * (barWidth + gap);
+        const value = point.value ?? 0;
+        const barHeight = point.value === null ? 0 : (value / max) * chartHeight;
+        const fill = point.value === null ? "#e4e4e7" : interpolateMoodColor(point.value, max);
         return (
           <g key={point.label}>
             <rect
@@ -43,7 +39,7 @@ export function WeekdayBar({
               fill={fill}
             >
               <title>{`${point.label}: ${
-                point.value === null ? '—' : point.value.toFixed(2)
+                point.value === null ? "—" : point.value.toFixed(2)
               } (${point.count})`}</title>
             </rect>
             <text
@@ -57,20 +53,20 @@ export function WeekdayBar({
               {point.label}
             </text>
           </g>
-        )
+        );
       })}
     </svg>
-  )
+  );
 }
 
 function interpolateMoodColor(value: number, max: number): string {
-  const t = Math.max(0, Math.min(1, (value - 1) / (max - 1)))
+  const t = Math.max(0, Math.min(1, (value - 1) / (max - 1)));
   // 1 → rose-500, max → emerald-500
   if (t < 0.5) {
-    return '#f43f5e'
+    return "#f43f5e";
   }
   if (t < 0.75) {
-    return '#f59e0b'
+    return "#f59e0b";
   }
-  return '#10b981'
+  return "#10b981";
 }
