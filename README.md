@@ -120,7 +120,7 @@ Sicherheits­lücken bitte **nicht** über öffentliche Issues melden – stattd
 
 ### Roadmap
 
-Die geplanten Phasen und das Datenmodell sind in [PLAN.md](./PLAN.md) dokumentiert.
+Die geplanten Phasen und das Datenmodell sind in [docs/ROADMAP.md](./docs/ROADMAP.md) dokumentiert.
 
 ### Lizenz
 
