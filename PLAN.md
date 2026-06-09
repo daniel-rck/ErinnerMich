@@ -63,7 +63,7 @@
       Hinweis: src/lib/ui/** (vendored web-base-Foundation) bleibt unangetastet.
       Verify: `bun run typecheck && bun run test && bun run build`.
 
-- [ ] T7: Remove unused workbox-window dependency
+- [x] T7: Remove unused workbox-window dependency
       Files: package.json, bun.lock
       Change: `bun remove workbox-window` (kein Import, Registrierung läuft über
       vite-plugin-pwa `injectRegister: "auto"`).
