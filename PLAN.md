@@ -55,7 +55,7 @@
       `<App />` in main.tsx wrappen.
       Verify: neuer Test (werfendes Kind → Fallback + Export-Spy); `bun run test && bun run build`.
 
-- [ ] T6: Delete dead UI primitives and dead barrels
+- [x] T6: Delete dead UI primitives and dead barrels
       Files: löschen: src/components/ui/{FormField,ListItem,SegmentedControl,index}.tsx|ts,
       src/lib/hooks/index.ts, src/lib/design/index.ts,
       src/components/ui/__tests__/{FormField,SegmentedControl}.test.tsx;
