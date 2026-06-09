@@ -33,7 +33,7 @@ Stats-Aggregation unterscheiden zwischen den Modi.
 | Lokaler Storage | `localStorage` (Settings) + IndexedDB via `idb` |
 | State | React Context + Hooks |
 | Tests | Vitest + Testing Library |
-| Linting | ESLint flat config |
+| Linting | Biome (Lint + Format, web-base-Baseline; ursprünglich ESLint) |
 | CI | GitHub Actions (Lint + Typecheck + Test + Build) |
 | Optional Sync | Cloudflare Workers + R2 + KV, AES-GCM/HKDF (Phase 7) |
 
@@ -283,7 +283,7 @@ Inventory-Threshold-Crossing.
 - Schnell-Snooze 10/30/60/1d
 - Habit-Reminder mit `+1`-Notification-Action
 - Mood-Reminder mit 5-Emoji-Notification-Actions
-- Keyboard-Shortcuts (`n` Reminder, `h` Habit, `m` Mood-Quick-Log, `g t/h/m/a/b` Navigation, `?` Hilfe)
+- Keyboard-Shortcuts (`n` Reminder, `h` Habit, `m` Mood-Quick-Log, `g t/r/u/h/a/s/e/m` Navigation, `?` Hilfe)
 - A11y-Pass (Lighthouse 100, axe-core grün, `prefers-reduced-motion`)
 
 ### Phase 7 — Optional Verschlüsselter Sync
@@ -300,7 +300,7 @@ Inventory-Threshold-Crossing.
 - **iOS**: Notification Triggers API nicht verfügbar; Banner für Homescreen-Install;
   Web Push (Phase 7) als Fallback
 - **Service Worker DB-Zugriff**: `src/lib/db/index.ts` muss SW-kompatibel sein
-- **Error Boundaries**: Top-Level mit DB-Backup-Export bei Migrations-Fehlern
+- **Error Boundaries**: Top-Level mit DB-Backup-Export ✅ (`src/components/ErrorBoundary.tsx`)
 - **A11y**: 44 × 44 px Touch-Targets, `prefers-reduced-motion`, Focus-Visible global
 
 ## Out of Scope (bewusst)

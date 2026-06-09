@@ -54,7 +54,7 @@ Wir verwenden lockeres [Conventional Commits](https://www.conventionalcommits.or
 ## Code-Stil
 
 - **TypeScript strict** – kein `any` ohne Begründung im Kommentar
-- **ESLint** (Flat Config) – `bun run lint` muss durchlaufen
+- **Biome** (Lint + Format) – `bun run lint` muss durchlaufen, `bun run format` formatiert
 - **React Hooks** – Regeln einhalten, kein State in Render-Pfaden
 - **Komponenten** kompakt halten, Logik in `src/lib/` auslagern
 - **Keine neuen Dependencies** ohne triftigen Grund – wir halten den Bundle klein

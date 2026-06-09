@@ -29,6 +29,7 @@ Eine Progressive Web App, die wiederkehrende Erinnerungen, Habits und Stimmungs�
 - 🔔 **Wiederkehrende Erinnerungen** mit flexibler Schedule-Engine (täglich, wöchentlich, monatlich, frei definierbar)
 - ✅ **Habit-Tracking** mit Streaks und Jahres-Heatmap
 - 🧠 **Mood-Logging** und Stats über die Zeit
+- 🧘 **Wellness-Tools** (Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Schatzkiste, Sorgen-Box, Affirmationen) – optional zuschaltbar
 - 📲 **Installierbar als PWA** – auf Desktop und Mobile, funktioniert offline
 - 🔒 **Komplett lokal**: kein Account, keine Cookies, kein Tracking, DSGVO-konform
 
@@ -76,7 +77,8 @@ bun run build        # Production Build nach dist/
 bun run preview      # gebauten Stand lokal ausliefern
 bun run test         # Vitest einmalig
 bun run test:watch   # Vitest watch mode
-bun run lint         # ESLint
+bun run lint         # Biome (Lint + Format-Check)
+bun run format       # Biome Format (write)
 bun run typecheck    # tsc -b --noEmit
 ```
 
@@ -92,19 +94,21 @@ bun run worker:deploy   # Deployment
 
 ```
 src/
-├── App.tsx              # App-Shell
-├── main.tsx             # Entry Point
+├── App.tsx              # Routing + Provider
+├── main.tsx             # Entry Point (inkl. Top-Level ErrorBoundary)
 ├── index.css            # Tailwind 4 Entry
 ├── components/          # UI-Komponenten (AppShell, Forms, Toast, …)
-├── pages/               # Routen (Today, Habits, Mood, Stats, …)
+│   └── tools/           # Wellness-Tools (Atem, Erden, Dankbarkeit, …)
+├── pages/               # Routen (Today, Mood, Library, You, Stats, Tools, …)
 ├── lib/
 │   ├── db/              # IndexedDB-Layer (idb)
 │   ├── schedule/        # Schedule-Engine (Recurring-Logik)
-│   ├── notifications/   # Notifications API + Fallback
+│   ├── notifications/   # Notifications API + In-Tab-Fallback
 │   ├── stats/           # Stats-Aggregation
-│   ├── design/          # Design-Tokens & Primitives
+│   ├── tools/           # Wellness-Tool-Registry
+│   ├── ui/              # web-base-Foundation (Theme, Tokens, Install)
 │   └── …
-└── sw/index.ts          # Service Worker (Workbox precache)
+└── sw/sw.ts             # Service Worker (Workbox precache)
 
 worker/
 └── index.ts             # Cloudflare Worker (SPA-Routing + /healthz)

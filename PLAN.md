@@ -69,7 +69,7 @@
       vite-plugin-pwa `injectRegister: "auto"`).
       Verify: `bun run build` erzeugt weiterhin dist/registerSW.js + dist/sw.js.
 
-- [ ] T8: Sync docs to reality (Biome migration + structure drift) and bump biome schema
+- [x] T8: Sync docs to reality (Biome migration + structure drift) and bump biome schema
       Files: README.md (Lint-Kommentar Biome, Projektstruktur sw/sw.ts + Tools/Pages,
       Wellness-Tools-Bullet), CONTRIBUTING.md (ESLint → Biome),
       docs/ROADMAP.md (Linting-Zeile, Shortcut-Liste, Error-Boundary-Status),
