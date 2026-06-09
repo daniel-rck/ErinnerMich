@@ -8,13 +8,7 @@ import {
   writeNotificationOnboardingDone,
   writeWellnessToolsEnabled,
 } from "../lib/db/settings";
-import {
-  exportAll,
-  exportFilename,
-  ImportSchemaError,
-  importAll,
-  parseExport,
-} from "../lib/io/exportImport";
+import { downloadExport, ImportSchemaError, importAll, parseExport } from "../lib/io/exportImport";
 import {
   ensureNotificationPermission,
   getNotificationSupport,
@@ -207,18 +201,7 @@ function DataIO() {
   async function doExport() {
     setBusy(true);
     try {
-      const snap = await exportAll();
-      const blob = new Blob([JSON.stringify(snap, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = exportFilename();
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      const snap = await downloadExport();
       toast.show({
         variant: "success",
         message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events, ${snap.toolEntries.length} Tool-Einträge.`,

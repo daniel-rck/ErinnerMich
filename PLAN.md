@@ -45,7 +45,7 @@
       `.catch`-Logging im subscribe-Callback von `startScheduler`.
       Verify: `bun run test && bun run lint`.
 
-- [ ] T5: Add the spec'd top-level error boundary with data-export escape hatch
+- [x] T5: Add the spec'd top-level error boundary with data-export escape hatch
       Files: neu src/components/ErrorBoundary.tsx + Test, src/main.tsx,
       src/lib/io/exportImport.ts, src/pages/Settings.tsx
       Gap: Roadmap (Cross-Cutting) verspricht Top-Level Error Boundary mit
