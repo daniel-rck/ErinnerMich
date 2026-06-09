@@ -76,7 +76,10 @@
       biome.json ($schema 2.4.15 → 2.4.16).
       Verify: `bun run lint` ohne Schema-Warnung; kein „eslint" mehr in den Docs.
 
-- [ ] T9: Final verification + close out
+- [x] T9: Final verification + close out
+      Ergebnis: Lint exit 0 (67 Warnings, 7 Infos — eins weniger als Baseline),
+      Typecheck sauber, 253/253 Tests grün (−8 durch gelöschte Dead-Code-Tests,
+      +4 neue: Scheduler-Re-Arm, Import-Broadcast, 2× ErrorBoundary), Build ok.
       Change: Vollverifikation, alle Tasks abhaken, push, Draft-PR.
       Verify: alles grün; PR existiert.
 
