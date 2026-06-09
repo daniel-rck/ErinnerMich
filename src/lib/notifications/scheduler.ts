@@ -11,6 +11,12 @@ import {
 
 let started = false;
 let unsubscribe: (() => void) | null = null;
+let rearmInterval: ReturnType<typeof setInterval> | null = null;
+
+// In-tab timers only cover the next 24 h (INTAB_HORIZON_MS) and are not
+// re-armed after they fire. A long-lived tab/PWA window would stop notifying
+// without this periodic re-arm that keeps the rolling horizon filled.
+const REARM_INTERVAL_MS = 60 * 60 * 1000;
 
 export interface SchedulerStatus {
   mode: "triggers" | "in-tab" | "unsupported";
@@ -78,6 +84,9 @@ export function startScheduler(): () => void {
   unsubscribe = subscribe((message) => {
     void handleMessage(message);
   });
+  rearmInterval = setInterval(() => {
+    void rearmAll();
+  }, REARM_INTERVAL_MS);
 
   void rearmAll();
   return stopScheduler;
@@ -87,6 +96,10 @@ export function stopScheduler(): void {
   if (!started) return;
   unsubscribe?.();
   unsubscribe = null;
+  if (rearmInterval !== null) {
+    clearInterval(rearmInterval);
+    rearmInterval = null;
+  }
   clearAllInTabTimers();
   started = false;
 }
@@ -157,6 +170,10 @@ export async function showTestNotification(delayMs = 10_000): Promise<boolean> {
 export function _resetSchedulerForTests(): void {
   unsubscribe?.();
   unsubscribe = null;
+  if (rearmInterval !== null) {
+    clearInterval(rearmInterval);
+    rearmInterval = null;
+  }
   started = false;
   clearAllInTabTimers();
 }

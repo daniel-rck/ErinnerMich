@@ -20,7 +20,7 @@
       Change: `git mv`, README-Link aktualisieren, Session-Plan als PLAN.md.
       Verify: keine veralteten PLAN.md-Referenzen; Lint grün.
 
-- [ ] T2: Fix in-tab notifications dying after the 24h arming horizon
+- [x] T2: Fix in-tab notifications dying after the 24h arming horizon
       Files: src/lib/notifications/scheduler.ts, src/lib/notifications/__tests__/scheduler.test.ts
       Bug: `armInTabTimers` armiert nur 24h voraus; nichts re-armiert danach
       (kein Interval, kein visibility-Handler). Da die Notification Triggers API
