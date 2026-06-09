@@ -30,7 +30,7 @@
       `stopScheduler`/`_resetSchedulerForTests`; Kommentar zum 24h-Horizont.
       Verify: neuer Test mit Fake-Timern (+1h → Timer wieder armiert); `bun run test`.
 
-- [ ] T3: Broadcast a full reload after import so merge-imports show up without refresh
+- [x] T3: Broadcast a full reload after import so merge-imports show up without refresh
       Files: src/lib/io/exportImport.ts:156-165, src/lib/io/__tests__/exportImport.test.ts
       Bug: Merge-Import broadcastet nur `reminder-changed`/`tool-added` — importierte
       Events/Moods/Inventories erscheinen erst nach Reload.

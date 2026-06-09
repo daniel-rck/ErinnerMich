@@ -154,15 +154,10 @@ export async function importAll(
   }
 
   await tx.done;
-  if (mode === "replace") {
-    broadcast({ type: "db-cleared" });
-  }
-  for (const reminder of data.reminders) {
-    broadcast({ type: "reminder-changed", id: reminder.id });
-  }
-  for (const tool of toolEntries) {
-    broadcast({ type: "tool-added", id: tool.id, toolKey: tool.toolKey });
-  }
+  // `db-cleared` doubles as "reload everything": every hook re-fetches and the
+  // scheduler clears + re-arms all triggers — exactly right after an import,
+  // which can touch every store at once (also in merge mode).
+  broadcast({ type: "db-cleared" });
 
   return {
     reminders: data.reminders.length,

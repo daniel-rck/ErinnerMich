@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { broadcast } from "../../db/broadcast";
 import { addEvent, listEventsForReminder } from "../../db/events";
 import { getInventory, setInventory } from "../../db/inventories";
 import { addMoodEntry, listMoodEntriesInRange } from "../../db/moodEntries";
@@ -12,6 +13,11 @@ import {
   importAll,
   parseExport,
 } from "../exportImport";
+
+vi.mock("../../db/broadcast", () => ({
+  broadcast: vi.fn(),
+  subscribe: () => () => {},
+}));
 
 async function seed() {
   const reminder = await createReminder({
@@ -198,6 +204,14 @@ describe("importAll roundtrip", () => {
     await importAll(snap, { mode: "merge" });
     const after = await listReminders();
     expect(after.map((r) => r.id).sort()).toEqual([reminder2.id, rem1.id].sort());
+  });
+
+  it("broadcastet db-cleared auch im Merge-Modus (Hooks laden neu)", async () => {
+    await seed();
+    const snap = await exportAll();
+    vi.mocked(broadcast).mockClear();
+    await importAll(snap, { mode: "merge" });
+    expect(vi.mocked(broadcast)).toHaveBeenCalledWith({ type: "db-cleared" });
   });
 });
 
