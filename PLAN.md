@@ -39,7 +39,7 @@
       Scheduler behandeln es als Reload-/Rearm-All). Tests anpassen.
       Verify: `bun run test`.
 
-- [ ] T4: Stop swallowing notification-path promise rejections
+- [x] T4: Stop swallowing notification-path promise rejections
       Files: src/lib/notifications/inTab.ts, src/lib/notifications/scheduler.ts
       Change: try/catch + `console.error` in `fireInTab` und Test-Notification;
       `.catch`-Logging im subscribe-Callback von `startScheduler`.

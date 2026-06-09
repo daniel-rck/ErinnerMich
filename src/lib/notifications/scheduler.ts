@@ -82,7 +82,9 @@ export function startScheduler(): () => void {
   started = true;
 
   unsubscribe = subscribe((message) => {
-    void handleMessage(message);
+    handleMessage(message).catch((err) => {
+      console.error("[notifications] Re-Arm nach DB-Broadcast fehlgeschlagen:", err);
+    });
   });
   rearmInterval = setInterval(() => {
     void rearmAll();
@@ -152,16 +154,24 @@ export async function showTestNotification(delayMs = 10_000): Promise<boolean> {
   }
 
   setTimeout(() => {
-    if (registration) {
-      void registration.showNotification("ErinnerMich – Test", {
-        tag: "test-notification",
-        body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
-      });
-    } else if (typeof Notification !== "undefined") {
-      new Notification("ErinnerMich – Test", {
-        tag: "test-notification",
-        body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
-      });
+    try {
+      if (registration) {
+        registration
+          .showNotification("ErinnerMich – Test", {
+            tag: "test-notification",
+            body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
+          })
+          .catch((err) => {
+            console.error("[notifications] Test-Notification fehlgeschlagen:", err);
+          });
+      } else if (typeof Notification !== "undefined") {
+        new Notification("ErinnerMich – Test", {
+          tag: "test-notification",
+          body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
+        });
+      }
+    } catch (err) {
+      console.error("[notifications] Test-Notification fehlgeschlagen:", err);
     }
   }, delayMs);
   return true;
