@@ -11,6 +11,12 @@ import {
 
 let started = false;
 let unsubscribe: (() => void) | null = null;
+let rearmInterval: ReturnType<typeof setInterval> | null = null;
+
+// In-tab timers only cover the next 24 h (INTAB_HORIZON_MS) and are not
+// re-armed after they fire. A long-lived tab/PWA window would stop notifying
+// without this periodic re-arm that keeps the rolling horizon filled.
+const REARM_INTERVAL_MS = 60 * 60 * 1000;
 
 export interface SchedulerStatus {
   mode: "triggers" | "in-tab" | "unsupported";
@@ -76,10 +82,24 @@ export function startScheduler(): () => void {
   started = true;
 
   unsubscribe = subscribe((message) => {
-    void handleMessage(message);
+    handleMessage(message).catch((err) => {
+      console.error("[notifications] Re-Arm nach DB-Broadcast fehlgeschlagen:", err);
+    });
   });
+  rearmInterval = setInterval(() => {
+    // Nur der In-Tab-Horizont muss periodisch nachgefüllt werden — via
+    // Triggers API armierte Notifications überleben ohne Re-Arm. Dort würde
+    // das stündliche Schließen + Neu-Anlegen nur unnötig arbeiten und bei
+    // Fehlern temporär Trigger verlieren.
+    if (schedulerStatus().mode !== "in-tab") return;
+    rearmAll().catch((err) => {
+      console.error("[notifications] Periodisches Re-Arm fehlgeschlagen:", err);
+    });
+  }, REARM_INTERVAL_MS);
 
-  void rearmAll();
+  rearmAll().catch((err) => {
+    console.error("[notifications] Initiales Re-Arm fehlgeschlagen:", err);
+  });
   return stopScheduler;
 }
 
@@ -87,6 +107,10 @@ export function stopScheduler(): void {
   if (!started) return;
   unsubscribe?.();
   unsubscribe = null;
+  if (rearmInterval !== null) {
+    clearInterval(rearmInterval);
+    rearmInterval = null;
+  }
   clearAllInTabTimers();
   started = false;
 }
@@ -139,16 +163,24 @@ export async function showTestNotification(delayMs = 10_000): Promise<boolean> {
   }
 
   setTimeout(() => {
-    if (registration) {
-      void registration.showNotification("ErinnerMich – Test", {
-        tag: "test-notification",
-        body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
-      });
-    } else if (typeof Notification !== "undefined") {
-      new Notification("ErinnerMich – Test", {
-        tag: "test-notification",
-        body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
-      });
+    try {
+      if (registration) {
+        registration
+          .showNotification("ErinnerMich – Test", {
+            tag: "test-notification",
+            body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
+          })
+          .catch((err) => {
+            console.error("[notifications] Test-Notification fehlgeschlagen:", err);
+          });
+      } else if (typeof Notification !== "undefined") {
+        new Notification("ErinnerMich – Test", {
+          tag: "test-notification",
+          body: "Diese Test-Benachrichtigung wurde aus dem offenen Tab ausgelöst.",
+        });
+      }
+    } catch (err) {
+      console.error("[notifications] Test-Notification fehlgeschlagen:", err);
     }
   }, delayMs);
   return true;
@@ -157,6 +189,10 @@ export async function showTestNotification(delayMs = 10_000): Promise<boolean> {
 export function _resetSchedulerForTests(): void {
   unsubscribe?.();
   unsubscribe = null;
+  if (rearmInterval !== null) {
+    clearInterval(rearmInterval);
+    rearmInterval = null;
+  }
   started = false;
   clearAllInTabTimers();
 }

@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  type InputHTMLAttributes,
-  type SelectHTMLAttributes,
-  type TextareaHTMLAttributes,
-} from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 const BASE = [
   "w-full",
@@ -25,34 +20,6 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
   function Input({ className = "", type = "text", ...rest }, ref) {
     return (
       <input ref={ref} type={type} className={[BASE, HEIGHT, className].join(" ")} {...rest} />
-    );
-  },
-);
-
-export const Textarea = forwardRef<
-  HTMLTextAreaElement,
-  TextareaHTMLAttributes<HTMLTextAreaElement>
->(function Textarea({ className = "", rows = 3, ...rest }, ref) {
-  return (
-    <textarea
-      ref={ref}
-      rows={rows}
-      className={[BASE, "py-[0.75rem] resize-y", className].join(" ")}
-      {...rest}
-    />
-  );
-});
-
-export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
-  function Select({ className = "", children, ...rest }, ref) {
-    return (
-      <select
-        ref={ref}
-        className={[BASE, HEIGHT, "pr-8 appearance-none", className].join(" ")}
-        {...rest}
-      >
-        {children}
-      </select>
     );
   },
 );

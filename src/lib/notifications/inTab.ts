@@ -68,14 +68,20 @@ async function fireInTab(
     icon: descriptor.icon,
     data: descriptor.data,
   };
-  if (registration) {
-    const swOptions = options as NotificationOptions & {
-      actions?: typeof descriptor.actions;
-    };
-    swOptions.actions = descriptor.actions;
-    await registration.showNotification(descriptor.title, swOptions);
-  } else {
-    new Notification(descriptor.title, options);
+  try {
+    if (registration) {
+      const swOptions = options as NotificationOptions & {
+        actions?: typeof descriptor.actions;
+      };
+      swOptions.actions = descriptor.actions;
+      await registration.showNotification(descriptor.title, swOptions);
+    } else {
+      new Notification(descriptor.title, options);
+    }
+  } catch (err) {
+    // E.g. permission revoked while the tab stayed open — log instead of
+    // surfacing as an unhandled rejection.
+    console.error("[notifications] In-Tab-Notification fehlgeschlagen:", err);
   }
 }
 

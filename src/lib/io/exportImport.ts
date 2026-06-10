@@ -154,15 +154,10 @@ export async function importAll(
   }
 
   await tx.done;
-  if (mode === "replace") {
-    broadcast({ type: "db-cleared" });
-  }
-  for (const reminder of data.reminders) {
-    broadcast({ type: "reminder-changed", id: reminder.id });
-  }
-  for (const tool of toolEntries) {
-    broadcast({ type: "tool-added", id: tool.id, toolKey: tool.toolKey });
-  }
+  // `db-cleared` doubles as "reload everything": every hook re-fetches and the
+  // scheduler clears + re-arms all triggers — exactly right after an import,
+  // which can touch every store at once (also in merge mode).
+  broadcast({ type: "db-cleared" });
 
   return {
     reminders: data.reminders.length,
@@ -178,4 +173,24 @@ export function exportFilename(now: Date = new Date()): string {
   const mm = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
   return `erinnermich-${yyyy}-${mm}-${dd}.json`;
+}
+
+/**
+ * Exports the full DB snapshot and triggers a JSON file download.
+ * Returns the snapshot so callers can show a summary.
+ */
+export async function downloadExport(): Promise<ErinnermichExport> {
+  const snap = await exportAll();
+  const blob = new Blob([JSON.stringify(snap, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = exportFilename();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  return snap;
 }
