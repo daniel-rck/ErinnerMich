@@ -87,10 +87,19 @@ export function startScheduler(): () => void {
     });
   });
   rearmInterval = setInterval(() => {
-    void rearmAll();
+    // Nur der In-Tab-Horizont muss periodisch nachgefüllt werden — via
+    // Triggers API armierte Notifications überleben ohne Re-Arm. Dort würde
+    // das stündliche Schließen + Neu-Anlegen nur unnötig arbeiten und bei
+    // Fehlern temporär Trigger verlieren.
+    if (schedulerStatus().mode !== "in-tab") return;
+    rearmAll().catch((err) => {
+      console.error("[notifications] Periodisches Re-Arm fehlgeschlagen:", err);
+    });
   }, REARM_INTERVAL_MS);
 
-  void rearmAll();
+  rearmAll().catch((err) => {
+    console.error("[notifications] Initiales Re-Arm fehlgeschlagen:", err);
+  });
   return stopScheduler;
 }
 
