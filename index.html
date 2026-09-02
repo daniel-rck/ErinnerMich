@@ -10,12 +10,7 @@
       content="ErinnerMich — Erinnern. Reflektieren. Durchatmen. Reminder, Habits, Mood und kleine Wellness-Tools im Browser. Lokale Daten, kein Account, DSGVO-konform."
     />
     <title>ErinnerMich</title>
-    <script>
-      try {
-        const t = localStorage.getItem("theme");
-        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
-      } catch {}
-    </script>
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
