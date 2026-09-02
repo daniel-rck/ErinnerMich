@@ -113,7 +113,7 @@ export function Onboarding() {
         initial={{ y: "100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 360, damping: 30 }}
-        className="w-full max-w-md rounded-t-3xl bg-white pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl dark:bg-zinc-900 sm:rounded-2xl"
+        className="w-full max-w-md rounded-t-3xl bg-surface pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl sm:rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="onboarding-title"
@@ -134,20 +134,20 @@ export function Onboarding() {
               <h2 id="onboarding-title" className="text-xl font-semibold">
                 {slide.title}
               </h2>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">{slide.body}</p>
+              <p className="text-sm text-fg-muted">{slide.body}</p>
               {slide.kind === "choice" && slide.key === "wellness" && (
                 <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
                   <button
                     type="button"
                     onClick={() => chooseWellness(true)}
-                    className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700"
+                    className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
                   >
                     Ja, aktivieren
                   </button>
                   <button
                     type="button"
                     onClick={() => chooseWellness(false)}
-                    className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                    className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
                   >
                     Später
                   </button>
@@ -167,7 +167,7 @@ export function Onboarding() {
                 <h2 id="onboarding-title" className="text-xl font-semibold">
                   Erste Habit anlegen?
                 </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="text-sm text-fg-muted">
                   Wähle eine Vorlage — du kannst sie jederzeit anpassen.
                 </p>
               </div>
@@ -177,7 +177,7 @@ export function Onboarding() {
                     <button
                       type="button"
                       onClick={() => void pickStarter(t.key)}
-                      className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-left hover:border-accent-400 hover:bg-accent-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-accent-500 dark:hover:bg-accent-900/40"
+                      className="flex w-full items-center gap-3 rounded-lg border border-border bg-surface p-3 text-left hover:border-accent-400 hover:bg-accent-50 dark:hover:border-accent-500 dark:hover:bg-accent-900/40"
                     >
                       <span className="text-2xl" aria-hidden>
                         {t.icon}
@@ -185,12 +185,10 @@ export function Onboarding() {
                       <div className="flex flex-1 flex-col">
                         <span className="font-medium">{t.title}</span>
                         {t.description && (
-                          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                            {t.description}
-                          </span>
+                          <span className="text-xs text-fg-muted">{t.description}</span>
                         )}
                       </div>
-                      <ChevronRight size={16} className="text-zinc-400" />
+                      <ChevronRight size={16} className="text-fg-subtle" />
                     </button>
                   </li>
                 ))}
@@ -199,12 +197,8 @@ export function Onboarding() {
           )}
         </AnimatePresence>
 
-        <footer className="flex items-center justify-between gap-3 border-t border-zinc-200 px-6 py-4 dark:border-zinc-800">
-          <button
-            type="button"
-            onClick={complete}
-            className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          >
+        <footer className="flex items-center justify-between gap-3 border-t border-border px-6 py-4">
+          <button type="button" onClick={complete} className="text-sm text-fg-muted hover:text-fg">
             Überspringen
           </button>
           <div className="flex items-center gap-1.5" aria-hidden>
@@ -214,10 +208,10 @@ export function Onboarding() {
                 className={
                   "h-1.5 rounded-full transition-all " +
                   (onPicker || i < step
-                    ? "w-2 bg-zinc-300 dark:bg-zinc-700"
+                    ? "w-2 bg-border"
                     : i === step
                       ? "w-6 bg-accent-500"
-                      : "w-2 bg-zinc-300 dark:bg-zinc-700")
+                      : "w-2 bg-border")
                 }
               />
             ))}
@@ -229,7 +223,7 @@ export function Onboarding() {
               <button
                 type="button"
                 onClick={() => void nextStep()}
-                className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700"
+                className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
               >
                 Weiter
               </button>
@@ -238,7 +232,7 @@ export function Onboarding() {
             <button
               type="button"
               onClick={complete}
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
             >
               Später
             </button>

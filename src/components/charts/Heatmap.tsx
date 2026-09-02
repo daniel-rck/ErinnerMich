@@ -67,7 +67,7 @@ export function Heatmap({
           y={10}
           fontSize={9}
           fill="currentColor"
-          className="text-zinc-500 dark:text-zinc-400"
+          className="text-fg-muted"
         >
           {label}
         </text>

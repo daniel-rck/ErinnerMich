@@ -40,9 +40,7 @@ export function GratitudeJar() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-2">
         <Jar fill={fillRatio} count={recent.length} />
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {recent.length} Einträge in den letzten 7 Tagen
-        </p>
+        <p className="text-sm text-fg-muted">{recent.length} Einträge in den letzten 7 Tagen</p>
       </div>
 
       <form
@@ -62,12 +60,12 @@ export function GratitudeJar() {
             onChange={(e) => setText(e.target.value)}
             maxLength={240}
             placeholder="ein kleiner Moment …"
-            className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm"
           />
           <button
             type="submit"
             disabled={!text.trim()}
-            className="rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+            className="rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-amber-700 disabled:opacity-50"
           >
             Hinzufügen
           </button>
@@ -80,14 +78,14 @@ export function GratitudeJar() {
             key={e.id}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+            className="flex items-start gap-3 rounded-lg border border-border bg-surface p-3"
           >
             <span className="text-lg" aria-hidden>
               🫙
             </span>
             <div className="flex-1">
               <p className="text-sm">{e.text}</p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-fg-muted">
                 {new Date(e.loggedAt).toLocaleString("de-DE", {
                   dateStyle: "medium",
                   timeStyle: "short",
@@ -97,7 +95,7 @@ export function GratitudeJar() {
             <button
               type="button"
               onClick={() => void remove(e.id)}
-              className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-rose-600 dark:hover:bg-zinc-800"
+              className="rounded p-1 text-fg-subtle hover:bg-surface-sunken hover:text-danger"
               aria-label="Eintrag löschen"
             >
               <Trash2 size={14} />

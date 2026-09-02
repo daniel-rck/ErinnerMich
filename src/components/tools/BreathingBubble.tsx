@@ -152,7 +152,7 @@ export function BreathingBubble() {
         </div>
       </div>
 
-      <div className="text-sm text-zinc-500 tabular-nums dark:text-zinc-400">
+      <div className="text-sm text-fg-muted tabular-nums">
         Restzeit: {Math.ceil(totalRemaining)}s
       </div>
 
@@ -161,7 +161,7 @@ export function BreathingBubble() {
           <button
             type="button"
             onClick={start}
-            className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700"
+            className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-sky-700"
           >
             <Play size={16} /> Start
           </button>
@@ -169,7 +169,7 @@ export function BreathingBubble() {
           <button
             type="button"
             onClick={pause}
-            className="inline-flex items-center gap-2 rounded-md bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+            className="inline-flex items-center gap-2 rounded-md bg-surface-sunken px-4 py-2 text-sm font-medium text-fg hover:bg-surface-sunken"
           >
             <Pause size={16} /> Pause
           </button>
@@ -177,7 +177,7 @@ export function BreathingBubble() {
         <button
           type="button"
           onClick={reset}
-          className="inline-flex items-center gap-2 rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
         >
           <RotateCcw size={16} /> Reset
         </button>
@@ -185,7 +185,7 @@ export function BreathingBubble() {
           type="button"
           onClick={() => void finish()}
           disabled={totalElapsed < 1}
-          className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken disabled:opacity-50"
         >
           Fertig
         </button>
@@ -211,7 +211,7 @@ function ModeButton({
         "rounded-md border px-3 py-1.5 text-sm " +
         (active
           ? "border-sky-500 bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-100"
-          : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
+          : "border-border hover:bg-surface-sunken")
       }
     >
       {children}

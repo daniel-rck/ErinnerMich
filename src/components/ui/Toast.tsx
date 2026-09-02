@@ -64,7 +64,7 @@ function ToastViewport({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: str
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
             role={toast.variant === "error" ? "alert" : "status"}
-            className="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border bg-white px-4 py-3 text-sm shadow-lg dark:bg-zinc-900"
+            className="pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border bg-surface px-4 py-3 text-sm shadow-lg"
             data-variant={toast.variant}
             style={borderForVariant(toast.variant)}
           >
@@ -86,7 +86,7 @@ function ToastViewport({ toasts, dismiss }: { toasts: Toast[]; dismiss: (id: str
               type="button"
               onClick={() => dismiss(toast.id)}
               aria-label="Schließen"
-              className="-my-1 rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+              className="-my-1 rounded-md p-1 text-fg-subtle hover:bg-surface-sunken hover:text-fg"
             >
               <X size={16} />
             </button>

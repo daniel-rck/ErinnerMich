@@ -26,7 +26,7 @@ const ToolSessionPage = lazy(() =>
 
 function ToolsFallback() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center text-sm text-zinc-500">
+    <div className="flex min-h-[40vh] items-center justify-center text-sm text-fg-muted">
       Lade …
     </div>
   );

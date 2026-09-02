@@ -115,13 +115,11 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                   "flex flex-1 flex-col items-center gap-1 rounded-xl border-2 py-3 text-3xl transition " +
                   (active
                     ? "border-accent-500 bg-accent-50 dark:bg-accent-900/40"
-                    : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
+                    : "border-border hover:border-border")
                 }
               >
                 <span aria-hidden>{opt.emoji}</span>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                  {opt.label.split(" ")[0]}
-                </span>
+                <span className="text-[10px] text-fg-muted">{opt.label.split(" ")[0]}</span>
               </button>
             );
           })}
@@ -130,7 +128,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
         {mood !== null && (
           <>
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs font-medium uppercase tracking-wide text-fg-muted">
                 Tags (optional)
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -146,7 +144,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                         "rounded-full border px-3 py-1 text-sm " +
                         (active
                           ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                          : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
+                          : "border-border hover:border-border")
                       }
                     >
                       #{tag}
@@ -157,14 +155,14 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
             </div>
 
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs font-medium uppercase tracking-wide text-fg-muted">
                 Notiz (optional)
               </span>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={2}
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-zinc-700 dark:bg-zinc-900"
+                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
                 placeholder="Was beschäftigt dich gerade?"
               />
             </label>
@@ -173,7 +171,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
               type="button"
               onClick={() => void detailedSave()}
               disabled={submitting}
-              className="rounded-md bg-accent-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
+              className="rounded-md bg-accent-600 px-4 py-2.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
             >
               Speichern
             </button>

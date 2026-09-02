@@ -50,7 +50,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => resolveAndClose(false)}
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
             >
               {pending?.options.cancelLabel ?? "Abbrechen"}
             </button>
@@ -59,9 +59,9 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               onClick={() => resolveAndClose(true)}
               ref={confirmRef}
               className={
-                "rounded-md px-4 py-2 text-sm font-medium text-white " +
+                "rounded-md px-4 py-2 text-sm font-medium text-fg-on-accent " +
                 (pending?.options.destructive
-                  ? "bg-rose-600 hover:bg-rose-700"
+                  ? "bg-danger hover:opacity-90"
                   : "bg-accent-600 hover:bg-accent-700")
               }
             >
@@ -70,7 +70,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
           </>
         }
       >
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">{pending?.options.message}</p>
+        <p className="text-sm text-fg-muted">{pending?.options.message}</p>
       </Modal>
     </ConfirmContext.Provider>
   );

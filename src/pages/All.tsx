@@ -104,7 +104,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
       )}
 
       <div className="flex items-center gap-2 rounded-[0.875rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-[0.75rem]">
-        <Search size={16} className="text-zinc-400" aria-hidden />
+        <Search size={16} className="text-fg-subtle" aria-hidden />
         <input
           type="search"
           value={search}
@@ -115,10 +115,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         />
       </div>
 
-      <fieldset
-        aria-label="Filter"
-        className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
-      >
+      <fieldset aria-label="Filter" className="flex gap-1 rounded-lg bg-surface-sunken p-1">
         <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
           Alle
         </FilterButton>
@@ -158,13 +155,13 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
 function EmptyState({ search }: { search: string }) {
   if (search.trim().length > 0) {
     return (
-      <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+      <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-fg-muted">
         Keine Treffer für „{search}“.
       </p>
     );
   }
   return (
-    <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+    <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-fg-muted">
       Hier landen alle Reminder, Habits und Mood-Einträge.
     </p>
   );
@@ -187,7 +184,7 @@ function RowItem({
 
   return (
     <li
-      className={`flex items-center gap-3 rounded-lg border border-l-4 ${tone.borderL} border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900`}
+      className={`flex items-center gap-3 rounded-lg border border-l-4 ${tone.borderL} border-border bg-surface p-3`}
     >
       <button
         type="button"
@@ -202,7 +199,7 @@ function RowItem({
         </span>
         <div className="flex flex-1 flex-col">
           <span className="font-medium">{reminder.title}</span>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          <span className="text-xs text-fg-muted">
             {formatSchedule(reminder.schedule)}
             {!reminder.active && " · pausiert"}
           </span>
@@ -267,7 +264,7 @@ function RowMenu({
         aria-expanded={open}
         aria-controls={menuId}
         aria-label="Optionen"
-        className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="flex h-9 w-9 items-center justify-center rounded-md text-fg-muted hover:bg-surface-sunken"
       >
         <MoreVertical size={18} />
       </button>
@@ -275,13 +272,13 @@ function RowMenu({
         <div
           id={menuId}
           role="menu"
-          className="absolute right-0 top-full z-10 mt-1 flex min-w-[10rem] flex-col rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+          className="absolute right-0 top-full z-10 mt-1 flex min-w-[10rem] flex-col rounded-md border border-border bg-surface py-1 shadow-lg"
         >
           <button
             type="button"
             role="menuitem"
             onClick={pick(onToggleActive)}
-            className="px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
+            className="px-3 py-1.5 text-left text-sm hover:bg-surface-sunken"
           >
             {active ? "Pausieren" : "Aktivieren"}
           </button>
@@ -289,7 +286,7 @@ function RowMenu({
             type="button"
             role="menuitem"
             onClick={pick(onEdit)}
-            className="px-3 py-1.5 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700"
+            className="px-3 py-1.5 text-left text-sm hover:bg-surface-sunken"
           >
             Bearbeiten
           </button>
@@ -323,9 +320,7 @@ function FilterButton({
       onClick={onClick}
       className={
         "flex-1 rounded-md px-3 py-1.5 text-sm font-medium " +
-        (active
-          ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50"
-          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100")
+        (active ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")
       }
     >
       {children}

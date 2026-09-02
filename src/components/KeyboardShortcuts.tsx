@@ -74,7 +74,7 @@ export function KeyboardShortcuts() {
         if (event.key === "Escape") setHelpOpen(false);
       }}
     >
-      <div className="max-w-md rounded-lg border border-zinc-200 bg-white p-5 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+      <div className="max-w-md rounded-lg border border-border bg-surface p-5 shadow-xl">
         <h2 id="kbd-help-title" className="mb-3 text-lg font-semibold">
           Tastenkürzel
         </h2>
@@ -101,8 +101,8 @@ export function KeyboardShortcuts() {
             ] as [string, string][]
           ).map(([key, label]) => (
             <li key={key} className="flex items-center justify-between gap-3">
-              <span className="text-zinc-700 dark:text-zinc-300">{label}</span>
-              <kbd className="rounded border border-zinc-300 bg-zinc-50 px-2 py-0.5 font-mono text-xs text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              <span className="text-fg-muted">{label}</span>
+              <kbd className="rounded border border-border bg-surface-sunken px-2 py-0.5 font-mono text-xs text-fg-muted">
                 {key}
               </kbd>
             </li>
@@ -111,7 +111,7 @@ export function KeyboardShortcuts() {
         <button
           type="button"
           onClick={() => setHelpOpen(false)}
-          className="mt-4 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="mt-4 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken"
         >
           Schließen
         </button>

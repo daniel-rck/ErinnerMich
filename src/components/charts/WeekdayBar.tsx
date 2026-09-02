@@ -48,7 +48,7 @@ export function WeekdayBar({
               textAnchor="middle"
               fontSize={11}
               fill="currentColor"
-              className="text-zinc-500 dark:text-zinc-400"
+              className="text-fg-muted"
             >
               {point.label}
             </text>

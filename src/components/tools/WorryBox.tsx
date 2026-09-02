@@ -43,7 +43,7 @@ export function WorryBox() {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-fg-muted">
         Schreib auf, was dich beschäftigt. Die Sorge ist hier abgelegt — du darfst sie loslassen.
       </p>
 
@@ -60,28 +60,28 @@ export function WorryBox() {
           maxLength={1000}
           rows={4}
           placeholder="Was beschäftigt dich gerade?"
-          className="resize-none rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm"
         />
-        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <label className="flex items-center gap-2 text-sm text-fg-muted">
           <input
             type="checkbox"
             checked={autoDelete}
             onChange={(e) => setAutoDelete(e.target.checked)}
-            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
+            className="h-4 w-4 rounded border-border"
           />
           Nach 30 Tagen automatisch löschen
         </label>
         <button
           type="submit"
           disabled={!text.trim() || submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-slate-800 disabled:opacity-50"
         >
           In die Box ablegen
         </button>
       </form>
 
       <div>
-        <h2 className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-400">
+        <h2 className="mb-3 text-sm font-medium uppercase text-fg-muted">
           Abgelegte Sorgen ({entries.length})
         </h2>
         <ul className="flex flex-col gap-2">
@@ -94,14 +94,14 @@ export function WorryBox() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92 }}
                 transition={{ type: "spring", stiffness: 220, damping: 22 }}
-                className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900"
+                className="flex items-start gap-3 rounded-lg border border-border bg-surface-muted p-3"
               >
                 <span className="text-lg" aria-hidden>
                   📦
                 </span>
                 <div className="flex-1">
                   <p className="text-sm whitespace-pre-wrap">{e.text}</p>
-                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-1 text-xs text-fg-muted">
                     {new Date(e.loggedAt).toLocaleDateString("de-DE")}
                     {e.expiresAt
                       ? ` · läuft ${new Date(e.expiresAt).toLocaleDateString("de-DE")} ab`
@@ -111,7 +111,7 @@ export function WorryBox() {
                 <button
                   type="button"
                   onClick={() => void deleteToolEntry(e.id)}
-                  className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-rose-600 dark:hover:bg-zinc-800"
+                  className="rounded p-1 text-fg-subtle hover:bg-surface-sunken hover:text-danger"
                   aria-label="Sorge löschen"
                 >
                   <Trash2 size={14} />
@@ -120,7 +120,7 @@ export function WorryBox() {
             ))}
           </AnimatePresence>
           {entries.length === 0 && (
-            <li className="rounded-lg border border-dashed border-zinc-300 p-4 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+            <li className="rounded-lg border border-dashed border-border p-4 text-center text-sm text-fg-muted">
               Box ist leer.
             </li>
           )}

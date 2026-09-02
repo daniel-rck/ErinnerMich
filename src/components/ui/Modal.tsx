@@ -73,10 +73,10 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 4 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
-            className={`relative w-full rounded-2xl border border-zinc-200 bg-white shadow-2xl outline-none dark:border-zinc-800 dark:bg-zinc-900 ${SIZE_CLASS[size]}`}
+            className={`relative w-full rounded-2xl border border-border bg-surface shadow-2xl outline-none ${SIZE_CLASS[size]}`}
           >
             {(title || !hideClose) && (
-              <header className="flex items-center justify-between gap-3 border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
+              <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
                 {title ? (
                   <h2 id={titleId} className="text-base font-semibold">
                     {title}
@@ -89,7 +89,7 @@ export function Modal({
                     type="button"
                     onClick={onClose}
                     aria-label="Schließen"
-                    className="-my-1 rounded-md p-1.5 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                    className="-my-1 rounded-md p-1.5 text-fg-muted hover:bg-surface-sunken hover:text-fg"
                   >
                     <X size={18} />
                   </button>
@@ -98,7 +98,7 @@ export function Modal({
             )}
             <div className="px-5 py-4">{children}</div>
             {footer && (
-              <footer className="flex justify-end gap-2 border-t border-zinc-200 px-5 py-3 dark:border-zinc-800">
+              <footer className="flex justify-end gap-2 border-t border-border px-5 py-3">
                 {footer}
               </footer>
             )}

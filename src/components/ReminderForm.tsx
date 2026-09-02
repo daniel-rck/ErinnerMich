@@ -168,7 +168,7 @@ export function ReminderForm({
 
       <FieldGroup label="Wiederholung">
         {isReadOnlySchedule ? (
-          <div className="rounded-md border border-dashed border-zinc-300 px-3 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
+          <div className="rounded-md border border-dashed border-border px-3 py-2 text-sm text-fg-muted">
             {formatSchedule(schedule)} — wird in einer späteren Version editierbar.
           </div>
         ) : (
@@ -188,7 +188,7 @@ export function ReminderForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
+          className="rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
         >
           {initial ? "Speichern" : "Anlegen"}
         </button>
@@ -196,7 +196,7 @@ export function ReminderForm({
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
           >
             Abbrechen
           </button>
@@ -207,7 +207,7 @@ export function ReminderForm({
 }
 
 const inputClass =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-zinc-700 dark:bg-zinc-900";
+  "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500";
 
 function FieldGroup({
   label,
@@ -221,7 +221,7 @@ function FieldGroup({
   return (
     // biome-ignore lint/a11y/noLabelWithoutControl: the control arrives as `children`, so the label wraps it — an association the rule cannot follow.
     <label className={`flex flex-col gap-1 ${className ?? ""}`}>
-      <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{label}</span>
+      <span className="text-xs font-medium text-fg-muted">{label}</span>
       {children}
     </label>
   );
@@ -307,7 +307,7 @@ function DailyEditor({
         <span
           // biome-ignore lint/suspicious/noArrayIndexKey: keying on `time` would remount the input on every keystroke (and collide on duplicate times). The slot index is the stable identity here; the inputs are fully controlled, so nothing stale survives a removal.
           key={idx}
-          className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-white pl-2 pr-1 dark:border-zinc-700 dark:bg-zinc-900"
+          className="inline-flex items-center gap-1 rounded-full border border-border bg-surface pl-2 pr-1"
         >
           <input
             type="time"
@@ -320,7 +320,7 @@ function DailyEditor({
             type="button"
             onClick={() => removeAt(idx)}
             aria-label={`Zeit ${idx + 1} entfernen`}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted hover:bg-surface-sunken"
           >
             <X size={14} />
           </button>
@@ -329,7 +329,7 @@ function DailyEditor({
       <button
         type="button"
         onClick={addTime}
-        className="inline-flex items-center gap-1 rounded-full border border-dashed border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:border-accent-400 hover:text-accent-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-accent-500 dark:hover:text-accent-300"
+        className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-fg-muted hover:border-accent-400 hover:text-accent-700 dark:hover:border-accent-500 dark:hover:text-accent-300"
       >
         <Plus size={14} />
         Zeit hinzufügen
@@ -363,7 +363,7 @@ function WeeklyEditor({
               "rounded-md border px-3 py-1.5 text-sm " +
               (schedule.days.includes(value)
                 ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
+                : "border-border hover:bg-surface-sunken")
             }
           >
             {label}
@@ -399,7 +399,7 @@ function MonthlyEditor({
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.dayOfMonth === day
                 ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
+                : "border-border hover:border-border")
             }
             aria-pressed={schedule.dayOfMonth === day}
             aria-label={`Tag ${day}`}
@@ -484,7 +484,7 @@ function YearlyEditor({
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.day === day
                 ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                : "border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600")
+                : "border-border hover:border-border")
             }
             aria-pressed={schedule.day === day}
             aria-label={`Tag ${day}`}
@@ -494,7 +494,7 @@ function YearlyEditor({
         ))}
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">Vorlauf</span>
+        <span className="text-xs text-fg-muted">Vorlauf</span>
         <div className="flex flex-wrap gap-1.5">
           {LEAD_QUICK.map((d) => {
             const active = (schedule.leadDays ?? 0) === d;
@@ -507,7 +507,7 @@ function YearlyEditor({
                   "rounded-full border px-3 py-1 text-xs " +
                   (active
                     ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                    : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
+                    : "border-border hover:border-border")
                 }
                 aria-pressed={active}
               >
@@ -544,7 +544,7 @@ function ElapsedEditor({
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
                   ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
+                  : "border-border hover:border-border")
               }
               aria-pressed={active}
             >
@@ -588,7 +588,7 @@ function IntervalEditor({
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
                   ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
+                  : "border-border hover:border-border")
               }
               aria-pressed={active}
             >
@@ -664,7 +664,7 @@ function HabitGoalEditor({
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
                   ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600")
+                  : "border-border hover:border-border")
               }
               aria-pressed={active}
             >

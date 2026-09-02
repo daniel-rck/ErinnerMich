@@ -122,7 +122,7 @@ export function Grounding() {
             key={s.prompt}
             className={
               "h-1.5 flex-1 rounded-full transition-colors " +
-              (i <= stepIndex ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800")
+              (i <= stepIndex ? "bg-emerald-500" : "bg-border")
             }
           />
         ))}
@@ -143,7 +143,7 @@ export function Grounding() {
             </div>
             <div>
               <h2 className="text-lg font-semibold">{step.prompt}</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{step.hint}</p>
+              <p className="text-sm text-fg-muted">{step.hint}</p>
             </div>
           </div>
 
@@ -151,13 +151,13 @@ export function Grounding() {
             {Array.from({ length: step.count }).map((_, i) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
               <li key={i} className="flex items-center gap-2">
-                <span className="w-6 text-sm font-medium text-zinc-400">{i + 1}.</span>
+                <span className="w-6 text-sm font-medium text-fg-subtle">{i + 1}.</span>
                 <input
                   type="text"
                   value={at(inputs, stepIndex)[i] ?? ""}
                   onChange={(e) => updateInput(i, e.target.value)}
                   placeholder="optional"
-                  className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                  className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm"
                 />
               </li>
             ))}
@@ -170,7 +170,7 @@ export function Grounding() {
           type="button"
           onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
           disabled={stepIndex === 0}
-          className="inline-flex items-center gap-1 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken disabled:opacity-50"
         >
           <ChevronLeft size={16} /> Zurück
         </button>
@@ -178,7 +178,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1))}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
           >
             Weiter <ChevronRight size={16} />
           </button>
@@ -186,7 +186,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => void finish()}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
           >
             <Check size={16} /> Abschließen
           </button>
