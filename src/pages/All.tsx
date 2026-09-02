@@ -115,8 +115,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         />
       </div>
 
-      <div
-        role="group"
+      <fieldset
         aria-label="Filter"
         className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
       >
@@ -132,7 +131,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         <FilterButton active={filter === "mood"} onClick={() => setFilter("mood")}>
           Mood
         </FilterButton>
-      </div>
+      </fieldset>
 
       {loading ? (
         <CardSkeleton variant="row" count={4} />

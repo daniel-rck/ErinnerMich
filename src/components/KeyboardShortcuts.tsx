@@ -70,6 +70,9 @@ export function KeyboardShortcuts() {
       onClick={(event) => {
         if (event.target === event.currentTarget) setHelpOpen(false);
       }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setHelpOpen(false);
+      }}
     >
       <div className="max-w-md rounded-lg border border-zinc-200 bg-white p-5 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
         <h2 id="kbd-help-title" className="mb-3 text-lg font-semibold">

@@ -14,7 +14,7 @@ describe("tool entries", () => {
     await addToolEntry({ toolKey: "breathing", loggedAt: t, durationSec: 60 });
     const list = await listToolEntries({ toolKey: "breathing" });
     expect(list).toHaveLength(1);
-    expect(list[0].durationSec).toBe(60);
+    expect(list[0]!.durationSec).toBe(60);
   });
 
   it("filtert nach toolKey und Tag", async () => {
@@ -23,7 +23,7 @@ describe("tool entries", () => {
     await addToolEntry({ toolKey: "worry", loggedAt: t, text: "Termin" });
     const day = await listToolEntriesForDay("gratitude", dayKey(t));
     expect(day).toHaveLength(1);
-    expect(day[0].text).toBe("Sonne");
+    expect(day[0]!.text).toBe("Sonne");
   });
 
   it("löscht einen Eintrag", async () => {

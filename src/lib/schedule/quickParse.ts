@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { Schedule, Weekday } from "../types";
 
 export interface QuickParseResult {
@@ -47,13 +48,13 @@ function timeStr(t: ParsedTime): string {
 function parseTime(input: string): ParsedTime | null {
   const hhmm = input.match(/(?:^|\s)([0-2]?\d):([0-5]\d)(?:$|\s)/);
   if (hhmm) {
-    const h = parseInt(hhmm[1], 10);
-    const m = parseInt(hhmm[2], 10);
+    const h = parseInt(at(hhmm, 1), 10);
+    const m = parseInt(at(hhmm, 2), 10);
     if (h <= 23) return { hour: h, minute: m };
   }
   const uhr = input.match(/(?:^|\s)(\d{1,2})\s*uhr(?:\s*(\d{1,2}))?/i);
   if (uhr) {
-    const h = parseInt(uhr[1], 10);
+    const h = parseInt(at(uhr, 1), 10);
     const m = uhr[2] ? parseInt(uhr[2], 10) : 0;
     if (h <= 23 && m <= 59) return { hour: h, minute: m };
   }
@@ -62,10 +63,13 @@ function parseTime(input: string): ParsedTime | null {
 
 function findWeekday(input: string): { weekday: Weekday; match: string } | null {
   const lower = input.toLowerCase();
-  for (const key of Object.keys(WEEKDAY_MAP).sort((a, b) => b.length - a.length)) {
+  // Longest key first, so "donnerstag" wins over "don". Iterating entries
+  // rather than keys keeps the value typed — a keyed lookup would widen it.
+  const byLength = Object.entries(WEEKDAY_MAP).sort(([a], [b]) => b.length - a.length);
+  for (const [key, weekday] of byLength) {
     const re = new RegExp(`(?:^|\\s)${key}(?:\\s|$)`, "i");
     if (re.test(lower)) {
-      return { weekday: WEEKDAY_MAP[key], match: key };
+      return { weekday, match: key };
     }
   }
   return null;
@@ -82,7 +86,7 @@ function relativeKeyword(input: string): "today" | "tomorrow" | "in-days" | null
 function inDays(input: string): number | null {
   const match = input.toLowerCase().match(/\bin\s+(\d+)\s+tag(?:e|en)?\b/);
   if (!match) return null;
-  return parseInt(match[1], 10);
+  return parseInt(at(match, 1), 10);
 }
 
 function stripWeekdayWord(input: string, match: string): string {

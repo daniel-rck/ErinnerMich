@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, RefreshCcw } from "lucide-react";
 import { useState } from "react";
+import { at } from "../../lib/at.ts";
 import { dayKey } from "../../lib/db/index";
 import { addToolEntry } from "../../lib/db/toolEntries";
 import {
@@ -19,7 +20,7 @@ export function Affirmation() {
   function shuffle() {
     let next = shown;
     while (next.id === shown.id) {
-      next = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+      next = at(AFFIRMATIONS, Math.floor(Math.random() * AFFIRMATIONS.length));
     }
     setShown(next);
     setSaved(false);

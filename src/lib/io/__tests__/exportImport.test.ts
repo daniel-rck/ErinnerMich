@@ -57,15 +57,15 @@ describe("exportAll", () => {
     expect(snap.schema).toBe("erinnermich");
     expect(snap.schemaVersion).toBe(EXPORT_SCHEMA_VERSION);
     expect(snap.reminders).toHaveLength(1);
-    expect(snap.reminders[0].id).toBe(reminder.id);
+    expect(snap.reminders[0]!.id).toBe(reminder.id);
     expect(snap.events).toHaveLength(1);
-    expect(Object.hasOwn(snap.events[0], "triggeredAtDay")).toBe(false);
+    expect(Object.hasOwn(snap.events[0]!, "triggeredAtDay")).toBe(false);
     expect(snap.inventories).toHaveLength(1);
     expect(snap.moodEntries).toHaveLength(1);
-    expect(Object.hasOwn(snap.moodEntries[0], "loggedAtDay")).toBe(false);
+    expect(Object.hasOwn(snap.moodEntries[0]!, "loggedAtDay")).toBe(false);
     expect(snap.toolEntries).toHaveLength(1);
-    expect(snap.toolEntries[0].text).toBe("Sonne heute");
-    expect(Object.hasOwn(snap.toolEntries[0], "loggedAtDay")).toBe(false);
+    expect(snap.toolEntries[0]!.text).toBe("Sonne heute");
+    expect(Object.hasOwn(snap.toolEntries[0]!, "loggedAtDay")).toBe(false);
   });
 });
 
@@ -165,13 +165,13 @@ describe("importAll roundtrip", () => {
       toolEntries: 1,
     });
     const restored = await listReminders();
-    expect(restored[0].id).toBe(reminder.id);
+    expect(restored[0]!.id).toBe(reminder.id);
     expect(await listEventsForReminder(reminder.id)).toHaveLength(1);
     expect((await getInventory(reminder.id))?.remaining).toBe(10);
     expect(await listMoodEntriesInRange(0, Date.now())).toHaveLength(1);
     const tools = await listToolEntries();
     expect(tools).toHaveLength(1);
-    expect(tools[0].text).toBe("Sonne heute");
+    expect(tools[0]!.text).toBe("Sonne heute");
   });
 
   it("merge-Modus überschreibt nur überlappende IDs", async () => {

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bell, ChevronRight, HeartPulse, Lock, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { at } from "../lib/at.ts";
 import { createReminder } from "../lib/db/reminders";
 import {
   readSettings,
@@ -54,6 +55,7 @@ const STARTER_KEYS = ["water", "steps", "meditate"];
 export function Onboarding() {
   const [showOnboarding, setShowOnboarding] = useState(() => !readSettings().onboardingCompleted);
   const [step, setStep] = useState(0);
+  const slide = at(SLIDES, step);
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -69,7 +71,7 @@ export function Onboarding() {
       setStep(step + 1);
       return;
     }
-    if (SLIDES[step].key === "notify") {
+    if (slide.key === "notify") {
       const result = await ensureNotificationPermission();
       if (result === "granted") writeNotificationOnboardingDone(true);
     }
@@ -119,7 +121,7 @@ export function Onboarding() {
         <AnimatePresence mode="wait">
           {!onPicker ? (
             <motion.div
-              key={SLIDES[step].key}
+              key={at(SLIDES, step).key}
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -16 }}
@@ -127,13 +129,13 @@ export function Onboarding() {
               className="flex flex-col items-center gap-4 px-6 pt-8 pb-4 text-center"
             >
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-50 dark:bg-accent-900/40">
-                {SLIDES[step].icon}
+                {slide.icon}
               </div>
               <h2 id="onboarding-title" className="text-xl font-semibold">
-                {SLIDES[step].title}
+                {slide.title}
               </h2>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">{SLIDES[step].body}</p>
-              {SLIDES[step].kind === "choice" && SLIDES[step].key === "wellness" && (
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">{slide.body}</p>
+              {slide.kind === "choice" && slide.key === "wellness" && (
                 <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
                   <button
                     type="button"
@@ -221,7 +223,7 @@ export function Onboarding() {
             ))}
           </div>
           {!onPicker ? (
-            SLIDES[step].kind === "choice" ? (
+            slide.kind === "choice" ? (
               <span aria-hidden />
             ) : (
               <button

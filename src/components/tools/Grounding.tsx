@@ -10,6 +10,7 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { at } from "../../lib/at.ts";
 import { addToolEntry } from "../../lib/db/toolEntries";
 import { useToast } from "../ui/Toast";
 
@@ -65,14 +66,14 @@ export function Grounding() {
     startRef.current = Date.now();
   }, []);
 
-  const step = STEPS[stepIndex];
+  const step = at(STEPS, stepIndex);
   const StepIcon = step.icon;
   const isLast = stepIndex === STEPS.length - 1;
 
   function updateInput(i: number, value: string) {
     setInputs((prev) => {
       const next = prev.map((arr) => arr.slice());
-      next[stepIndex][i] = value;
+      at(next, stepIndex)[i] = value;
       return next;
     });
   }
@@ -82,7 +83,7 @@ export function Grounding() {
     const start = startRef.current ?? now;
     const durationSec = Math.round((now - start) / 1000);
     const text = STEPS.map((s, i) => {
-      const filled = inputs[i].filter((v) => v.trim().length > 0);
+      const filled = at(inputs, i).filter((v) => v.trim().length > 0);
       return filled.length ? `${s.prompt}: ${filled.join(", ")}` : null;
     })
       .filter((line): line is string => Boolean(line))
@@ -112,12 +113,13 @@ export function Grounding() {
   return (
     <div className="flex flex-col gap-6">
       <div
+        role="img"
         aria-label={`Schritt ${stepIndex + 1} von ${STEPS.length}`}
         className="flex items-center gap-1.5"
       >
-        {STEPS.map((_, i) => (
+        {STEPS.map((s, i) => (
           <span
-            key={i}
+            key={s.prompt}
             className={
               "h-1.5 flex-1 rounded-full transition-colors " +
               (i <= stepIndex ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-800")
@@ -147,11 +149,12 @@ export function Grounding() {
 
           <ul className="flex flex-col gap-2">
             {Array.from({ length: step.count }).map((_, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
               <li key={i} className="flex items-center gap-2">
                 <span className="w-6 text-sm font-medium text-zinc-400">{i + 1}.</span>
                 <input
                   type="text"
-                  value={inputs[stepIndex][i] ?? ""}
+                  value={at(inputs, stepIndex)[i] ?? ""}
                   onChange={(e) => updateInput(i, e.target.value)}
                   placeholder="optional"
                   className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"

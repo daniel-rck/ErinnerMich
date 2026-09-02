@@ -7,6 +7,7 @@ export function CardSkeleton({ count = 3, variant = "card" }: CardSkeletonProps)
   return (
     <div className="flex flex-col gap-3" aria-hidden>
       {Array.from({ length: count }).map((_, i) =>
+        // biome-ignore lint/suspicious/noArrayIndexKey: interchangeable, stateless loading placeholders — nothing to preserve across reorders.
         variant === "card" ? <Card key={i} /> : <Row key={i} />,
       )}
     </div>

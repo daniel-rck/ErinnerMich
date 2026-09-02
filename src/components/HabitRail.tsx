@@ -133,6 +133,7 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
         </span>
         {streak > 0 && (
           <span
+            role="img"
             className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--color-warning-soft)] px-1.5 py-0.5 text-[length:0.6875rem] font-medium text-[color:var(--color-warning)]"
             aria-label={`${streak} Tage Streak`}
           >

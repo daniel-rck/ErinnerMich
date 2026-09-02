@@ -63,7 +63,7 @@ describe("applyNotificationAction", () => {
     });
     const events = await listEventsForReminder(r.id);
     expect(events).toHaveLength(1);
-    expect(events[0].action).toBe("completed");
+    expect(events[0]!.action).toBe("completed");
   });
 
   it('"done" auf elapsed-Reminder updated lastDone', async () => {
@@ -94,8 +94,8 @@ describe("applyNotificationAction", () => {
     });
     const events = await listEventsForReminder(r.id);
     expect(events).toHaveLength(1);
-    expect(events[0].action).toBe("progress");
-    expect(events[0].progress).toEqual({ value: 1, unit: "Glas" });
+    expect(events[0]!.action).toBe("progress");
+    expect(events[0]!.progress).toEqual({ value: 1, unit: "Glas" });
   });
 
   it('"snooze-30" schreibt snoozed-Event mit snoozeUntil', async () => {
@@ -108,8 +108,8 @@ describe("applyNotificationAction", () => {
       scheduledFor: 0,
     });
     const events = await listEventsForReminder(r.id);
-    expect(events[0].action).toBe("snoozed");
-    expect(events[0].snoozeUntil).toBeGreaterThanOrEqual(before + 30 * 60_000);
+    expect(events[0]!.action).toBe("snoozed");
+    expect(events[0]!.snoozeUntil).toBeGreaterThanOrEqual(before + 30 * 60_000);
   });
 
   it('"mood-4" schreibt einen MoodEntry', async () => {
@@ -127,8 +127,8 @@ describe("applyNotificationAction", () => {
     });
     const entries = await listMoodEntriesInRange(0, Date.now() + 1);
     expect(entries).toHaveLength(1);
-    expect(entries[0].mood).toBe(4);
-    expect(entries[0].reminderId).toBe(r.id);
+    expect(entries[0]!.mood).toBe(4);
+    expect(entries[0]!.reminderId).toBe(r.id);
   });
 
   it('"done" dekrementiert Inventory wenn vorhanden', async () => {

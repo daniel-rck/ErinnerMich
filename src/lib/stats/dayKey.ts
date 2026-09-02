@@ -5,18 +5,28 @@ export function dayKeyForDate(date: Date): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function dayKeyAddDays(key: string, delta: number): string {
+/** Parse a "YYYY-MM-DD" key. Keys are produced by `dayKeyForDate`, so the shape
+ *  holds — but a malformed one must not silently become an Invalid Date. */
+function parseDayKey(key: string): { y: number; m: number; d: number } {
   const [y, m, d] = key.split("-").map(Number);
+  if (y === undefined || m === undefined || d === undefined || Number.isNaN(y)) {
+    throw new RangeError(`Malformed day key: ${key}`);
+  }
+  return { y, m, d };
+}
+
+export function dayKeyAddDays(key: string, delta: number): string {
+  const { y, m, d } = parseDayKey(key);
   const date = new Date(y, m - 1, d);
   date.setDate(date.getDate() + delta);
   return dayKeyForDate(date);
 }
 
 export function diffDays(a: string, b: string): number {
-  const [ay, am, ad] = a.split("-").map(Number);
-  const [by, bm, bd] = b.split("-").map(Number);
-  const da = new Date(ay, am - 1, ad).getTime();
-  const db = new Date(by, bm - 1, bd).getTime();
+  const first = parseDayKey(a);
+  const second = parseDayKey(b);
+  const da = new Date(first.y, first.m - 1, first.d).getTime();
+  const db = new Date(second.y, second.m - 1, second.d).getTime();
   return Math.round((da - db) / (24 * 60 * 60 * 1000));
 }
 

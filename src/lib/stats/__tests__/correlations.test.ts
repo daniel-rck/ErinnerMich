@@ -73,6 +73,7 @@ describe("habitMoodCorrelations", () => {
     const moods = [moodEntry(1, 2), moodEntry(2, 5), moodEntry(3, 5), moodEntry(4, 2)];
     const events = [completionEvent(2, habit.id), completionEvent(3, habit.id)];
     const [row] = habitMoodCorrelations([habit], events, moods);
+    if (!row) throw new Error("expected a correlation row");
     expect(row.pairs).toBe(4);
     // Sport-Tage haben mood=5, off-Tage mood=2 → r = +1
     expect(row.r).toBeCloseTo(1);
@@ -81,6 +82,7 @@ describe("habitMoodCorrelations", () => {
   it("liefert null bei nur einem überlappenden Mood-Tag", () => {
     const moods = [moodEntry(1, 3)];
     const [row] = habitMoodCorrelations([habit], [], moods);
+    if (!row) throw new Error("expected a correlation row");
     expect(row.pairs).toBe(1);
     expect(row.r).toBeNull();
   });
@@ -90,6 +92,7 @@ describe("habitMoodCorrelations", () => {
     // Habit hat zusätzlich am 5. fertig, aber kein Mood → wird nicht gepaart
     const events = [completionEvent(2, habit.id), completionEvent(5, habit.id)];
     const [row] = habitMoodCorrelations([habit], events, moods);
+    if (!row) throw new Error("expected a correlation row");
     expect(row.pairs).toBe(2);
   });
 });

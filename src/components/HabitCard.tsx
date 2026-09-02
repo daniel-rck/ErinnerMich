@@ -64,6 +64,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
     >
       {streak > 0 && (
         <div
+          role="img"
           className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
           aria-label={`Streak ${streak} Tage${freezesUsed > 0 ? `, davon ${freezesUsed} Freezes` : ""}`}
         >
@@ -223,7 +224,8 @@ function ProgressRing({
       className="relative flex shrink-0 items-center justify-center"
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} className="-rotate-90">
+      {/* Decorative: the completion figure is already in the text beside it. */}
+      <svg width={size} height={size} className="-rotate-90" role="presentation">
         <circle
           cx={size / 2}
           cy={size / 2}

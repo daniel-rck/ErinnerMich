@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useContext, useRef, useState } from "react";
+import { type ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ConfirmContext, type ConfirmFn, type ConfirmOptions } from "./confirmContext";
 import { Modal } from "./Modal";
 
@@ -22,6 +22,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       setPending(next);
     });
   }, []);
+
+  const confirmRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the confirm button when the dialog opens. An effect rather than
+  // autoFocus: the attribute grabs focus on mount regardless of context.
+  useEffect(() => {
+    if (pending !== null) confirmRef.current?.focus();
+  }, [pending]);
 
   function resolveAndClose(answer: boolean) {
     pendingRef.current?.resolve(answer);
@@ -49,7 +57,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => resolveAndClose(true)}
-              autoFocus
+              ref={confirmRef}
               className={
                 "rounded-md px-4 py-2 text-sm font-medium text-white " +
                 (pending?.options.destructive

@@ -219,6 +219,7 @@ function FieldGroup({
   className?: string;
 }) {
   return (
+    // biome-ignore lint/a11y/noLabelWithoutControl: the control arrives as `children`, so the label wraps it — an association the rule cannot follow.
     <label className={`flex flex-col gap-1 ${className ?? ""}`}>
       <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{label}</span>
       {children}
@@ -304,6 +305,7 @@ function DailyEditor({
     <div className="flex flex-wrap gap-2">
       {schedule.times.map((time, idx) => (
         <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: keying on `time` would remount the input on every keystroke (and collide on duplicate times). The slot index is the stable identity here; the inputs are fully controlled, so nothing stale survives a removal.
           key={idx}
           className="inline-flex items-center gap-1 rounded-full border border-zinc-300 bg-white pl-2 pr-1 dark:border-zinc-700 dark:bg-zinc-900"
         >
@@ -459,7 +461,7 @@ function YearlyEditor({
           aria-label="Monat"
         >
           {MONTH_LABELS.map((label, idx) => (
-            <option key={idx} value={idx + 1}>
+            <option key={label} value={idx + 1}>
               {label}
             </option>
           ))}

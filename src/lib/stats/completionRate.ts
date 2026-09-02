@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { ReminderEvent } from "../types";
 import { dayKeyForDate, lastNDayKeys } from "./dayKey";
 
@@ -59,7 +60,7 @@ export function averageDaysBetweenCompletions(events: readonly ReminderEvent[]):
   if (stamps.length < 2) return null;
   let sumGapMs = 0;
   for (let i = 1; i < stamps.length; i++) {
-    sumGapMs += stamps[i] - stamps[i - 1];
+    sumGapMs += at(stamps, i) - at(stamps, i - 1);
   }
   const avgMs = sumGapMs / (stamps.length - 1);
   return avgMs / (24 * 60 * 60 * 1000);

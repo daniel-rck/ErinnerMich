@@ -42,7 +42,7 @@ describe("expiresEngine", () => {
     const from = new Date("2026-01-01T00:00:00");
     const triggers = listExpiresTriggers(schedule, from);
     expect(triggers.length).toBe(7); // 6 PreWarnings + expiresAt
-    expect(triggers[triggers.length - 1].getTime()).toBe(expiresAt);
+    expect(triggers[triggers.length - 1]!.getTime()).toBe(expiresAt);
   });
 
   it("berechnet daysUntilExpiry positiv und negativ", () => {

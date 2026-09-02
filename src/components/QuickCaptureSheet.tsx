@@ -1,5 +1,5 @@
 import { Bell, BookOpen, Flame, Send, Smile, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createReminder } from "../lib/db/reminders";
 import { useSettings } from "../lib/hooks/useSettings";
@@ -16,6 +16,15 @@ interface QuickCaptureSheetProps {
 }
 
 export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus the field when the sheet opens. An effect rather than autoFocus: the
+  // attribute grabs focus on mount regardless of context, which is disorienting
+  // with a screen reader.
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
+
   const navigate = useNavigate();
   const toast = useToast();
   const moodLog = useMoodLog();
@@ -97,7 +106,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             aria-label="Schnell-Eintrag"
             className="min-w-0 flex-1 bg-transparent text-[length:0.9375rem] focus:outline-none placeholder:text-[color:var(--color-fg-subtle)]"
             disabled={busy}
-            autoFocus
+            ref={inputRef}
           />
           <button
             type="submit"

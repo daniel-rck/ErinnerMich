@@ -31,7 +31,7 @@ describe("events CRUD + Aggregation", () => {
     });
     const list = await listEventsForReminder(r.id);
     expect(list).toHaveLength(1);
-    expect(list[0].action).toBe("completed");
+    expect(list[0]!.action).toBe("completed");
   });
 
   it("listet Events sortiert (neueste zuerst)", async () => {
@@ -44,8 +44,8 @@ describe("events CRUD + Aggregation", () => {
       triggeredAt: t + 1000,
     });
     const list = await listEventsForReminder(r.id);
-    expect(list[0].triggeredAt).toBe(t + 1000);
-    expect(list[1].triggeredAt).toBe(t);
+    expect(list[0]!.triggeredAt).toBe(t + 1000);
+    expect(list[1]!.triggeredAt).toBe(t);
   });
 
   it("aggregiert Tagesprogress über action=progress", async () => {
@@ -100,7 +100,7 @@ describe("events CRUD + Aggregation", () => {
 
     const eventsForDay2 = await listEventsForDay(dayKey(day2));
     expect(eventsForDay2).toHaveLength(1);
-    expect(eventsForDay2[0].triggeredAt).toBe(day2);
+    expect(eventsForDay2[0]!.triggeredAt).toBe(day2);
   });
 
   it("löscht ein Event", async () => {

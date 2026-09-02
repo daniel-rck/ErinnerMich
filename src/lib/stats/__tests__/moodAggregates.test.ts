@@ -24,8 +24,8 @@ describe("dailyMoodSeries", () => {
   it("mittelt mehrere Einträge pro Tag", () => {
     const series = dailyMoodSeries([entry(0, 5), entry(0, 3)], 1, TODAY);
     expect(series).toHaveLength(1);
-    expect(series[0].avgMood).toBe(4);
-    expect(series[0].count).toBe(2);
+    expect(series[0]!.avgMood).toBe(4);
+    expect(series[0]!.count).toBe(2);
   });
 
   it("liefert null für Tage ohne Einträge", () => {
@@ -51,11 +51,11 @@ describe("moodByWeekday", () => {
       { id: "2", loggedAt: tuesday, mood: 3 },
       { id: "3", loggedAt: friday, mood: 1 },
     ]);
-    expect(buckets[2].label).toBe("Di");
-    expect(buckets[2].avgMood).toBe(4);
-    expect(buckets[2].count).toBe(2);
-    expect(buckets[5].label).toBe("Fr");
-    expect(buckets[5].avgMood).toBe(1);
+    expect(buckets[2]!.label).toBe("Di");
+    expect(buckets[2]!.avgMood).toBe(4);
+    expect(buckets[2]!.count).toBe(2);
+    expect(buckets[5]!.label).toBe("Fr");
+    expect(buckets[5]!.avgMood).toBe(1);
   });
 });
 
