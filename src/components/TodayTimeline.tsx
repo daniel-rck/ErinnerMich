@@ -37,7 +37,7 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
 
   if (totalItems === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+      <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-fg-muted">
         Heute steht nichts an. 🎉
       </p>
     );
@@ -63,7 +63,7 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
                 <button
                   type="button"
                   onClick={() => setDoneCollapsed((v) => !v)}
-                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-fg-muted hover:bg-surface-sunken"
                   aria-expanded={!collapsed}
                 >
                   {collapsed ? "Anzeigen" : "Einklappen"}
@@ -119,7 +119,7 @@ function CardRow({
 
   return (
     <div className={`rounded-xl ${accent}`}>
-      <div className="flex items-baseline gap-3 px-1 pb-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <div className="flex items-baseline gap-3 px-1 pb-1 text-xs text-fg-muted">
         <span className="tabular-nums">{formatTime(scheduledFor)}</span>
         {bucket === "overdue" && (
           <span className="text-rose-600 dark:text-rose-400">überfällig</span>
@@ -143,9 +143,9 @@ function bucketLabelClass(key: BucketKey): string {
     case "now":
       return "text-accent-600 dark:text-accent-400";
     case "done":
-      return "text-zinc-500 dark:text-zinc-400";
+      return "text-fg-muted";
     default:
-      return "text-zinc-500 dark:text-zinc-400";
+      return "text-fg-muted";
   }
 }
 

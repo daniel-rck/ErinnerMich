@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { MoodEntry, Reminder, ReminderEvent } from "../types";
 import { dayKeyForDate } from "./dayKey";
 
@@ -15,8 +16,8 @@ export function pearson(xs: readonly number[], ys: readonly number[]): number | 
   let sumX = 0;
   let sumY = 0;
   for (let i = 0; i < n; i++) {
-    sumX += xs[i];
-    sumY += ys[i];
+    sumX += at(xs, i);
+    sumY += at(ys, i);
   }
   const meanX = sumX / n;
   const meanY = sumY / n;
@@ -24,8 +25,8 @@ export function pearson(xs: readonly number[], ys: readonly number[]): number | 
   let varX = 0;
   let varY = 0;
   for (let i = 0; i < n; i++) {
-    const dx = xs[i] - meanX;
-    const dy = ys[i] - meanY;
+    const dx = at(xs, i) - meanX;
+    const dy = at(ys, i) - meanY;
     cov += dx * dy;
     varX += dx * dx;
     varY += dy * dy;

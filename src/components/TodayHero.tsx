@@ -166,7 +166,8 @@ function ProgressRing({ ratio, done, due }: { ratio: number; done: number; due: 
       className="relative shrink-0"
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} className="-rotate-90">
+      {/* Decorative: the progress figure is already in the text beside it. */}
+      <svg width={size} height={size} className="-rotate-90" role="presentation">
         <defs>
           <linearGradient id="hero-ring-gradient" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="var(--color-accent-400)" />

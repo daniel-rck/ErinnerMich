@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { Schedule } from "../types";
 import { addDays, parseHM, withTime } from "./helpers";
 
@@ -14,7 +15,7 @@ export function nextDailyOccurrence(schedule: DailySchedule, from: Date): Date {
       return candidate;
     }
   }
-  return withTime(addDays(from, 1), sorted[0]);
+  return withTime(addDays(from, 1), at(sorted, 0));
 }
 
 function byTime(a: string, b: string): number {

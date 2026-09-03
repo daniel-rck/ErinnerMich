@@ -27,10 +27,10 @@ export function EditReminderPage() {
     };
   }, [id]);
 
-  if (loading) return <p className="text-sm text-zinc-500">Lade …</p>;
+  if (loading) return <p className="text-sm text-fg-muted">Lade …</p>;
   if (notFound || !reminder) {
     return (
-      <p className="rounded-lg border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+      <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-fg-muted">
         Eintrag nicht gefunden.
       </p>
     );

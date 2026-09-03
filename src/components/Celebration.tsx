@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Modal } from "./ui/Modal";
 
 interface CelebrationProps {
@@ -41,6 +41,15 @@ function fireConfetti() {
 }
 
 export function Celebration({ open, streak, onClose }: CelebrationProps) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the dismiss button when the celebration opens. Done in an effect
+  // rather than with autoFocus: the attribute steals focus whenever the node
+  // mounts, regardless of why, which is disorienting with a screen reader.
+  useEffect(() => {
+    if (open) closeRef.current?.focus();
+  }, [open]);
+
   useEffect(() => {
     if (open) fireConfetti();
   }, [open]);
@@ -61,12 +70,12 @@ export function Celebration({ open, streak, onClose }: CelebrationProps) {
               🎉
             </span>
             <h2 className="text-2xl font-semibold">{streak} Tage in Folge!</h2>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">{messageForStreak(streak)}</p>
+            <p className="text-sm text-fg-muted">{messageForStreak(streak)}</p>
             <button
               type="button"
               onClick={onClose}
-              autoFocus
-              className="mt-2 rounded-md bg-accent-600 px-5 py-2 text-sm font-medium text-white hover:bg-accent-700"
+              ref={closeRef}
+              className="mt-2 rounded-md bg-accent-600 px-5 py-2 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               Weiter so
             </button>

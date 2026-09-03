@@ -33,6 +33,7 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
     >
       {segments.map((segment, i) => (
         <polyline
+          // biome-ignore lint/suspicious/noArrayIndexKey: segments are derived fresh from `points` on every render and hold no state — the index is their only identity.
           key={i}
           fill="none"
           stroke="#10b981"
@@ -42,9 +43,9 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
           points={segment.map((p) => `${p.x},${p.y}`).join(" ")}
         />
       ))}
-      {points.map((p, i) =>
+      {points.map((p) =>
         p === null ? null : (
-          <circle key={i} cx={p.x} cy={p.y} r={2.5} fill="#10b981">
+          <circle key={p.label} cx={p.x} cy={p.y} r={2.5} fill="#10b981">
             <title>{`${p.label}: ${p.value.toFixed(2)}`}</title>
           </circle>
         ),

@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { MoodEntry } from "../types";
 import { dayKeyForDate, lastNDayKeys } from "./dayKey";
 
@@ -43,14 +44,14 @@ export function moodByWeekday(entries: readonly MoodEntry[]): WeekdayMoodPoint[]
   const counts = new Array<number>(7).fill(0);
   for (const entry of entries) {
     const wd = new Date(entry.loggedAt).getDay();
-    sums[wd] += entry.mood;
-    counts[wd] += 1;
+    sums[wd] = at(sums, wd) + entry.mood;
+    counts[wd] = at(counts, wd) + 1;
   }
   return WEEKDAY_LABELS.map((label, weekday) => ({
     weekday: weekday as WeekdayMoodPoint["weekday"],
     label,
-    avgMood: counts[weekday] > 0 ? sums[weekday] / counts[weekday] : null,
-    count: counts[weekday],
+    avgMood: at(counts, weekday) > 0 ? at(sums, weekday) / at(counts, weekday) : null,
+    count: at(counts, weekday),
   }));
 }
 

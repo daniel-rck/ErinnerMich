@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useContext, useRef, useState } from "react";
+import { type ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ConfirmContext, type ConfirmFn, type ConfirmOptions } from "./confirmContext";
 import { Modal } from "./Modal";
 
@@ -23,6 +23,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const confirmRef = useRef<HTMLButtonElement>(null);
+
+  // Focus the confirm button when the dialog opens. An effect rather than
+  // autoFocus: the attribute grabs focus on mount regardless of context.
+  useEffect(() => {
+    if (pending !== null) confirmRef.current?.focus();
+  }, [pending]);
+
   function resolveAndClose(answer: boolean) {
     pendingRef.current?.resolve(answer);
     pendingRef.current = null;
@@ -42,18 +50,18 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => resolveAndClose(false)}
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
             >
               {pending?.options.cancelLabel ?? "Abbrechen"}
             </button>
             <button
               type="button"
               onClick={() => resolveAndClose(true)}
-              autoFocus
+              ref={confirmRef}
               className={
-                "rounded-md px-4 py-2 text-sm font-medium text-white " +
+                "rounded-md px-4 py-2 text-sm font-medium text-fg-on-accent " +
                 (pending?.options.destructive
-                  ? "bg-rose-600 hover:bg-rose-700"
+                  ? "bg-danger hover:opacity-90"
                   : "bg-accent-600 hover:bg-accent-700")
               }
             >
@@ -62,7 +70,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
           </>
         }
       >
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">{pending?.options.message}</p>
+        <p className="text-sm text-fg-muted">{pending?.options.message}</p>
       </Modal>
     </ConfirmContext.Provider>
   );

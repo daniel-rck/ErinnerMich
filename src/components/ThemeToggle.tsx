@@ -1,4 +1,5 @@
 import { Monitor, Moon, Sun } from "lucide-react";
+import { at } from "../lib/at.ts";
 import { type Theme, useTheme } from "../lib/ui/useTheme";
 import { IconButton } from "./ui/IconButton";
 
@@ -27,7 +28,7 @@ export function ThemeToggle() {
 
   function cycle() {
     const idx = ORDER.indexOf(theme);
-    setTheme(ORDER[(idx + 1) % ORDER.length]);
+    setTheme(at(ORDER, (idx + 1) % ORDER.length));
   }
 
   return (

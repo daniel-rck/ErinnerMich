@@ -32,7 +32,7 @@ describe("nextNOccurrences", () => {
     );
     expect(occs).toHaveLength(5);
     for (let i = 1; i < occs.length; i++) {
-      expect(occs[i].getTime()).toBeGreaterThan(occs[i - 1].getTime());
+      expect(occs[i]!.getTime()).toBeGreaterThan(occs[i - 1]!.getTime());
     }
   });
 
@@ -66,7 +66,7 @@ describe("nextNOccurrences", () => {
     );
     expect(occs).toHaveLength(3);
     for (let i = 1; i < occs.length; i++) {
-      expect(occs[i].getFullYear()).toBeGreaterThan(occs[i - 1].getFullYear());
+      expect(occs[i]!.getFullYear()).toBeGreaterThan(occs[i - 1]!.getFullYear());
     }
   });
 });

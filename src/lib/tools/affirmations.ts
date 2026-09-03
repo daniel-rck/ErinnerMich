@@ -1,3 +1,5 @@
+import { at } from "../at.ts";
+
 export interface Affirmation {
   id: string;
   text: string;
@@ -81,7 +83,7 @@ function hashDay(day: string): number {
 
 export function affirmationForDay(day: string): Affirmation {
   const idx = hashDay(day) % AFFIRMATIONS.length;
-  return AFFIRMATIONS[idx];
+  return at(AFFIRMATIONS, idx);
 }
 
 export function getAffirmationById(id: string): Affirmation | undefined {

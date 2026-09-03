@@ -60,10 +60,11 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
 
   return (
     <article
-      className={`relative flex flex-col gap-3 rounded-xl border border-l-4 ${tone.borderL} border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900`}
+      className={`relative flex flex-col gap-3 rounded-xl border border-l-4 ${tone.borderL} border-border bg-surface p-4`}
     >
       {streak > 0 && (
         <div
+          role="img"
           className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
           aria-label={`Streak ${streak} Tage${freezesUsed > 0 ? `, davon ${freezesUsed} Freezes` : ""}`}
         >
@@ -77,7 +78,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
         <ProgressRing ratio={ratio} icon={reminder.icon} ringClass={tone.ring} />
         <div className="flex flex-1 flex-col gap-1.5">
           <h3 className="font-medium leading-tight">{reminder.title}</h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-fg-muted">
             {target !== undefined
               ? `${current} / ${target} ${unit ?? ""}`.trim()
               : current > 0
@@ -93,7 +94,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
           <button
             type="button"
             onClick={() => bump(1, "completed")}
-            className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
+            className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
             disabled={completions > 0}
           >
             {completions > 0 ? "Erledigt" : "Erledigt markieren"}
@@ -104,14 +105,14 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(1, "progress")}
-              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               +1 {goal.unit}
             </button>
             <button
               type="button"
               onClick={() => bump(5, "progress")}
-              className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken"
             >
               +5
             </button>
@@ -122,14 +123,14 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
             <button
               type="button"
               onClick={() => bump(15, "progress")}
-              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               +15 min
             </button>
             <button
               type="button"
               onClick={() => bump(5, "progress")}
-              className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken"
             >
               +5 min
             </button>
@@ -165,7 +166,7 @@ function Last7Strip({ days }: { days: { key: string; done: boolean }[] }) {
           key={d.key}
           className={
             "h-1.5 flex-1 rounded-full " +
-            (d.done ? "bg-accent-500 dark:bg-accent-400" : "bg-zinc-200 dark:bg-zinc-800")
+            (d.done ? "bg-accent-500 dark:bg-accent-400" : "bg-border")
           }
         />
       ))}
@@ -223,14 +224,15 @@ function ProgressRing({
       className="relative flex shrink-0 items-center justify-center"
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} className="-rotate-90">
+      {/* Decorative: the completion figure is already in the text beside it. */}
+      <svg width={size} height={size} className="-rotate-90" role="presentation">
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
           strokeWidth={stroke}
-          className="stroke-zinc-200 dark:stroke-zinc-800"
+          className="stroke-border"
         />
         <motion.circle
           cx={size / 2}

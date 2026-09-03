@@ -80,8 +80,10 @@ function TabsTrigger({ value, children, className = "", onClick, ...rest }: Tabs
     const idx = tabs.indexOf(ref.current!);
     const next =
       e.key === "ArrowRight" ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
-    tabs[next].focus();
-    tabs[next].click();
+    const target = tabs[next];
+    if (!target) return;
+    target.focus();
+    target.click();
     e.preventDefault();
   };
 

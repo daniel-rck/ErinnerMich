@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-6 text-center">
         <h1 className="text-xl font-semibold">Da ist etwas schiefgelaufen</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-fg-muted">
           ErinnerMich ist auf einen unerwarteten Fehler gestoßen. Deine Daten liegen weiterhin lokal
           in diesem Browser — du kannst sie vor dem Neuladen als JSON sichern.
         </p>
@@ -50,14 +50,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="rounded-md bg-accent-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-700"
+            className="rounded-md bg-accent-600 px-4 py-2.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
           >
             Neu laden
           </button>
           <button
             type="button"
             onClick={() => void this.handleExport()}
-            className="rounded-md border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600"
+            className="rounded-md border border-border px-4 py-2.5 text-sm font-medium hover:border-border"
           >
             Daten exportieren (JSON)
           </button>
@@ -67,7 +67,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             Export fehlgeschlagen — Details in der Browser-Konsole.
           </p>
         )}
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">{this.state.error.message}</p>
+        <p className="text-xs text-fg-subtle">{this.state.error.message}</p>
       </main>
     );
   }

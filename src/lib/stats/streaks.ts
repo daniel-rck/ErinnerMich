@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { ReminderEvent } from "../types";
 import { dayKeyAddDays, dayKeyForDate, diffDays } from "./dayKey";
 /**
@@ -46,7 +47,7 @@ export function longestStreak(events: readonly ReminderEvent[]): number {
   let best = 1;
   let run = 1;
   for (let i = 1; i < days.length; i++) {
-    if (diffDays(days[i], days[i - 1]) === 1) {
+    if (diffDays(at(days, i), at(days, i - 1)) === 1) {
       run += 1;
       if (run > best) best = run;
     } else {
@@ -95,6 +96,7 @@ export function currentStreakWithFreeze(
   // Beyond the earliest hit, the streak has nothing to anchor on. Don't burn
   // freezes on prehistoric gaps.
   const earliest = [...days].sort()[0];
+  if (earliest === undefined) return { length: 0, freezesUsed: 0 };
 
   const monthBudget = new Map<string, number>();
   function takeFreeze(dayK: string): boolean {

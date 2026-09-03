@@ -75,9 +75,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Erscheinungsbild
-        </h2>
+        <h2 className="text-sm font-medium text-fg-muted uppercase">Erscheinungsbild</h2>
         <div className="flex gap-2">
           <ChoiceButton active={theme === "light"} onClick={() => setTheme("light")}>
             Hell
@@ -89,9 +87,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Standard-Startseite
-        </h2>
+        <h2 className="text-sm font-medium text-fg-muted uppercase">Standard-Startseite</h2>
         <div className="flex flex-wrap gap-2">
           <ChoiceButton active={landing === "today"} onClick={() => pickLanding("today")}>
             Heute
@@ -106,9 +102,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Benachrichtigungen
-        </h2>
+        <h2 className="text-sm font-medium text-fg-muted uppercase">Benachrichtigungen</h2>
         <NotificationStatus permission={permission} status={status} />
 
         <div className="flex flex-wrap gap-2">
@@ -116,7 +110,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
             <button
               type="button"
               onClick={requestPermission}
-              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700"
+              className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               Berechtigung anfragen
             </button>
@@ -125,7 +119,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
             type="button"
             onClick={triggerTest}
             disabled={permission !== "granted"}
-            className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50"
           >
             Test in 10s
           </button>
@@ -155,10 +149,8 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Stimmung &amp; Wellness
-        </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-sm font-medium text-fg-muted uppercase">Stimmung &amp; Wellness</h2>
+        <p className="text-sm text-fg-muted">
           Stimmungs-Tracking sowie Atemübung, 5-4-3-2-1 Erden, Dankbarkeits-Glas, Schatzkiste,
           Sorgen-Box und Affirmationen — direkt in der App. Bei „Aus" verschwinden Stimmungs-Strip,
           der Stimmung-Tab und die Wellness-Tools komplett aus der Oberfläche.
@@ -176,16 +168,14 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       <DataIO />
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-          Datenschutz
-        </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <h2 className="text-sm font-medium text-fg-muted uppercase">Datenschutz</h2>
+        <p className="text-sm text-fg-muted">
           Alle Daten bleiben ausschließlich in deinem Browser (IndexedDB + localStorage). Es gibt
           keine Cookies, kein Analytics, keine Tracker. DSGVO-konform per Default.
         </p>
       </section>
 
-      <section className="flex flex-col gap-2 border-t border-zinc-200 pt-6 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+      <section className="flex flex-col gap-2 border-t border-border pt-6 text-xs text-fg-muted">
         <p>ErinnerMich · Daten werden ausschließlich lokal in deinem Browser gespeichert.</p>
         <p>Keine Cookies · Kein Tracking · DSGVO-konform</p>
       </section>
@@ -254,15 +244,13 @@ function DataIO() {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-sm font-medium text-zinc-500 uppercase dark:text-zinc-400">
-        Daten Export / Import
-      </h2>
+      <h2 className="text-sm font-medium text-fg-muted uppercase">Daten Export / Import</h2>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={doExport}
           disabled={busy}
-          className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-700 disabled:opacity-50"
+          className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
         >
           Export (JSON)
         </button>
@@ -291,7 +279,7 @@ function ImportButton({
   return (
     <label
       className={
-        "inline-flex cursor-pointer items-center gap-1 rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800 " +
+        "inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken " +
         (disabled ? "pointer-events-none opacity-50" : "")
       }
     >
@@ -319,9 +307,7 @@ function NotificationStatus({
 }) {
   if (permission === "unsupported") {
     return (
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        Dein Browser unterstützt keine Benachrichtigungen.
-      </p>
+      <p className="text-sm text-fg-muted">Dein Browser unterstützt keine Benachrichtigungen.</p>
     );
   }
   if (permission === "denied") {
@@ -334,7 +320,7 @@ function NotificationStatus({
   }
   if (permission === "default") {
     return (
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-fg-muted">
         Bitte erlaube Benachrichtigungen, damit deine Reminder rechtzeitig ausgelöst werden.
       </p>
     );
@@ -367,7 +353,7 @@ function ChoiceButton({
         "rounded-md border px-3 py-1.5 text-sm " +
         (active
           ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-          : "border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800")
+          : "border-border hover:bg-surface-sunken")
       }
     >
       {children}

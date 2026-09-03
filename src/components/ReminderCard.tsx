@@ -248,7 +248,7 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
         Snooze
       </button>
       {open && (
-        <div
+        <fieldset
           id={popoverId}
           aria-label="Snooze-Optionen"
           className={[
@@ -272,7 +272,7 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
               {label}
             </button>
           ))}
-        </div>
+        </fieldset>
       )}
     </div>
   );

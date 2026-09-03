@@ -1,3 +1,4 @@
+import { at } from "../at.ts";
 import type { Weekday } from "../types";
 
 const WEEKDAYS: Weekday[] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -37,7 +38,7 @@ export function addMinutes(date: Date, minutes: number): Date {
 }
 
 export function weekdayKey(date: Date): Weekday {
-  return WEEKDAYS[date.getDay()];
+  return at(WEEKDAYS, date.getDay());
 }
 
 export function lastDayOfMonth(year: number, monthIndex: number): number {

@@ -14,7 +14,7 @@ describe("mood entries", () => {
     await addMoodEntry({ loggedAt: t, mood: 4 });
     const day = await listMoodEntriesForDay(dayKey(t));
     expect(day).toHaveLength(1);
-    expect(day[0].mood).toBe(4);
+    expect(day[0]!.mood).toBe(4);
   });
 
   it("listet Entries in Zeitbereich", async () => {
@@ -27,8 +27,8 @@ describe("mood entries", () => {
 
     const range = await listMoodEntriesInRange(a, b);
     expect(range).toHaveLength(2);
-    expect(range[0].mood).toBe(5);
-    expect(range[1].mood).toBe(3);
+    expect(range[0]!.mood).toBe(5);
+    expect(range[1]!.mood).toBe(3);
   });
 
   it("berechnet Tagesdurchschnitt für Mood + Energy", async () => {

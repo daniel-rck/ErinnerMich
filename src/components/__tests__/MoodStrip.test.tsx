@@ -41,7 +41,7 @@ describe("MoodStrip", () => {
     await waitFor(async () => {
       const entries = await listMoodEntriesInRange(0, Date.now() + 1000);
       expect(entries.length).toBe(1);
-      expect(entries[0].mood).toBe(4);
+      expect(entries[0]!.mood).toBe(4);
     });
   });
 

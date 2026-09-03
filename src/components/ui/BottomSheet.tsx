@@ -57,14 +57,14 @@ export function BottomSheet({ open, onClose, title, children, labelledBy }: Bott
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 380, damping: 36 }}
-            className="relative w-full max-w-2xl rounded-t-3xl border-t border-zinc-200 bg-white pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl dark:border-zinc-800 dark:bg-zinc-900"
+            className="relative w-full max-w-2xl rounded-t-3xl border-t border-border bg-surface pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl"
           >
             <div
               onPointerDown={(event) => controls.start(event)}
               className="flex cursor-grab justify-center pt-3 pb-1 active:cursor-grabbing"
               aria-hidden
             >
-              <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <div className="h-1 w-10 rounded-full bg-border" />
             </div>
             {title && (
               <h2 id={titleId} className="px-5 pb-3 text-base font-semibold">

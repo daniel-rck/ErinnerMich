@@ -16,7 +16,7 @@ describe("Surface + Card", () => {
 
   it("Card with header + footer renders all three regions", () => {
     render(
-      <Card header={<h2>Titel</h2>} footer={<button>Fuß</button>}>
+      <Card header={<h2>Titel</h2>} footer={<button type="button">Fuß</button>}>
         Body
       </Card>,
     );

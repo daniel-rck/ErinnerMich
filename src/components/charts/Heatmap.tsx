@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { at } from "../../lib/at.ts";
 import { dayKeyAddDays, dayKeyForDate } from "../../lib/stats/dayKey";
 
 type Palette = readonly [string, string, string, string, string];
@@ -66,7 +67,7 @@ export function Heatmap({
           y={10}
           fontSize={9}
           fill="currentColor"
-          className="text-zinc-500 dark:text-zinc-400"
+          className="text-fg-muted"
         >
           {label}
         </text>
@@ -127,9 +128,9 @@ function buildGrid(
       cells.push({ day: dayCursor, x, y });
       dayCursor = dayKeyAddDays(dayCursor, 1);
     }
-    const month = Number(dayCursor.split("-")[1]) - 1;
+    const month = Number(at(dayCursor.split("-"), 1)) - 1;
     if (month !== lastMonth && col % 4 === 0) {
-      monthLabels.push({ x: col * step, label: MONTHS_SHORT[month] });
+      monthLabels.push({ x: col * step, label: at(MONTHS_SHORT, month) });
       lastMonth = month;
     }
   }
