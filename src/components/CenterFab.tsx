@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LONG_PRESS_MS } from "../lib/design/gestures";
 import { useSettings } from "../lib/hooks/useSettings";
 import { useMoodLog } from "./MoodLog/MoodLogProvider";
@@ -21,6 +21,14 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressFired = useRef(false);
+
+  // A pending long-press must not open the mood sheet after unmount.
+  useEffect(
+    () => () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    },
+    [],
+  );
 
   function startLongPress() {
     if (!wellnessToolsEnabled) return;
@@ -84,7 +92,7 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
         onPointerLeave={cancelLongPress}
         onPointerCancel={cancelLongPress}
         whileTap={{ scale: 0.92 }}
-        aria-label="Neu anlegen (lang drücken: Stimmung)"
+        aria-label={wellnessToolsEnabled ? "Neu anlegen (lang drücken: Stimmung)" : "Neu anlegen"}
         className={[
           "inline-flex items-center justify-center",
           "h-14 w-14 -mt-3 rounded-full",

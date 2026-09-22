@@ -51,7 +51,7 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
       setPulse(value);
       await addMoodEntry({ loggedAt: Date.now(), mood: value });
       vibrate("success");
-      toast.show({ variant: "success", message: "Mood gespeichert" });
+      toast.show({ variant: "success", message: "Stimmung gespeichert" });
       setTimeout(() => setPulse(null), 300);
       setForceExpand(false);
     },

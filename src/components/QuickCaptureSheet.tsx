@@ -127,7 +127,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={Bell}
-            onClick={() => goto("/new?kind=reminder")}
+            onClick={() => goto("/new?kind=reminder&blank=1")}
             fullWidth
             className="justify-start"
           >
@@ -137,7 +137,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={Flame}
-            onClick={() => goto("/new?kind=habit")}
+            onClick={() => goto("/new?kind=habit&blank=1")}
             fullWidth
             className="justify-start"
           >
@@ -162,7 +162,7 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             variant="secondary"
             size="lg"
             leadingIcon={BookOpen}
-            onClick={() => goto("/new?kind=reminder")}
+            onClick={() => goto("/new")}
             fullWidth
             className="justify-start"
           >

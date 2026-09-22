@@ -51,7 +51,7 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
       ) : reminders.length === 0 ? (
         <EmptyState
           icon={Flame}
-          title="Erste Habit anlegen"
+          title="Erstes Habit anlegen"
           description="Wähle eine Vorlage oder lege selbst etwas an."
           primaryAction={{
             label: "Aus Vorlage",
@@ -59,8 +59,8 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
             icon: Plus,
           }}
           secondaryAction={{
-            label: "Eigener Habit",
-            onClick: () => navigate("/new?kind=habit"),
+            label: "Eigenes Habit",
+            onClick: () => navigate("/new?kind=habit&blank=1"),
           }}
         />
       ) : (
@@ -89,7 +89,8 @@ function SuggestedFooter() {
         <button
           key={t.key}
           type="button"
-          onClick={() => navigate(`/new?kind=habit&title=${encodeURIComponent(t.title)}`)}
+          // The whole template, not just its title — "💧 Wasser" keeps its goal and icon.
+          onClick={() => navigate(`/new?template=${encodeURIComponent(t.key)}`)}
           className={[
             "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5",
             "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",

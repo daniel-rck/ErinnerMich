@@ -1,6 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import type { ReactElement } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Affirmation } from "../components/tools/Affirmation";
 import { BreathingBubble } from "../components/tools/BreathingBubble";
 import { GratitudeJar } from "../components/tools/GratitudeJar";
@@ -8,6 +8,7 @@ import { Grounding } from "../components/tools/Grounding";
 import { TreasureBox } from "../components/tools/TreasureBox";
 import { WorryBox } from "../components/tools/WorryBox";
 import { IconButton } from "../components/ui/IconButton";
+import { useBack } from "../components/useBack";
 import { useSettings } from "../lib/hooks/useSettings";
 import { TOOL_BY_KEY } from "../lib/tools/registry";
 import type { ToolKey } from "../lib/types";
@@ -33,7 +34,7 @@ const TOOL_GRADIENT: Record<string, string> = {
 export function ToolSessionPage() {
   const { wellnessToolsEnabled } = useSettings();
   const { toolKey } = useParams<{ toolKey: string }>();
-  const navigate = useNavigate();
+  const back = useBack("/library?tab=tools");
 
   if (!wellnessToolsEnabled) return <Navigate to="/" replace />;
 
@@ -61,7 +62,7 @@ export function ToolSessionPage() {
           tone="glass"
           shape="circle"
           size="md"
-          onClick={() => navigate(-1)}
+          onClick={back}
         />
         <div className="flex flex-1 items-center gap-[0.5rem]">
           <span className="text-3xl" aria-hidden>

@@ -81,7 +81,11 @@ export const StatTile = forwardRef<HTMLDivElement, StatTileProps>(function StatT
               ].join(" ")}
             >
               <TrendIcon size={14} aria-hidden />
-              <span>{Math.abs(trend.delta)}%</span>
+              {/* Direction was only in the hidden icon and the colour. */}
+              <span className="sr-only">
+                {trend.delta > 0 ? "gestiegen um" : trend.delta < 0 ? "gesunken um" : "unverändert"}
+              </span>
+              <span>{Math.abs(trend.delta)} %</span>
             </div>
           ) : (
             <span />

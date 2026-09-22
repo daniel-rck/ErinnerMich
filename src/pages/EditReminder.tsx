@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ReminderForm } from "../components/ReminderForm";
+import { useBack } from "../components/useBack";
 import { getReminder } from "../lib/db/reminders";
 import type { Reminder } from "../lib/types";
 
 export function EditReminderPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const back = useBack("/library");
   const [reminder, setReminder] = useState<Reminder | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -39,12 +40,7 @@ export function EditReminderPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">{reminder.title} bearbeiten</h1>
-      <ReminderForm
-        initial={reminder}
-        kind={reminder.kind}
-        onSaved={() => navigate(-1)}
-        onCancel={() => navigate(-1)}
-      />
+      <ReminderForm initial={reminder} kind={reminder.kind} onSaved={back} onCancel={back} />
     </div>
   );
 }

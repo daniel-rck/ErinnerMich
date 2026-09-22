@@ -80,12 +80,12 @@ export function MoodPage() {
               </p>
             </div>
             <Link
-              to="/stats"
+              to="/you?stat=mood"
               aria-label="Zur Stimmungs-Statistik"
               className="inline-flex items-center gap-1 text-[length:0.8125rem] font-medium text-[color:var(--color-accent-600)] hover:underline no-min-tap"
             >
               <TrendingUp size={14} aria-hidden />
-              Stats
+              Statistik
             </Link>
           </div>
           {entries.length === 0 ? (
