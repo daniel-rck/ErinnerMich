@@ -1,3 +1,4 @@
+import { dayKeyForDate, diffDays as diffDayKeys } from "./stats/dayKey";
 import type { Schedule, Weekday } from "./types";
 
 const WEEKDAY_LABELS: Record<Weekday, string> = {
@@ -31,7 +32,7 @@ export function formatSchedule(schedule: Schedule): string {
       return `Jährlich am ${schedule.day}.${schedule.month}. um ${schedule.time}${lead}`;
     }
     case "elapsed":
-      return `Alle ${schedule.days} Tage`;
+      return schedule.days === 1 ? "Jeden Tag" : `Alle ${schedule.days} Tage`;
     case "expires": {
       const date = new Date(schedule.expiresAt);
       return `Verfällt am ${date.toLocaleDateString("de-DE")}`;
@@ -42,8 +43,8 @@ export function formatSchedule(schedule: Schedule): string {
 }
 
 export function formatRelativeDate(target: Date, now = new Date()): string {
-  const diffMs = target.getTime() - now.getTime();
-  const diffDays = Math.round(diffMs / (24 * 60 * 60 * 1000));
+  // Calendar days, not 24h blocks: 22:00 → tomorrow 08:00 is "morgen".
+  const diffDays = diffDayKeys(dayKeyForDate(target), dayKeyForDate(now));
   if (diffDays === 0) return "heute";
   if (diffDays === 1) return "morgen";
   if (diffDays === -1) return "gestern";

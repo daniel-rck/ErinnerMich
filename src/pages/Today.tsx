@@ -8,19 +8,14 @@ import { MoodStrip } from "../components/MoodStrip";
 import { TodayHero } from "../components/TodayHero";
 import { TodayTimeline } from "../components/TodayTimeline";
 import { CardSkeleton } from "../components/ui/CardSkeleton";
-import { useToast } from "../components/ui/Toast";
+import { useDeleteWithUndo } from "../components/useDeleteWithUndo";
 import { WellnessRibbon } from "../components/WellnessRibbon";
-import { archiveReminder, deleteReminder, restoreReminder } from "../lib/db/reminders";
 import { FADE_UP, STAGGER_CONTAINER } from "../lib/design/motion";
 import { useReminders } from "../lib/hooks/useReminders";
 import { useSettings } from "../lib/hooks/useSettings";
-import type { Reminder } from "../lib/types";
-
-const DELETE_GRACE_MS = 5500;
 
 export function TodayPage() {
   const navigate = useNavigate();
-  const toast = useToast();
   const moodLog = useMoodLog();
   const settings = useSettings();
   const [params, setParams] = useSearchParams();
@@ -38,27 +33,7 @@ export function TodayPage() {
     }
   }, [params, setParams, moodLog]);
 
-  async function handleDelete(reminder: Reminder) {
-    await archiveReminder(reminder.id);
-    let cancelled = false;
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      void deleteReminder(reminder.id);
-    }, DELETE_GRACE_MS);
-    toast.show({
-      variant: "success",
-      message: `„${reminder.title}“ gelöscht`,
-      durationMs: DELETE_GRACE_MS,
-      action: {
-        label: "Rückgängig",
-        onClick: () => {
-          cancelled = true;
-          clearTimeout(timer);
-          void restoreReminder(reminder.id);
-        },
-      },
-    });
-  }
+  const handleDelete = useDeleteWithUndo();
 
   return (
     <motion.div

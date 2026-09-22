@@ -38,6 +38,9 @@ export function LibraryPage() {
 
   function setActive(next: string) {
     const np = new URLSearchParams(params);
+    // Filter and search belong to the tab they were set in.
+    np.delete("filter");
+    np.delete("q");
     if (next === "habits") np.delete("tab");
     else np.set("tab", next);
     setParams(np, { replace: true });
@@ -63,7 +66,7 @@ export function LibraryPage() {
         <Tabs value={active} onChange={setActive}>
           <Tabs.List ariaLabel="Bibliotheks-Bereiche">
             <Tabs.Trigger value="habits">Habits</Tabs.Trigger>
-            <Tabs.Trigger value="reminders">Reminder</Tabs.Trigger>
+            <Tabs.Trigger value="reminders">Erinnerungen</Tabs.Trigger>
             {wellnessToolsEnabled && <Tabs.Trigger value="tools">Tools</Tabs.Trigger>}
             <Tabs.Trigger value="all">Alle</Tabs.Trigger>
           </Tabs.List>

@@ -132,3 +132,18 @@ describe("currentStreakWithFreeze", () => {
     expect(freezesUsed).toBe(0);
   });
 });
+
+describe("currentStreakWithFreeze with a missed yesterday", () => {
+  const today = new Date(2026, 4, 5, 12);
+
+  it("bridges yesterday with a freeze before today is ticked", () => {
+    // Done 2..4 days ago, yesterday missed, today not yet.
+    const events = [2, 3, 4].map((d) => event(d));
+    expect(currentStreakWithFreeze(events, { today })).toEqual({ length: 3, freezesUsed: 1 });
+  });
+
+  it("reports no streak when the freeze would bridge into nothing", () => {
+    const events = [5].map((d) => event(d));
+    expect(currentStreakWithFreeze(events, { today })).toEqual({ length: 0, freezesUsed: 0 });
+  });
+});

@@ -220,3 +220,36 @@ describe("exportFilename", () => {
     expect(exportFilename(new Date(2026, 4, 5))).toBe("erinnermich-2026-05-05.json");
   });
 });
+
+describe("parseExport record validation", () => {
+  const empty = {
+    schema: "erinnermich",
+    schemaVersion: 2,
+    exportedAt: 0,
+    reminders: [] as unknown[],
+    events: [] as unknown[],
+    inventories: [] as unknown[],
+    moodEntries: [] as unknown[],
+    toolEntries: [] as unknown[],
+  };
+
+  it("rejects a fractional or negative schemaVersion", () => {
+    expect(() => parseExport({ ...empty, schemaVersion: 1.5 })).toThrow(ImportSchemaError);
+    expect(() => parseExport({ ...empty, schemaVersion: -1 })).toThrow(ImportSchemaError);
+  });
+
+  it("rejects a reminder whose schedule the engines can't handle", () => {
+    const reminders = [{ id: "r", title: "x", schedule: { type: "daily", times: [] } }];
+    expect(() => parseExport({ ...empty, reminders })).toThrow("Erinnerung Nr. 1");
+  });
+
+  it("rejects a mood entry without loggedAt", () => {
+    expect(() => parseExport({ ...empty, moodEntries: [{ id: "m", mood: 3 }] })).toThrow(
+      "Stimmungseintrag Nr. 1",
+    );
+  });
+
+  it("rejects an event without reminderId", () => {
+    expect(() => parseExport({ ...empty, events: [{ id: "e" }] })).toThrow("Ereignis Nr. 1");
+  });
+});

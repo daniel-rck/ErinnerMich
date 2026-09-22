@@ -90,8 +90,10 @@ export function currentStreakWithFreeze(
   if (days.size === 0) return { length: 0, freezesUsed: 0 };
 
   const todayKey = dayKeyForDate(today);
+  // A missed yesterday is exactly what a freeze is for — the loop below
+  // bridges it. Returning 0 here showed the streak as lost all day, only to
+  // jump back once today was ticked.
   let cursor = days.has(todayKey) ? todayKey : dayKeyAddDays(todayKey, -1);
-  if (!days.has(cursor)) return { length: 0, freezesUsed: 0 };
 
   // Beyond the earliest hit, the streak has nothing to anchor on. Don't burn
   // freezes on prehistoric gaps.
@@ -122,5 +124,7 @@ export function currentStreakWithFreeze(
     }
     break;
   }
+  // Freezes alone don't make a streak.
+  if (length === 0) return { length: 0, freezesUsed: 0 };
   return { length, freezesUsed };
 }

@@ -6,6 +6,7 @@ import {
   type StoredToolEntry,
 } from "../db";
 import { broadcast } from "../db/broadcast";
+import { nextOccurrence } from "../schedule/nextOccurrence";
 import type { Inventory, MoodEntry, Reminder, ReminderEvent, ToolEntry } from "../types";
 
 // v2 added `toolEntries` (wellness tool history). v1 exports are still
@@ -82,7 +83,11 @@ export function parseExport(raw: unknown): ErinnermichExport {
   if (obj.schema !== "erinnermich") {
     throw new ImportSchemaError(`Unbekanntes Schema „${String(obj.schema)}".`);
   }
-  if (typeof obj.schemaVersion !== "number") {
+  if (
+    typeof obj.schemaVersion !== "number" ||
+    !Number.isInteger(obj.schemaVersion) ||
+    obj.schemaVersion < 1
+  ) {
     throw new ImportSchemaError("schemaVersion fehlt oder ist kein Integer.");
   }
   if (obj.schemaVersion > EXPORT_SCHEMA_VERSION) {
@@ -102,7 +107,73 @@ export function parseExport(raw: unknown): ErinnermichExport {
   } else if (!Array.isArray(obj.toolEntries)) {
     throw new ImportSchemaError('Feld „toolEntries" muss ein Array sein.');
   }
+  validateRecords(obj);
   return obj as unknown as ErinnermichExport;
+}
+
+const SCHEDULE_TYPES = new Set([
+  "interval",
+  "daily",
+  "weekly",
+  "biweekly",
+  "monthly",
+  "yearly",
+  "elapsed",
+  "expires",
+  "inventory_based",
+]);
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null;
+}
+function isNonEmptyString(v: unknown): v is string {
+  return typeof v === "string" && v.length > 0;
+}
+function isFiniteNumber(v: unknown): v is number {
+  return typeof v === "number" && Number.isFinite(v);
+}
+
+/**
+ * Per-record checks. Without them a record missing its key aborted the whole
+ * transaction with a raw DataError, a mood entry without `loggedAt` was stored
+ * under "NaN-NaN-NaN", and a schedule the engines reject (e.g. `times: []`)
+ * got in and broke notification re-arming later.
+ */
+function validateRecords(obj: Record<string, unknown>): void {
+  const fail = (what: string, i: number, why: string): never => {
+    throw new ImportSchemaError(`${what} Nr. ${i + 1}: ${why}`);
+  };
+  (obj.reminders as unknown[]).forEach((r, i) => {
+    if (!isRecord(r) || !isNonEmptyString(r.id)) return fail("Erinnerung", i, "ID fehlt.");
+    if (typeof r.title !== "string") fail("Erinnerung", i, "Titel fehlt.");
+    const schedule = r.schedule;
+    if (!isRecord(schedule) || !SCHEDULE_TYPES.has(String(schedule.type))) {
+      return fail("Erinnerung", i, "unbekannter Zeitplan.");
+    }
+    try {
+      nextOccurrence(schedule as unknown as Reminder["schedule"], new Date());
+    } catch (err) {
+      fail("Erinnerung", i, `ungültiger Zeitplan (${err instanceof Error ? err.message : err}).`);
+    }
+  });
+  (obj.events as unknown[]).forEach((e, i) => {
+    if (!isRecord(e) || !isNonEmptyString(e.id) || !isNonEmptyString(e.reminderId)) {
+      fail("Ereignis", i, "ID oder Erinnerung fehlt.");
+    }
+  });
+  (obj.inventories as unknown[]).forEach((inv, i) => {
+    if (!isRecord(inv) || !isNonEmptyString(inv.reminderId)) fail("Vorrat", i, "Erinnerung fehlt.");
+  });
+  (obj.moodEntries as unknown[]).forEach((m, i) => {
+    if (!isRecord(m) || !isNonEmptyString(m.id) || !isFiniteNumber(m.loggedAt)) {
+      fail("Stimmungseintrag", i, "ID oder Zeitpunkt fehlt.");
+    }
+  });
+  (obj.toolEntries as unknown[]).forEach((t, i) => {
+    if (!isRecord(t) || !isNonEmptyString(t.id) || !isFiniteNumber(t.loggedAt)) {
+      fail("Tool-Eintrag", i, "ID oder Zeitpunkt fehlt.");
+    }
+  });
 }
 
 export async function importAll(
@@ -191,6 +262,7 @@ export async function downloadExport(): Promise<ErinnermichExport> {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  // Revoking synchronously can cancel the download in Safari/older Firefox.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
   return snap;
 }
