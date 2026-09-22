@@ -1,56 +1,35 @@
-import { useEffect, useState } from "react";
-import { subscribe } from "../db/broadcast";
 import { listReminders } from "../db/reminders";
+import { dayKeyForDate, diffDays } from "../stats/dayKey";
 import type { Reminder } from "../types";
+import { useDbQuery } from "./useDbQuery";
 
-export interface ExpiringReminder {
+export type ExpiringReminder = {
   reminder: Reminder;
   expiresAt: number;
   daysRemaining: number;
-}
+};
 
 export function useExpiryRadar(now?: number): {
   items: ExpiringReminder[];
   loading: boolean;
 } {
-  const [items, setItems] = useState<ExpiringReminder[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const reference = now ?? Date.now();
+  const { data, loading } = useDbQuery<ExpiringReminder[]>(
+    async () => {
+      const referenceKey = dayKeyForDate(new Date(now ?? Date.now()));
       const all = await listReminders({ activeOnly: true });
       const expiring: ExpiringReminder[] = [];
       for (const reminder of all) {
         if (reminder.schedule.type !== "expires") continue;
         const expiresAt = reminder.schedule.expiresAt;
-        const daysRemaining = Math.ceil((expiresAt - reference) / (24 * 60 * 60 * 1000));
+        // Calendar days, not 24h blocks — a DST weekend must not add a day.
+        const daysRemaining = diffDays(dayKeyForDate(new Date(expiresAt)), referenceKey);
         expiring.push({ reminder, expiresAt, daysRemaining });
       }
-      expiring.sort((a, b) => a.expiresAt - b.expiresAt);
-      if (!cancelled) {
-        setItems(expiring);
-        setLoading(false);
-      }
-    }
-
-    void load();
-    const unsubscribe = subscribe((message) => {
-      if (
-        message.type === "reminder-changed" ||
-        message.type === "reminder-deleted" ||
-        message.type === "db-cleared"
-      ) {
-        void load();
-      }
-    });
-    return () => {
-      cancelled = true;
-      unsubscribe();
-    };
-  }, [now]);
-
-  return { items, loading };
+      return expiring.toSorted((a, b) => a.expiresAt - b.expiresAt);
+    },
+    [],
+    (message) => message.type === "reminder-changed" || message.type === "reminder-deleted",
+    [now],
+  );
+  return { items: data, loading };
 }

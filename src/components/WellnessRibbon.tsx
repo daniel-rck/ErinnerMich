@@ -76,7 +76,7 @@ const ACCENT_ICON: Record<Cue["accent"], string> = {
 export function WellnessRibbon() {
   const [toMs] = useState(() => Date.now());
   const fromMs = useMemo(() => toMs - 24 * 60 * 60 * 1000, [toMs]);
-  const { entries } = useMoodEntriesInRange(fromMs, toMs);
+  const { entries } = useMoodEntriesInRange(fromMs);
   const [hour] = useState(() => new Date().getHours());
   const cue = useMemo(() => chooseCue(latestRecent(entries, TWO_HOURS), hour), [entries, hour]);
 

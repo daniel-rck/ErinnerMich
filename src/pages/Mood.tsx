@@ -29,7 +29,7 @@ export function MoodPage() {
 
   const [now] = useState(() => Date.now());
   const fromMs = useMemo(() => now - 7 * 24 * 60 * 60 * 1000, [now]);
-  const { entries } = useMoodEntriesInRange(fromMs, now);
+  const { entries } = useMoodEntriesInRange(fromMs);
 
   const series = useMemo(() => dailyMoodSeries(entries, 7), [entries]);
   const sparklineData = useMemo(

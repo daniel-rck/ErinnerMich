@@ -259,7 +259,7 @@ const MOOD_WINDOW_DAYS = 30;
 function MoodStats() {
   const [now] = useState(() => Date.now());
   const fromMs = now - MOOD_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-  const { entries, loading } = useMoodEntriesInRange(fromMs, now);
+  const { entries, loading } = useMoodEntriesInRange(fromMs);
   const { reminders: habits } = useReminders({ kind: "habit" });
   const { events } = useAllEvents();
 
