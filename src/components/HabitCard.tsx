@@ -29,7 +29,7 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
   const doneToday = useMemo(() => successfulDayKeys(events).has(today), [events, today]);
 
   async function bump(value: number) {
-    const plan = await logHabit(reminder, events, value);
+    const plan = await logHabit(reminder, value);
     if (plan.milestone !== null) {
       vibrate("milestone");
       setCelebrateStreak(plan.milestone);

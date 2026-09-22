@@ -243,6 +243,11 @@ describe("parseExport record validation", () => {
     expect(() => parseExport({ ...empty, reminders })).toThrow("Erinnerung Nr. 1");
   });
 
+  it("rejects an expiry reminder without a valid expiresAt", () => {
+    const reminders = [{ id: "r", title: "Pass", schedule: { type: "expires", preWarnings: [] } }];
+    expect(() => parseExport({ ...empty, reminders })).toThrow("Ablaufdatum fehlt");
+  });
+
   it("rejects a mood entry without loggedAt", () => {
     expect(() => parseExport({ ...empty, moodEntries: [{ id: "m", mood: 3 }] })).toThrow(
       "Stimmungseintrag Nr. 1",

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { addEvent, listEventsForReminder } from "../../db/events";
+import { createReminder } from "../../db/reminders";
 import { successfulDayKeys } from "../../stats/streaks";
 import type { ReminderEvent } from "../../types";
-import { planHabitLog } from "../logHabit";
+import { logHabit, planHabitLog } from "../logHabit";
 
 const now = new Date(2026, 8, 22, 12, 0).getTime();
 const hour = 60 * 60 * 1000;
@@ -65,5 +67,50 @@ describe("planHabitLog", () => {
     const sixDays = [1, 2, 3, 4, 5, 6].map((d) => ev({ triggeredAt: now - d * day }));
     expect(planHabitLog(binary, sixDays, 1, now).milestone).toBe(7);
     expect(planHabitLog(binary, sixDays.slice(1), 1, now).milestone).toBeNull();
+  });
+});
+
+describe("logHabit concurrency", () => {
+  it("closes the day exactly once when two taps cross the target together", async () => {
+    const habit = await createReminder({
+      kind: "habit",
+      title: "Wasser",
+      icon: "💧",
+      category: "health",
+      color: "sky",
+      schedule: { type: "daily", times: ["09:00"] },
+      goal: { type: "count", target: 8, unit: "Glas" },
+      streakSensitive: true,
+      active: true,
+    });
+    await addEvent({
+      reminderId: habit.id,
+      action: "progress",
+      triggeredAt: Date.now(),
+      progress: { value: 7, unit: "Glas" },
+    });
+
+    await Promise.all([logHabit(habit, 1), logHabit(habit, 1)]);
+
+    const events = await listEventsForReminder(habit.id);
+    expect(events.filter((e) => e.action === "completed")).toHaveLength(1);
+    expect(events.filter((e) => e.action === "progress")).toHaveLength(3);
+  });
+
+  it("completes a binary habit once on a double tap", async () => {
+    const habit = await createReminder({
+      kind: "habit",
+      title: "Meditieren",
+      icon: "🧘",
+      category: "health",
+      color: "sky",
+      schedule: { type: "daily", times: ["09:00"] },
+      goal: { type: "binary" },
+      streakSensitive: true,
+      active: true,
+    });
+    await Promise.all([logHabit(habit, 1), logHabit(habit, 1)]);
+    const events = await listEventsForReminder(habit.id);
+    expect(events.filter((e) => e.action === "completed")).toHaveLength(1);
   });
 });

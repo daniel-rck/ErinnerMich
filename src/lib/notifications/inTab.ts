@@ -1,3 +1,4 @@
+import type { PendingSnooze } from "../schedule/snooze";
 import type { Reminder } from "../types";
 import { buildDescriptor } from "./actions";
 import { planTriggers } from "./triggers";
@@ -30,26 +31,28 @@ export function armInTabTimers(
   registration: ServiceWorkerRegistration | null,
   reminder: Reminder,
   now: number = Date.now(),
-  snoozeUntil: number | null = null,
+  snoozes: readonly PendingSnooze[] = [],
 ): number {
   clearInTabTimers(reminder.id);
   if (!reminder.active) return 0;
 
   const horizon = now + INTAB_HORIZON_MS;
   const planned = planTriggers(reminder, new Date(now), MAX_TIMERS_PER_REMINDER);
-  const due = planned
-    .map(({ scheduledFor }) => scheduledFor)
-    .filter((at) => at.getTime() > now && at.getTime() <= horizon);
-  if (snoozeUntil !== null && snoozeUntil > now && snoozeUntil <= horizon) {
-    due.push(new Date(snoozeUntil));
+  const due: { at: Date; occurrence?: number }[] = planned
+    .map(({ scheduledFor }) => ({ at: scheduledFor }))
+    .filter(({ at }) => at.getTime() > now && at.getTime() <= horizon);
+  for (const snooze of snoozes) {
+    if (snooze.until > now && snooze.until <= horizon) {
+      due.push({ at: new Date(snooze.until), occurrence: snooze.slot });
+    }
   }
   if (due.length === 0) return 0;
 
   const timers: number[] = [];
-  for (const scheduledFor of due) {
+  for (const { at: scheduledFor, occurrence } of due) {
     const delay = scheduledFor.getTime() - now;
     const id = setTimeout(() => {
-      void fireInTab(registration, reminder, scheduledFor);
+      void fireInTab(registration, reminder, scheduledFor, occurrence);
     }, delay) as unknown as number;
     timers.push(id);
   }
@@ -61,10 +64,11 @@ async function fireInTab(
   registration: ServiceWorkerRegistration | null,
   reminder: Reminder,
   scheduledFor: Date,
+  occurrence?: number,
 ): Promise<void> {
   if (typeof Notification === "undefined") return;
   if (Notification.permission !== "granted") return;
-  const descriptor = buildDescriptor(reminder, scheduledFor);
+  const descriptor = buildDescriptor(reminder, scheduledFor, occurrence);
   const options: NotificationOptions = {
     tag: descriptor.tag,
     body: descriptor.body,

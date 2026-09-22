@@ -150,6 +150,11 @@ function validateRecords(obj: Record<string, unknown>): void {
     if (!isRecord(schedule) || !SCHEDULE_TYPES.has(String(schedule.type))) {
       return fail("Erinnerung", i, "unbekannter Zeitplan.");
     }
+    // The engines don't throw on a NaN expiry — they just find no occurrence —
+    // so it would get in and later render as "Invalid Date".
+    if (schedule.type === "expires" && !isFiniteNumber(schedule.expiresAt)) {
+      fail("Erinnerung", i, "Ablaufdatum fehlt.");
+    }
     try {
       nextOccurrence(schedule as unknown as Reminder["schedule"], new Date());
     } catch (err) {

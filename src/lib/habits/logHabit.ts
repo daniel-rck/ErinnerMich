@@ -1,4 +1,4 @@
-import { addEvent, type NewReminderEvent } from "../db/events";
+import { addEvent, listEventsForReminder, type NewReminderEvent } from "../db/events";
 import { dayKeyForDate } from "../stats/dayKey";
 import { isMilestone } from "../stats/streakMilestones";
 import { currentStreak, successfulDayKeys } from "../stats/streaks";
@@ -73,13 +73,35 @@ export function planHabitLog(
   };
 }
 
-export async function logHabit(
+// One queue per habit. Two quick taps used to plan from the same stale event
+// list: from 7/8, both "+1" could miss the target-crossing completion, or a
+// binary habit got completed twice.
+const queues = new Map<string, Promise<unknown>>();
+
+/**
+ * Logs one tap. Taps on the same habit run one after another, and each plans
+ * from the events freshly read from the DB — not from the caller's
+ * possibly-stale snapshot — so the completion decision sees every earlier tap.
+ */
+export function logHabit(
   reminder: Pick<Reminder, "id" | "goal">,
-  events: readonly ReminderEvent[],
   value: number,
-  now: number = Date.now(),
+  now: () => number = Date.now,
 ): Promise<HabitLogPlan> {
-  const plan = planHabitLog(reminder, events, value, now);
-  for (const event of plan.events) await addEvent(event);
-  return plan;
+  const previous = queues.get(reminder.id) ?? Promise.resolve();
+  const next = previous
+    .catch(() => {})
+    .then(async () => {
+      const events = await listEventsForReminder(reminder.id);
+      const plan = planHabitLog(reminder, events, value, now());
+      for (const event of plan.events) await addEvent(event);
+      return plan;
+    });
+  queues.set(reminder.id, next);
+  void next
+    .catch(() => {})
+    .finally(() => {
+      if (queues.get(reminder.id) === next) queues.delete(reminder.id);
+    });
+  return next;
 }

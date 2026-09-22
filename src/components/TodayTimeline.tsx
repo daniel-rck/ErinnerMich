@@ -82,11 +82,12 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
             {!collapsed && (
               <div className="flex flex-col gap-3">
                 <AnimatePresence initial={false} mode="popLayout">
-                  {bucket.items.map(({ reminder, scheduledFor, snoozed }) => (
+                  {bucket.items.map(({ reminder, scheduledFor, displayAt, snoozed }) => (
                     <CardRow
                       key={`${reminder.id}-${scheduledFor.getTime()}`}
                       reminder={reminder}
                       scheduledFor={scheduledFor}
+                      displayAt={displayAt}
                       snoozed={snoozed}
                       bucket={bucket.key}
                       onEdit={onEdit}
@@ -106,6 +107,7 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
 function CardRow({
   reminder,
   scheduledFor,
+  displayAt,
   snoozed,
   bucket,
   onEdit,
@@ -113,6 +115,7 @@ function CardRow({
 }: {
   reminder: Reminder;
   scheduledFor: Date;
+  displayAt: Date;
   snoozed: boolean;
   bucket: BucketKey;
   onEdit?: (r: Reminder) => void;
@@ -130,10 +133,10 @@ function CardRow({
   return (
     <div className={`rounded-xl ${accent}`}>
       <div className="flex items-baseline gap-3 px-1 pb-1 text-xs text-fg-muted">
-        <span className="tabular-nums">{formatTime(scheduledFor)}</span>
+        <span className="tabular-nums">{formatTime(displayAt)}</span>
         {bucket === "overdue" && <span className="text-danger-fg">überfällig</span>}
         {bucket === "now" && <span className="text-accent-600 dark:text-accent-400">jetzt</span>}
-        {snoozed && <span>verschoben</span>}
+        {snoozed && <span>verschoben von {formatTime(scheduledFor)}</span>}
       </div>
       <ReminderCard
         reminder={reminder}

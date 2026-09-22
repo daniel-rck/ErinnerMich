@@ -55,10 +55,36 @@ describe("planToday", () => {
       }),
     ];
     const items = planToday([base], events, at(12));
-    expect(items.map((i) => [i.scheduledFor.getHours(), i.bucket, i.snoozed])).toEqual([
-      [13, "later", true],
-      [20, "later", false],
+    expect(
+      items.map((i) => [i.scheduledFor.getHours(), i.displayAt.getHours(), i.bucket, i.snoozed]),
+    ).toEqual([
+      [8, 13, "later", true],
+      [20, 20, "later", false],
     ]);
+  });
+
+  it("moves only the snoozed slot, even when the snooze runs past another one", () => {
+    const events = [
+      ev({
+        action: "snoozed",
+        triggeredAt: at(19, 50).getTime(),
+        scheduledFor: at(8).getTime(),
+        snoozeUntil: at(21).getTime(),
+      }),
+    ];
+    const items = planToday([base], events, at(20, 10));
+    expect(
+      items.map((i) => [i.scheduledFor.getHours(), i.displayAt.getHours(), i.snoozed]),
+    ).toEqual([
+      [20, 20, false],
+      [8, 21, true],
+    ]);
+  });
+
+  it("picks the latest due slot of a short interval, not one of the first twelve", () => {
+    const every30: Reminder = { ...base, schedule: { type: "interval", minutes: 30 } };
+    const [item] = planToday([every30], [], at(12, 10));
+    expect([item?.scheduledFor.getHours(), item?.scheduledFor.getMinutes()]).toEqual([12, 0]);
   });
 
   it("shows an interval reminder as a single card", () => {

@@ -37,10 +37,9 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
   const items = useMemo(() => reminders.slice(0, limit), [reminders, limit]);
 
   async function bump(reminder: Reminder) {
-    const habitEvents = eventsByReminder.get(reminder.id) ?? [];
     // Same step as the habit card's primary button, so "+1" on a
     // "8 Glas" habit adds one glass instead of closing out the day.
-    const plan = await logHabit(reminder, habitEvents, stepFor(reminder));
+    const plan = await logHabit(reminder, stepFor(reminder));
     if (plan.milestone !== null) {
       vibrate("milestone");
       setCelebrateStreak(plan.milestone);

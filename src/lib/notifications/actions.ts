@@ -71,7 +71,16 @@ export function notificationTag(reminderId: string, scheduledFor: number): strin
   return `reminder-${reminderId}-${scheduledFor}`;
 }
 
-export function buildDescriptor(reminder: Reminder, scheduledFor: Date): NotificationDescriptor {
+/**
+ * `occurrence` is the slot the notification is about when it fires at another
+ * time — a snooze fires at its end but its actions must still settle the
+ * original slot (`data.scheduledFor`), or the timeline can't match them.
+ */
+export function buildDescriptor(
+  reminder: Reminder,
+  scheduledFor: Date,
+  occurrence?: number,
+): NotificationDescriptor {
   const ts = scheduledFor.getTime();
   return {
     tag: notificationTag(reminder.id, ts),
@@ -81,7 +90,7 @@ export function buildDescriptor(reminder: Reminder, scheduledFor: Date): Notific
     data: {
       reminderId: reminder.id,
       kind: reminder.kind,
-      scheduledFor: ts,
+      scheduledFor: occurrence ?? ts,
     },
   };
 }
