@@ -5,6 +5,7 @@ import { readSettings, writeNotificationOnboardingDone } from "../lib/db/setting
 import { formatSchedule } from "../lib/format";
 import { ensureNotificationPermission } from "../lib/notifications/permission";
 import { lastDayOfMonth } from "../lib/schedule/helpers";
+import { goalProblem, scheduleProblem } from "../lib/schedule/validate";
 import type { Template } from "../lib/templates";
 import type { HabitGoal, Reminder, ReminderKind, Schedule, Weekday } from "../lib/types";
 import { SchedulePreview } from "./SchedulePreview";
@@ -97,6 +98,13 @@ export function ReminderForm({
       setError("Titel darf nicht leer sein");
       return;
     }
+    const problem =
+      (isReadOnlySchedule ? null : scheduleProblem(schedule)) ??
+      (kind === "habit" ? goalProblem(goal) : null);
+    if (problem) {
+      setError(problem);
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -161,12 +169,12 @@ export function ReminderForm({
       </FieldGroup>
 
       {kind === "habit" && (
-        <FieldGroup label="Ziel">
+        <FieldSet legend="Ziel">
           <HabitGoalEditor goal={goal} onChange={setGoal} />
-        </FieldGroup>
+        </FieldSet>
       )}
 
-      <FieldGroup label="Wiederholung">
+      <FieldSet legend="Wiederholung">
         {isReadOnlySchedule ? (
           <div className="rounded-md border border-dashed border-border px-3 py-2 text-sm text-fg-muted">
             {formatSchedule(schedule)} — wird in einer späteren Version editierbar.
@@ -174,12 +182,12 @@ export function ReminderForm({
         ) : (
           <ScheduleEditor schedule={schedule} onChange={setSchedule} />
         )}
-      </FieldGroup>
+      </FieldSet>
 
       <SchedulePreview schedule={schedule} />
 
       {error && (
-        <p role="alert" className="text-sm text-rose-600">
+        <p role="alert" className="text-sm text-danger-fg">
           {error}
         </p>
       )}
@@ -227,6 +235,20 @@ function FieldGroup({
   );
 }
 
+/**
+ * For composite editors (several controls). A wrapping <label> forwarded
+ * clicks on its caption or the gaps between chips to the first control inside
+ * — clicking "Ziel" reset the goal to "Erledigt / Nicht".
+ */
+function FieldSet({ legend, children }: { legend: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="flex min-w-0 flex-col gap-1">
+      <legend className="mb-1 text-xs font-medium text-fg-muted">{legend}</legend>
+      {children}
+    </fieldset>
+  );
+}
+
 function ScheduleEditor({
   schedule,
   onChange,
@@ -244,6 +266,7 @@ function ScheduleEditor({
         value={schedule.type}
         onChange={(e) => pickType(e.target.value as EditableType)}
         className={inputClass}
+        aria-label="Art der Wiederholung"
       >
         <option value="daily">Täglich</option>
         <option value="weekly">Wöchentlich</option>
@@ -314,16 +337,20 @@ function DailyEditor({
             value={time}
             onChange={(e) => setAt(idx, e.target.value)}
             aria-label={`Zeit ${idx + 1}`}
+            required
             className="min-w-[5.5rem] bg-transparent py-1 text-sm focus:outline-none"
           />
-          <button
-            type="button"
-            onClick={() => removeAt(idx)}
-            aria-label={`Zeit ${idx + 1} entfernen`}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-fg-muted hover:bg-surface-sunken"
-          >
-            <X size={14} />
-          </button>
+          {/* The last time can't go — a daily reminder without one never fires. */}
+          {schedule.times.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeAt(idx)}
+              aria-label={`Zeit ${idx + 1} entfernen`}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-fg-muted hover:bg-surface-sunken no-min-tap"
+            >
+              <X size={14} aria-hidden />
+            </button>
+          )}
         </span>
       ))}
       <button
@@ -331,7 +358,7 @@ function DailyEditor({
         onClick={addTime}
         className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-fg-muted hover:border-accent-400 hover:text-accent-700 dark:hover:border-accent-500 dark:hover:text-accent-300"
       >
-        <Plus size={14} />
+        <Plus size={14} aria-hidden />
         Zeit hinzufügen
       </button>
     </div>
@@ -359,10 +386,11 @@ function WeeklyEditor({
             key={value}
             type="button"
             onClick={() => toggleDay(value)}
+            aria-pressed={schedule.days.includes(value)}
             className={
               "rounded-md border px-3 py-1.5 text-sm " +
               (schedule.days.includes(value)
-                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
+                ? "border-accent-500 bg-accent-soft text-fg"
                 : "border-border hover:bg-surface-sunken")
             }
           >
@@ -375,6 +403,8 @@ function WeeklyEditor({
         value={schedule.time}
         onChange={(e) => onChange({ ...schedule, time: e.target.value })}
         className={inputClass}
+        aria-label="Uhrzeit"
+        required
       />
     </div>
   );
@@ -398,8 +428,8 @@ function MonthlyEditor({
             className={
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.dayOfMonth === day
-                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                : "border-border hover:border-border")
+                ? "border-accent-500 bg-accent-soft text-fg"
+                : "border-border hover:border-accent-300")
             }
             aria-pressed={schedule.dayOfMonth === day}
             aria-label={`Tag ${day}`}
@@ -483,8 +513,8 @@ function YearlyEditor({
             className={
               "rounded-md border px-2 py-1.5 text-sm tabular-nums no-min-tap " +
               (schedule.day === day
-                ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                : "border-border hover:border-border")
+                ? "border-accent-500 bg-accent-soft text-fg"
+                : "border-border hover:border-accent-300")
             }
             aria-pressed={schedule.day === day}
             aria-label={`Tag ${day}`}
@@ -506,12 +536,12 @@ function YearlyEditor({
                 className={
                   "rounded-full border px-3 py-1 text-xs " +
                   (active
-                    ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                    : "border-border hover:border-border")
+                    ? "border-accent-500 bg-accent-soft text-fg"
+                    : "border-border hover:border-accent-300")
                 }
                 aria-pressed={active}
               >
-                {d === 0 ? "kein Vorlauf" : `${d} Tage`}
+                {d === 0 ? "kein Vorlauf" : d === 1 ? "1 Tag" : `${d} Tage`}
               </button>
             );
           })}
@@ -543,8 +573,8 @@ function ElapsedEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-border hover:border-border")
+                  ? "border-accent-500 bg-accent-soft text-fg"
+                  : "border-border hover:border-accent-300")
               }
               aria-pressed={active}
             >
@@ -587,12 +617,15 @@ function IntervalEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-border hover:border-border")
+                  ? "border-accent-500 bg-accent-soft text-fg"
+                  : "border-border hover:border-accent-300")
               }
               aria-pressed={active}
             >
-              alle {m >= 60 ? `${m / 60} h` : `${m} min`}
+              alle{" "}
+              {m >= 60
+                ? `${(m / 60).toLocaleString("de-DE", { maximumFractionDigits: 1 })} h`
+                : `${m} min`}
             </button>
           );
         })}
@@ -663,8 +696,8 @@ function HabitGoalEditor({
               className={
                 "rounded-full border px-3 py-1 text-sm " +
                 (active
-                  ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
-                  : "border-border hover:border-border")
+                  ? "border-accent-500 bg-accent-soft text-fg"
+                  : "border-border hover:border-accent-300")
               }
               aria-pressed={active}
             >
