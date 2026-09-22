@@ -95,11 +95,13 @@ export function TodayHero() {
       />
       <div className="relative flex items-center gap-5">
         <ProgressRing ratio={ratio} done={stats.doneTotal} due={stats.dueTotal} />
-        <div className="flex flex-1 flex-col gap-1">
-          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
+        {/* min-w-0: without it the flex child refused to shrink and long
+            headlines ("Bereit, durchzustarten?") were cut off on phones. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-muted)]">
             {stats.dueTotal === 0 ? "Heute" : `${stats.doneTotal} / ${stats.dueTotal} erledigt`}
           </p>
-          <h2 className="text-[length:1.625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-[color:var(--color-fg)]">
+          <h2 className="text-[length:clamp(1.125rem,4.6vw,1.625rem)] font-semibold leading-[1.25] tracking-[-0.02em] text-balance hyphens-auto text-[color:var(--color-fg)]">
             {microcopy(ratio, stats.dueTotal)}
           </h2>
         </div>
@@ -121,8 +123,8 @@ export function TodayHero() {
           size="sm"
         />
         <StatTile
-          label="Streak"
-          value={`${stats.bestStreak}d`}
+          label="Serie (Tage)"
+          value={stats.bestStreak}
           icon={Flame}
           accent="glow"
           size="sm"

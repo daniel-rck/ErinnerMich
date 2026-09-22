@@ -183,18 +183,16 @@ function HabitStats() {
               </h2>
             </header>
             <div className="mb-[1rem] grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
-              <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
+              <StatTile label="Serie (Tage)" value={streak.current} accent="glow" size="sm" />
               <StatTile
-                label="Mit Freeze"
+                label="Mit Freeze (Tage)"
                 value={
-                  freeze.freezesUsed > 0
-                    ? `${freeze.length}d ❄${freeze.freezesUsed}`
-                    : `${freeze.length}d`
+                  freeze.freezesUsed > 0 ? `${freeze.length} ❄${freeze.freezesUsed}` : freeze.length
                 }
                 accent="calm"
                 size="sm"
               />
-              <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
+              <StatTile label="Längste (Tage)" value={streak.longest} accent="brand" size="sm" />
               <StatTile
                 label="30-Tage"
                 value={`${Math.round(summary.last30.rate * 100)}%`}
@@ -244,8 +242,12 @@ function ReminderStats() {
                 size="sm"
               />
               <StatTile
-                label="Ø Abstand"
-                value={avgGap === null ? "—" : `${avgGap.toFixed(1)}d`}
+                label="Ø Abstand (Tage)"
+                value={
+                  avgGap === null
+                    ? "—"
+                    : avgGap.toLocaleString("de-DE", { maximumFractionDigits: 1 })
+                }
                 accent="calm"
                 size="sm"
               />

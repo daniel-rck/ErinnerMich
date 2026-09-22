@@ -117,8 +117,8 @@ export function ReminderDetailPage() {
       <section className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
         {reminder.kind === "habit" && (
           <>
-            <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
-            <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
+            <StatTile label="Serie (Tage)" value={streak.current} accent="glow" size="sm" />
+            <StatTile label="Längste (Tage)" value={streak.longest} accent="brand" size="sm" />
           </>
         )}
         <StatTile
@@ -134,7 +134,12 @@ export function ReminderDetailPage() {
           size="sm"
         />
         {avgGap !== null && (
-          <StatTile label="Ø Abstand" value={`${avgGap.toFixed(1)}d`} accent="mood" size="sm" />
+          <StatTile
+            label="Ø Abstand (Tage)"
+            value={avgGap.toLocaleString("de-DE", { maximumFractionDigits: 1 })}
+            accent="mood"
+            size="sm"
+          />
         )}
       </section>
 
