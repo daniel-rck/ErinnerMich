@@ -5,7 +5,7 @@ import { downloadExport } from "../../lib/io/exportImport";
 import { ErrorBoundary } from "../ErrorBoundary";
 
 vi.mock("../../lib/io/exportImport", () => ({
-  downloadExport: vi.fn().mockResolvedValue({}),
+  downloadExport: vi.fn<() => Promise<unknown>>().mockResolvedValue({}),
 }));
 
 function Bomb(): never {

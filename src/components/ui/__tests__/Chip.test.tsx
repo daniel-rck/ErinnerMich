@@ -15,7 +15,7 @@ describe("Chip", () => {
   });
 
   it("fires onClick", async () => {
-    const onClick = vi.fn();
+    const onClick = vi.fn<() => void>();
     render(<Chip onClick={onClick}>Tag</Chip>);
     await userEvent.click(screen.getByRole("button", { name: "Tag" }));
     expect(onClick).toHaveBeenCalledOnce();

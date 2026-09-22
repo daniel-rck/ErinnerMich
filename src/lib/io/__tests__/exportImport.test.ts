@@ -15,7 +15,7 @@ import {
 } from "../exportImport";
 
 vi.mock("../../db/broadcast", () => ({
-  broadcast: vi.fn(),
+  broadcast: vi.fn<(message: unknown) => void>(),
   subscribe: () => () => {},
 }));
 

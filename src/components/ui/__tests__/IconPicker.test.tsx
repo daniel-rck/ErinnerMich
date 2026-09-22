@@ -41,7 +41,7 @@ describe("IconPicker", () => {
   });
 
   it("ruft onChange beim Klick auf ein Symbol", async () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<(next: string) => void>();
     render(<Harness onChange={onChange} />);
     await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
     await userEvent.click(screen.getByRole("button", { name: "Symbol 💧" }));
@@ -49,7 +49,7 @@ describe("IconPicker", () => {
   });
 
   it("akzeptiert ein eigenes Emoji aus dem Custom-Feld", async () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<(next: string) => void>();
     render(<Harness onChange={onChange} />);
     await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
     const customInput = screen.getByLabelText(/Eigenes Emoji/);

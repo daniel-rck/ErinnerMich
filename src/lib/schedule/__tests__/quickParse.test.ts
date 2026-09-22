@@ -48,11 +48,7 @@ describe("quickParse", () => {
     const fixed = new Date("2026-05-04T10:00:00"); // Monday
     const r = quickParse("Müll morgen 8 Uhr", fixed);
     expect(r!.title).toBe("Müll");
-    expect(r!.schedule.type).toBe("weekly");
-    if (r!.schedule.type === "weekly") {
-      expect(r!.schedule.days).toEqual(["TUE"]);
-      expect(r!.schedule.time).toBe("08:00");
-    }
+    expect(r!.schedule).toEqual({ type: "weekly", days: ["TUE"], time: "08:00" });
   });
 
   it('parses "in N Tagen" as elapsed', () => {

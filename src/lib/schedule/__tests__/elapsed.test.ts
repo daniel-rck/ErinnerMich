@@ -29,6 +29,8 @@ describe("elapsedEngine", () => {
   });
 
   it("lehnt days <= 0 ab", () => {
-    expect(() => nextElapsedOccurrence({ type: "elapsed", days: 0 }, new Date())).toThrow();
+    expect(() => nextElapsedOccurrence({ type: "elapsed", days: 0 }, new Date())).toThrow(
+      "elapsed.days muss > 0 sein",
+    );
   });
 });

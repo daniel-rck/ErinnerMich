@@ -150,12 +150,14 @@ describe("applyNotificationAction", () => {
   });
 
   it("macht nichts bei unbekanntem Reminder", async () => {
-    await applyNotificationAction({
-      action: "done",
-      reminderId: "does-not-exist",
-      kind: "reminder",
-      scheduledFor: 0,
-    });
+    await expect(
+      applyNotificationAction({
+        action: "done",
+        reminderId: "does-not-exist",
+        kind: "reminder",
+        scheduledFor: 0,
+      }),
+    ).resolves.toBeUndefined();
   });
 });
 

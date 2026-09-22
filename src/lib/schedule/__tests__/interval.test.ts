@@ -64,6 +64,8 @@ describe("intervalEngine", () => {
   });
 
   it("verlangt minutes > 0", () => {
-    expect(() => nextIntervalOccurrence({ type: "interval", minutes: 0 }, new Date())).toThrow();
+    expect(() => nextIntervalOccurrence({ type: "interval", minutes: 0 }, new Date())).toThrow(
+      "interval.minutes muss > 0 sein",
+    );
   });
 });

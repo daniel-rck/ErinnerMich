@@ -15,7 +15,12 @@ describe("useDbQuery", () => {
     const runs = [deferred<string>(), deferred<string>(), deferred<string>()];
     let call = 0;
     const { result } = renderHook(() =>
-      useDbQuery(() => (runs[call++] as (typeof runs)[number]).promise, "initial", () => false, []),
+      useDbQuery(
+        () => (runs[call++] as (typeof runs)[number]).promise,
+        "initial",
+        () => false,
+        [],
+      ),
     );
 
     // Run 0 is the mount run; start run 1 and 2 on top of it.
