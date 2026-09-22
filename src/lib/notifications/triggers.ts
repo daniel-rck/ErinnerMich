@@ -66,10 +66,11 @@ export function planTriggers(
       .slice(0, limit)
       .map((scheduledFor) => ({ reminder, scheduledFor }));
   }
-  return nextNOccurrences(reminder.schedule, from, limit).map((scheduledFor) => ({
-    reminder,
-    scheduledFor,
-  }));
+  // An overdue `elapsed` anchor is in the past — the UI shows it as
+  // "überfällig", but arming it would fire immediately on every re-arm.
+  return nextNOccurrences(reminder.schedule, from, limit)
+    .filter((scheduledFor) => scheduledFor.getTime() > from.getTime())
+    .map((scheduledFor) => ({ reminder, scheduledFor }));
 }
 
 export async function armReminderTriggers(

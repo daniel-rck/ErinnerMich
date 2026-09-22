@@ -1,4 +1,5 @@
 import type { Schedule } from "../types";
+import { addDays } from "./helpers";
 
 type ElapsedSchedule = Extract<Schedule, { type: "elapsed" }>;
 
@@ -15,9 +16,9 @@ export function nextElapsedOccurrence(schedule: ElapsedSchedule, from: Date): Da
   if (schedule.days <= 0) {
     throw new Error("elapsed.days muss > 0 sein");
   }
-  const dayMs = 24 * 60 * 60 * 1000;
+  // Calendar days keep the wall-clock time across a DST switch.
   if (schedule.lastDone !== undefined) {
-    return new Date(schedule.lastDone + schedule.days * dayMs);
+    return addDays(new Date(schedule.lastDone), schedule.days);
   }
-  return new Date(from.getTime() + schedule.days * dayMs);
+  return addDays(from, schedule.days);
 }

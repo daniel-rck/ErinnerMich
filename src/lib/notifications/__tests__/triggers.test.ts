@@ -57,3 +57,13 @@ describe("planTriggers", () => {
     expect(planTriggers(inv, new Date())).toEqual([]);
   });
 });
+
+describe("planTriggers with an overdue elapsed reminder", () => {
+  it("plans nothing in the past", () => {
+    const reminder: Reminder = {
+      ...baseReminder,
+      schedule: { type: "elapsed", days: 3, lastDone: new Date(2026, 0, 1).getTime() },
+    };
+    expect(planTriggers(reminder, new Date(2026, 5, 1))).toEqual([]);
+  });
+});

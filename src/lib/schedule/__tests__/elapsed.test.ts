@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { nextElapsedOccurrence } from "../elapsedEngine";
+import { nextNOccurrences } from "../nextOccurrence";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -32,5 +33,13 @@ describe("elapsedEngine", () => {
     expect(() => nextElapsedOccurrence({ type: "elapsed", days: 0 }, new Date())).toThrow(
       "elapsed.days muss > 0 sein",
     );
+  });
+});
+
+describe("elapsed in nextNOccurrences", () => {
+  it("returns an overdue anchor once instead of repeating it", () => {
+    const lastDone = new Date(2026, 0, 1, 9, 0).getTime();
+    const list = nextNOccurrences({ type: "elapsed", days: 3, lastDone }, new Date(2026, 5, 1), 5);
+    expect(list).toHaveLength(1);
   });
 });

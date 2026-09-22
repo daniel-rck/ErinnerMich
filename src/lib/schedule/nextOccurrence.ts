@@ -46,6 +46,9 @@ export function nextNOccurrences(schedule: Schedule, from: Date, n: number): Dat
   for (let i = 0; i < n; i++) {
     const next = nextOccurrence(schedule, cursor);
     if (!next) break;
+    // Engines that can return a past anchor (elapsed with an overdue
+    // `lastDone`) hand back the same date forever — keep it once, then stop.
+    if (result.length > 0 && next.getTime() <= cursor.getTime()) break;
     result.push(next);
     cursor = next;
   }
