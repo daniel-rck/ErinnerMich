@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { MoodLogProvider } from "./components/MoodLog/MoodLogProvider";
 import { Onboarding } from "./components/Onboarding";
 import { ConfirmProvider } from "./components/ui/Confirm";
 import { ToastProvider } from "./components/ui/Toast";
 import { purgeArchivedReminders } from "./lib/db/reminders";
+import { readSettings } from "./lib/db/settings";
 import { NotificationsBootstrap } from "./lib/notifications/NotificationsBootstrap";
 import { ToolsBootstrap } from "./lib/tools/ToolsBootstrap";
 import { AllPage } from "./pages/All";
@@ -14,6 +15,7 @@ import { HabitsPage } from "./pages/Habits";
 import { LibraryPage } from "./pages/Library";
 import { MoodPage } from "./pages/Mood";
 import { NewReminderPage } from "./pages/NewReminder";
+import { NotFoundPage } from "./pages/NotFound";
 import { ReminderDetailPage } from "./pages/ReminderDetail";
 import { SettingsPage } from "./pages/Settings";
 import { StatsPage } from "./pages/Stats";
@@ -31,6 +33,27 @@ function ToolsFallback() {
       Lade …
     </div>
   );
+}
+
+const LANDING_PATH = { today: "/", habits: "/library", mood: "/mood" } as const;
+
+/**
+ * Applies the "Standard-Startseite" setting once per app start: a plain launch
+ * on "/" (no deep link, no query like `?notif=`) goes to the chosen tab.
+ */
+function LandingRedirect() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.pathname !== "/" || location.search !== "") return;
+    const settings = readSettings();
+    const target = LANDING_PATH[settings.defaultLandingTab];
+    if (target === "/mood" && !settings.wellnessToolsEnabled) return;
+    if (target !== "/") navigate(target, { replace: true });
+    // Only on mount — later visits to "/" are the user's own navigation.
+    // oxlint-disable-next-line react/exhaustive-deps -- run once at app start
+  }, []);
+  return null;
 }
 
 // Longer than any undo window, so a delete still pending in another tab
@@ -52,6 +75,7 @@ export function App() {
             <NotificationsBootstrap />
             <ToolsBootstrap />
             <Onboarding />
+            <LandingRedirect />
             <Routes>
               <Route element={<AppShell />}>
                 <Route index element={<TodayPage />} />
@@ -83,6 +107,7 @@ export function App() {
                     </Suspense>
                   }
                 />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>
           </MoodLogProvider>

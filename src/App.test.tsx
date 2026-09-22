@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { App } from "./App";
-import { writeWellnessToolsEnabled } from "./lib/db/settings";
+import { writeLandingTab, writeWellnessToolsEnabled } from "./lib/db/settings";
 
 afterEach(() => {
   writeWellnessToolsEnabled(false);
+  window.history.replaceState(null, "", "/");
 });
 
 describe("App shell", () => {
@@ -37,5 +38,17 @@ describe("App shell", () => {
   it("hat den zentralen FAB als „Neu anlegen“-Button", () => {
     render(<App />);
     expect(screen.getAllByRole("button", { name: /Neu anlegen/ }).length).toBeGreaterThan(0);
+  });
+
+  it("öffnet beim Start die gewählte Standard-Startseite", async () => {
+    writeLandingTab("habits");
+    render(<App />);
+    await waitFor(() => expect(window.location.pathname).toBe("/library"));
+  });
+
+  it("zeigt eine 404-Seite für unbekannte Pfade", () => {
+    window.history.replaceState(null, "", "/gibt-es-nicht");
+    render(<App />);
+    expect(screen.getByText("Diese Seite gibt es nicht")).toBeInTheDocument();
   });
 });
