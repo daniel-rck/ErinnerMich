@@ -65,3 +65,17 @@ describe("IconPicker", () => {
     expect(screen.getByText(/Keine Symbole/)).toBeInTheDocument();
   });
 });
+
+describe("IconPicker custom emoji", () => {
+  it("keeps a ZWJ family emoji whole", async () => {
+    const onChange = vi.fn<(next: string) => void>();
+    render(<Harness onChange={onChange} />);
+    await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
+    // Emoji keyboards insert the whole sequence at once — `type` would split it
+    // into UTF-16 units.
+    await userEvent.click(screen.getByLabelText(/Eigenes Emoji/));
+    await userEvent.paste("👨‍👩‍👧");
+    await userEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+    expect(onChange).toHaveBeenCalledWith("👨‍👩‍👧");
+  });
+});

@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { addToolEntry } from "../../lib/db/toolEntries";
 import { useToolEntries } from "../../lib/hooks/useToolEntries";
 import { useToast } from "../ui/Toast";
+import { useDeleteEntryWithUndo } from "./useDeleteEntryWithUndo";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -11,6 +12,7 @@ export function GratitudeJar() {
   const [text, setText] = useState("");
   const toast = useToast();
   const { entries } = useToolEntries({ toolKey: "gratitude" });
+  const remove = useDeleteEntryWithUndo("Eintrag gelöscht");
 
   const [now] = useState(() => Date.now());
   const recent = useMemo(() => {
@@ -30,10 +32,6 @@ export function GratitudeJar() {
     });
     setText("");
     toast.show({ variant: "success", message: "Eintrag im Glas." });
-  }
-
-  async function remove(id: string) {
-    await deleteToolEntry(id);
   }
 
   return (
@@ -94,11 +92,11 @@ export function GratitudeJar() {
             </div>
             <button
               type="button"
-              onClick={() => void remove(e.id)}
-              className="rounded p-1 text-fg-subtle hover:bg-surface-sunken hover:text-danger"
+              onClick={() => void remove(e)}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-fg-muted hover:bg-surface-sunken hover:text-danger-fg no-min-tap"
               aria-label="Eintrag löschen"
             >
-              <Trash2 size={14} />
+              <Trash2 size={16} aria-hidden />
             </button>
           </motion.li>
         ))}

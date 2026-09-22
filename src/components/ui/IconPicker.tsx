@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { Input } from "./Input";
 import { Sheet } from "./Sheet";
 
@@ -241,6 +241,7 @@ export function IconPicker({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [custom, setCustom] = useState("");
+  const customId = useId();
 
   function pick(emoji: string) {
     onChange(emoji);
@@ -298,7 +299,7 @@ export function IconPicker({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={"Suchen … z.B. „wasser“, „pflanze“, „arzt“"}
               className="pl-9"
-              autoFocus
+              aria-label="Symbole suchen"
             />
           </div>
 
@@ -349,18 +350,17 @@ export function IconPicker({
 
           <div className="flex flex-col gap-[0.5rem] pt-[0.75rem] border-t border-[color:var(--color-border)]">
             <label
-              htmlFor="icon-picker-custom"
+              htmlFor={customId}
               className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]"
             >
               Eigenes Emoji
             </label>
             <div className="flex gap-2">
               <Input
-                id="icon-picker-custom"
+                id={customId}
                 value={custom}
-                onChange={(e) => setCustom(e.target.value.slice(0, 4))}
+                onChange={(e) => setCustom(lastGrapheme(e.target.value))}
                 placeholder="z.B. 🦔"
-                maxLength={4}
                 className="flex-1"
               />
               <button
@@ -372,7 +372,7 @@ export function IconPicker({
                 disabled={custom.trim().length === 0}
                 className={[
                   "h-11 px-4 rounded-[0.875rem]",
-                  "bg-[color:var(--color-accent-600)] text-[color:white]",
+                  "bg-[color:var(--color-accent-600)] text-fg-on-accent",
                   "text-[length:0.8125rem] font-medium",
                   "hover:bg-[color:var(--color-accent-700)]",
                   "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -381,7 +381,7 @@ export function IconPicker({
                 Übernehmen
               </button>
             </div>
-            <p className="text-[length:0.6875rem] text-[color:var(--color-fg-subtle)]">
+            <p className="text-[length:0.6875rem] text-[color:var(--color-fg-muted)]">
               {totalMatches} Symbole verfügbar
             </p>
           </div>
@@ -389,6 +389,18 @@ export function IconPicker({
       </Sheet>
     </>
   );
+}
+
+/**
+ * One user-perceived character — the last one typed, so typing again replaces
+ * it. `slice(0, 4)` counted UTF-16 units and cut family, flag and skin-tone
+ * emoji into broken surrogates.
+ */
+function lastGrapheme(value: string): string {
+  const trimmed = value.trim();
+  if (typeof Intl.Segmenter !== "function") return Array.from(trimmed).at(-1) ?? "";
+  const segments = [...new Intl.Segmenter("de", { granularity: "grapheme" }).segment(trimmed)];
+  return segments.at(-1)?.segment ?? "";
 }
 
 export { ALL_ICONS as ICON_PICKER_FALLBACK };

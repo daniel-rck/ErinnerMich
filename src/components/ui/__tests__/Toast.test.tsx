@@ -1,19 +1,27 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { ToastProvider, useToast } from "../Toast";
 import type { ToastInput } from "../toastContext";
 
-let show: (input: ToastInput) => string = () => "";
-function Grab() {
-  show = useToast().show;
+type Show = (input: ToastInput) => string;
+let show: Show = () => "";
+
+function Grab({ onReady }: { onReady: (show: Show) => void }) {
+  const toast = useToast();
+  useEffect(() => onReady(toast.show), [toast.show, onReady]);
   return null;
 }
 
 function renderToasts() {
   render(
     <ToastProvider>
-      <Grab />
+      <Grab
+        onReady={(fn) => {
+          show = fn;
+        }}
+      />
     </ToastProvider>,
   );
 }
