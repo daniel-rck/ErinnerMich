@@ -12,6 +12,12 @@ export interface ToastInput {
   message: string;
   action?: ToastAction;
   durationMs?: number;
+  /**
+   * Runs once when the toast goes away without its action being used (timeout
+   * or close button). Lets "delete with undo" commit exactly when undo stops
+   * being possible — a separate timer drifted once the toast could pause.
+   */
+  onExpire?: () => void;
 }
 
 export interface Toast extends ToastInput {

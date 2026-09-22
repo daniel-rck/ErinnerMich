@@ -61,7 +61,7 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
             "flex w-full items-center justify-center gap-2",
             "h-11 rounded-[0.875rem]",
             "bg-[color:var(--color-accent-600)] text-[color:white]",
-            "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+            "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
             "transition-[background-color] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
             "hover:bg-[color:var(--color-accent-700)] active:bg-[color:var(--color-accent-800)]",
           ].join(" ")}
@@ -90,7 +90,7 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
           "h-14 w-14 -mt-3 rounded-full",
           "bg-gradient-to-br from-[color:var(--color-accent-500)] to-[color:var(--color-accent-700)]",
           "text-[color:white]",
-          "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+          "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
           "transition-colors duration-[140ms]",
           "hover:brightness-110 active:brightness-95",
         ].join(" ")}

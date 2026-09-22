@@ -107,7 +107,7 @@ function TabsTrigger({ value, children, className = "", onClick, ...rest }: Tabs
         "text-[length:0.8125rem] font-medium",
         "transition-[background-color,color] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
         active
-          ? "bg-[color:var(--color-surface)] text-[color:var(--color-fg)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]"
+          ? "bg-[color:var(--color-surface)] text-[color:var(--color-fg)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]"
           : "text-[color:var(--color-fg-muted)] hover:text-[color:var(--color-fg)]",
         className,
       ].join(" ")}

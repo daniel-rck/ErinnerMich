@@ -19,11 +19,11 @@ export const TEXT = {
 } as const;
 
 export const ELEV = {
-  0: "shadow-[0 0 0 1px var(--color-border)]",
-  1: "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
-  2: "shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)]",
-  3: "shadow-[0 12px 32px oklch(20% 0.01 285 / 0.14), 0 4px 8px oklch(20% 0.01 285 / 0.06)]",
-  brand: "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+  0: "shadow-[0_0_0_1px_var(--color-border)]",
+  1: "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
+  2: "shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
+  3: "shadow-[0_12px_32px_oklch(20%_0.01_285/0.14),0_4px_8px_oklch(20%_0.01_285/0.06)]",
+  brand: "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
 } as const;
 
 export const RADIUS = {

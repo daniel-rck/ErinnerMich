@@ -1,3 +1,4 @@
+import { MotionConfig } from "framer-motion";
 import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
@@ -67,53 +68,58 @@ export function App() {
     });
   }, []);
 
+  // `reducedMotion="user"`: framer-motion's JS springs ignore the CSS
+  // prefers-reduced-motion rule in index.css; this turns transform/layout
+  // animations off for those users app-wide (opacity fades stay).
   return (
-    <ToastProvider>
-      <ConfirmProvider>
-        <BrowserRouter>
-          <MoodLogProvider>
-            <NotificationsBootstrap />
-            <ToolsBootstrap />
-            <Onboarding />
-            <LandingRedirect />
-            <Routes>
-              <Route element={<AppShell />}>
-                <Route index element={<TodayPage />} />
-                {/* New IA destinations */}
-                <Route path="mood" element={<MoodPage />} />
-                <Route path="library" element={<LibraryPage />} />
-                <Route path="you" element={<YouPage />} />
-                {/* Legacy routes — kept for back-compat, also reachable */}
-                <Route path="habits" element={<HabitsPage />} />
-                <Route path="all" element={<AllPage />} />
-                <Route path="stats" element={<StatsPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="new" element={<NewReminderPage />} />
-                <Route path="edit/:id" element={<EditReminderPage />} />
-                <Route path="detail/:id" element={<ReminderDetailPage />} />
-                <Route
-                  path="tools"
-                  element={
-                    <Suspense fallback={<ToolsFallback />}>
-                      <ToolsPage />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="tools/:toolKey"
-                  element={
-                    <Suspense fallback={<ToolsFallback />}>
-                      <ToolSessionPage />
-                    </Suspense>
-                  }
-                />
-                <Route path="*" element={<NotFoundPage />} />
-              </Route>
-            </Routes>
-          </MoodLogProvider>
-        </BrowserRouter>
-      </ConfirmProvider>
-    </ToastProvider>
+    <MotionConfig reducedMotion="user">
+      <ToastProvider>
+        <ConfirmProvider>
+          <BrowserRouter>
+            <MoodLogProvider>
+              <NotificationsBootstrap />
+              <ToolsBootstrap />
+              <Onboarding />
+              <LandingRedirect />
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route index element={<TodayPage />} />
+                  {/* New IA destinations */}
+                  <Route path="mood" element={<MoodPage />} />
+                  <Route path="library" element={<LibraryPage />} />
+                  <Route path="you" element={<YouPage />} />
+                  {/* Legacy routes — kept for back-compat, also reachable */}
+                  <Route path="habits" element={<HabitsPage />} />
+                  <Route path="all" element={<AllPage />} />
+                  <Route path="stats" element={<StatsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="new" element={<NewReminderPage />} />
+                  <Route path="edit/:id" element={<EditReminderPage />} />
+                  <Route path="detail/:id" element={<ReminderDetailPage />} />
+                  <Route
+                    path="tools"
+                    element={
+                      <Suspense fallback={<ToolsFallback />}>
+                        <ToolsPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="tools/:toolKey"
+                    element={
+                      <Suspense fallback={<ToolsFallback />}>
+                        <ToolSessionPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Route>
+              </Routes>
+            </MoodLogProvider>
+          </BrowserRouter>
+        </ConfirmProvider>
+      </ToastProvider>
+    </MotionConfig>
   );
 }
 
