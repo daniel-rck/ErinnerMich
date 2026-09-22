@@ -2,21 +2,14 @@ import { MoreVertical, Search } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CardSkeleton } from "../components/ui/CardSkeleton";
-import { useToast } from "../components/ui/Toast";
+import { useDeleteWithUndo } from "../components/useDeleteWithUndo";
 import { categoryClasses } from "../lib/categoryColors";
-import {
-  archiveReminder,
-  deleteReminder,
-  restoreReminder,
-  setReminderActive,
-} from "../lib/db/reminders";
+import { setReminderActive } from "../lib/db/reminders";
 import { formatSchedule } from "../lib/format";
 import { useReminders } from "../lib/hooks/useReminders";
 import type { Reminder, ReminderKind } from "../lib/types";
 
 type Filter = "all" | ReminderKind;
-
-const DELETE_GRACE_MS = 5500;
 
 interface AllPageProps {
   /**
@@ -32,12 +25,14 @@ interface AllPageProps {
 
 export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) {
   const navigate = useNavigate();
-  const toast = useToast();
   const [params, setParams] = useSearchParams();
+  // A scoped tab (`defaultFilter`) is fixed to its kind; the "Alle" tab next
+  // to it covers the rest. Only the unscoped list reads `?filter`.
   const filter: Filter = (() => {
+    if (defaultFilter) return defaultFilter;
     const f = params.get("filter");
     if (f === "reminder" || f === "habit" || f === "mood") return f;
-    return defaultFilter ?? "all";
+    return "all";
   })();
   const search = params.get("q") ?? "";
   const { reminders, loading } = useReminders({
@@ -66,27 +61,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
     setParams(np, { replace: true });
   }
 
-  async function handleDelete(reminder: Reminder) {
-    await archiveReminder(reminder.id);
-    let cancelled = false;
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      void deleteReminder(reminder.id);
-    }, DELETE_GRACE_MS);
-    toast.show({
-      variant: "success",
-      message: `„${reminder.title}“ gelöscht`,
-      durationMs: DELETE_GRACE_MS,
-      action: {
-        label: "Rückgängig",
-        onClick: () => {
-          cancelled = true;
-          clearTimeout(timer);
-          void restoreReminder(reminder.id);
-        },
-      },
-    });
-  }
+  const handleDelete = useDeleteWithUndo();
 
   return (
     <div className="flex flex-col gap-[1rem]">
@@ -115,20 +90,22 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         />
       </div>
 
-      <fieldset aria-label="Filter" className="flex gap-1 rounded-lg bg-surface-sunken p-1">
-        <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
-          Alle
-        </FilterButton>
-        <FilterButton active={filter === "reminder"} onClick={() => setFilter("reminder")}>
-          Erinnerungen
-        </FilterButton>
-        <FilterButton active={filter === "habit"} onClick={() => setFilter("habit")}>
-          Habits
-        </FilterButton>
-        <FilterButton active={filter === "mood"} onClick={() => setFilter("mood")}>
-          Mood
-        </FilterButton>
-      </fieldset>
+      {!defaultFilter && (
+        <fieldset aria-label="Filter" className="flex gap-1 rounded-lg bg-surface-sunken p-1">
+          <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
+            Alle
+          </FilterButton>
+          <FilterButton active={filter === "reminder"} onClick={() => setFilter("reminder")}>
+            Erinnerungen
+          </FilterButton>
+          <FilterButton active={filter === "habit"} onClick={() => setFilter("habit")}>
+            Habits
+          </FilterButton>
+          <FilterButton active={filter === "mood"} onClick={() => setFilter("mood")}>
+            Stimmung
+          </FilterButton>
+        </fieldset>
+      )}
 
       {loading ? (
         <CardSkeleton variant="row" count={4} />
@@ -162,7 +139,7 @@ function EmptyState({ search }: { search: string }) {
   }
   return (
     <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-fg-muted">
-      Hier landen alle Reminder, Habits und Mood-Einträge.
+      Hier landen alle Erinnerungen, Habits und Stimmungs-Check-ins.
     </p>
   );
 }
@@ -294,7 +271,7 @@ function RowMenu({
             type="button"
             role="menuitem"
             onClick={pick(onDelete)}
-            className="px-3 py-1.5 text-left text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+            className="px-3 py-1.5 text-left text-sm text-danger-fg hover:bg-[color:var(--color-danger-soft)]"
           >
             Löschen
           </button>

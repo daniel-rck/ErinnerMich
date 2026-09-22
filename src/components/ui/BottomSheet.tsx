@@ -1,5 +1,7 @@
 import { AnimatePresence, motion, useDragControls } from "framer-motion";
-import { type ReactNode, useEffect, useId } from "react";
+import { X } from "lucide-react";
+import { type ReactNode, useId, useRef } from "react";
+import { useOverlay } from "./useOverlay";
 
 interface BottomSheetProps {
   open: boolean;
@@ -7,24 +9,22 @@ interface BottomSheetProps {
   title?: string;
   children: ReactNode;
   labelledBy?: string;
+  /** Rendered pinned below the scroll area (see `Sheet`). */
+  footer?: ReactNode;
 }
 
-export function BottomSheet({ open, onClose, title, children, labelledBy }: BottomSheetProps) {
+export function BottomSheet({
+  open,
+  onClose,
+  title,
+  children,
+  labelledBy,
+  footer,
+}: BottomSheetProps) {
   const controls = useDragControls();
   const titleId = useId();
-
-  useEffect(() => {
-    if (!open) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+  useOverlay(open, onClose, sheetRef);
 
   return (
     <AnimatePresence>
@@ -37,7 +37,7 @@ export function BottomSheet({ open, onClose, title, children, labelledBy }: Bott
           transition={{ duration: 0.15 }}
         >
           <div
-            className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-[color:oklch(0.15_0_0/0.5)] backdrop-blur-sm"
             aria-hidden
             onClick={onClose}
           />
@@ -45,6 +45,8 @@ export function BottomSheet({ open, onClose, title, children, labelledBy }: Bott
             role="dialog"
             aria-modal="true"
             aria-labelledby={labelledBy ?? (title ? titleId : undefined)}
+            ref={sheetRef}
+            tabIndex={-1}
             drag="y"
             dragControls={controls}
             dragListener={false}
@@ -57,7 +59,12 @@ export function BottomSheet({ open, onClose, title, children, labelledBy }: Bott
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 380, damping: 36 }}
-            className="relative w-full max-w-2xl rounded-t-3xl border-t border-border bg-surface pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl"
+            className={[
+              "relative flex w-full max-w-2xl flex-col rounded-t-3xl border-t border-border bg-surface shadow-2xl outline-none",
+              // The safe-area inset is applied once — by the footer when there
+              // is one, otherwise here.
+              footer ? "" : "pb-[calc(env(safe-area-inset-bottom)+1rem)]",
+            ].join(" ")}
           >
             <div
               onPointerDown={(event) => controls.start(event)}
@@ -66,12 +73,30 @@ export function BottomSheet({ open, onClose, title, children, labelledBy }: Bott
             >
               <div className="h-1 w-10 rounded-full bg-border" />
             </div>
-            {title && (
-              <h2 id={titleId} className="px-5 pb-3 text-base font-semibold">
-                {title}
-              </h2>
+            <div className="flex items-start justify-between gap-3 px-5 pb-3">
+              {title ? (
+                <h2 id={titleId} className="text-base font-semibold">
+                  {title}
+                </h2>
+              ) : (
+                <span />
+              )}
+              {/* The drag handle is pointer-only; this is the way out for keyboard and screen readers. */}
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Schließen"
+                className="-my-1 -mr-1.5 rounded-md p-1.5 text-fg-muted hover:bg-surface-sunken hover:text-fg"
+              >
+                <X size={18} aria-hidden />
+              </button>
+            </div>
+            <div className="max-h-[75dvh] overflow-y-auto px-5 pb-2">{children}</div>
+            {footer && (
+              <div className="border-t border-border bg-surface px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+                {footer}
+              </div>
             )}
-            <div className="max-h-[75vh] overflow-y-auto px-5 pb-2">{children}</div>
           </motion.div>
         </motion.div>
       )}

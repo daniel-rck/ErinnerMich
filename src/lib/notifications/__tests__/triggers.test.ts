@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Reminder } from "../../types";
-import { planTriggers } from "../triggers";
+import { clearAllTriggers, clearReminderTriggers, planTriggers } from "../triggers";
 
 const baseReminder: Reminder = {
   id: "r-1",
@@ -55,5 +55,42 @@ describe("planTriggers", () => {
       schedule: { type: "inventory_based" },
     };
     expect(planTriggers(inv, new Date())).toEqual([]);
+  });
+});
+
+describe("planTriggers with an overdue elapsed reminder", () => {
+  it("plans nothing in the past", () => {
+    const reminder: Reminder = {
+      ...baseReminder,
+      schedule: { type: "elapsed", days: 3, lastDone: new Date(2026, 0, 1).getTime() },
+    };
+    expect(planTriggers(reminder, new Date(2026, 5, 1))).toEqual([]);
+  });
+});
+
+describe("clearing notifications", () => {
+  function fakeRegistration(tags: string[]) {
+    const closed: string[] = [];
+    const registration = {
+      getNotifications: async () => tags.map((tag) => ({ tag, close: () => closed.push(tag) })),
+    } as unknown as ServiceWorkerRegistration;
+    return { registration, closed };
+  }
+
+  it("leaves the low-stock ping alone on a re-arm but closes it when the reminder goes", async () => {
+    const tags = ["reminder-r-1-100", "lowstock-r-1", "lowstock-r-2"];
+    const rearm = fakeRegistration(tags);
+    await clearReminderTriggers(rearm.registration, "r-1");
+    expect(rearm.closed).toEqual(["reminder-r-1-100"]);
+
+    const gone = fakeRegistration(tags);
+    await clearReminderTriggers(gone.registration, "r-1", { includeLowStock: true });
+    expect(gone.closed).toEqual(["reminder-r-1-100", "lowstock-r-1"]);
+  });
+
+  it("closes low-stock pings on a full clear", async () => {
+    const all = fakeRegistration(["reminder-a-1", "lowstock-b", "test-notification"]);
+    await clearAllTriggers(all.registration);
+    expect(all.closed).toEqual(["reminder-a-1", "lowstock-b"]);
   });
 });

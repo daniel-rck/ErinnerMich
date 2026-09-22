@@ -18,8 +18,8 @@ import type { ToolCategory, ToolDef } from "../lib/tools/registry";
 import { TOOLS } from "../lib/tools/registry";
 
 const ACCENT_GRADIENT: Record<ToolCategory, string> = {
-  acute: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  reflection: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
+  acute: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  reflection: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
 };
 
 export function MoodPage() {
@@ -29,7 +29,7 @@ export function MoodPage() {
 
   const [now] = useState(() => Date.now());
   const fromMs = useMemo(() => now - 7 * 24 * 60 * 60 * 1000, [now]);
-  const { entries } = useMoodEntriesInRange(fromMs, now);
+  const { entries } = useMoodEntriesInRange(fromMs);
 
   const series = useMemo(() => dailyMoodSeries(entries, 7), [entries]);
   const sparklineData = useMemo(
@@ -80,12 +80,12 @@ export function MoodPage() {
               </p>
             </div>
             <Link
-              to="/stats"
+              to="/you?stat=mood"
               aria-label="Zur Stimmungs-Statistik"
               className="inline-flex items-center gap-1 text-[length:0.8125rem] font-medium text-[color:var(--color-accent-600)] hover:underline no-min-tap"
             >
               <TrendingUp size={14} aria-hidden />
-              Stats
+              Statistik
             </Link>
           </div>
           {entries.length === 0 ? (
@@ -148,13 +148,13 @@ export function MoodPage() {
               className={[
                 "group flex w-full items-center gap-[1rem]",
                 "rounded-[1.25rem] p-[1rem]",
-                "bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-100)]",
+                "bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-soft)]",
                 "border border-[color:var(--color-danger)]/30",
                 "transition-shadow duration-[240ms]",
-                "hover:shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)]",
+                "hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
               ].join(" ")}
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-surface)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-surface)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]">
                 <LifeBuoy size={20} aria-hidden className="text-[color:var(--color-danger)]" />
               </div>
               <div className="min-w-0 flex-1 text-left">
@@ -224,7 +224,7 @@ function ToolCard({ tool }: { tool: ToolDef }) {
         className={[
           "flex items-center gap-3 rounded-[1.25rem] p-[1rem]",
           "bg-gradient-to-br border border-[color:var(--color-border)]",
-          "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)] hover:shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)]",
+          "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)] hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
           "transition-shadow duration-[240ms]",
           ACCENT_GRADIENT[tool.category],
         ].join(" ")}

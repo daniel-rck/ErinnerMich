@@ -21,7 +21,8 @@ export default defineConfig({
         short_name: "ErinnerMich",
         description:
           "Erinnern. Reflektieren. Durchatmen. Reminder, Habits, Mood und Wellness-Tools — ohne Account, alles lokal im Browser.",
-        theme_color: "#7c3aed",
+        // Matches <meta name="theme-color"> in index.html (accent-600).
+        theme_color: "#5b50d6",
         background_color: "#0b0b10",
         display: "standalone",
         start_url: "/",

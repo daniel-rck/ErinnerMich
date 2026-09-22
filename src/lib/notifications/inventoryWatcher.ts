@@ -2,7 +2,6 @@ import { subscribe } from "../db/broadcast";
 import { getInventory } from "../db/inventories";
 import { getReminder } from "../db/reminders";
 import type { Inventory, Reminder } from "../types";
-import { notificationTag } from "./actions";
 
 let started = false;
 let unsubscribe: (() => void) | null = null;
@@ -47,12 +46,19 @@ async function check(reminderId: string): Promise<void> {
   if (!inventory) return;
   const now = Date.now();
   if (!shouldNotifyLowStock(inventory, now)) return;
+  // Claim the cooldown before the next await — two quick inventory-changed
+  // messages would otherwise both pass the check and ping twice.
+  const previous = lastNotifiedAt.get(reminderId);
+  lastNotifiedAt.set(reminderId, now);
 
   const reminder = await getReminder(reminderId);
-  if (!reminder || !reminder.active) return;
+  if (!reminder || !reminder.active) {
+    if (previous === undefined) lastNotifiedAt.delete(reminderId);
+    else lastNotifiedAt.set(reminderId, previous);
+    return;
+  }
 
   await fireLowStockNotification(reminder, inventory, now);
-  lastNotifiedAt.set(reminderId, now);
 }
 
 async function fireLowStockNotification(
@@ -63,7 +69,9 @@ async function fireLowStockNotification(
   const title = `${reminder.icon} ${reminder.title} – Vorrat niedrig`;
   const body = `Noch ${inventory.remaining} ${inventory.unit} (Schwelle: ${inventory.refillThreshold}).`;
   const options: NotificationOptions = {
-    tag: notificationTag(reminder.id, now),
+    // Its own tag: `reminder-<id>-*` is what a re-arm clears, which would
+    // close an open low-stock notification on every schedule change.
+    tag: `lowstock-${reminder.id}`,
     body,
     data: {
       reminderId: reminder.id,

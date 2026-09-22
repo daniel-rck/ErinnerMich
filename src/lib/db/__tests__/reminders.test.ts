@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import { addEvent } from "../events";
 import { setInventory } from "../inventories";
 import {
+  archiveReminder,
   createReminder,
   deleteReminder,
   getReminder,
   listReminders,
   type NewReminder,
+  purgeArchivedReminders,
+  restoreReminder,
   updateReminder,
 } from "../reminders";
 
@@ -92,5 +95,30 @@ describe("reminders CRUD", () => {
     await deleteReminder(r.id);
 
     expect(await getReminder(r.id)).toBeUndefined();
+  });
+});
+
+describe("archive, undo and purge", () => {
+  it("restores a paused reminder as paused", async () => {
+    const r = await createReminder({ ...baseReminder, active: false });
+    const wasActive = await archiveReminder(r.id);
+    expect(wasActive).toBe(false);
+    await restoreReminder(r.id, wasActive);
+    const back = await getReminder(r.id);
+    expect(back?.archivedAt).toBeUndefined();
+    expect(back?.active).toBe(false);
+  });
+
+  it("purges only reminders archived before the cutoff", async () => {
+    const old = await createReminder(baseReminder);
+    const fresh = await createReminder(baseReminder);
+    const kept = await createReminder(baseReminder);
+    await updateReminder(old.id, { archivedAt: 1_000, active: false });
+    await updateReminder(fresh.id, { archivedAt: 5_000, active: false });
+
+    expect(await purgeArchivedReminders(2_000)).toBe(1);
+    expect(await getReminder(old.id)).toBeUndefined();
+    expect(await getReminder(fresh.id)).toBeDefined();
+    expect(await getReminder(kept.id)).toBeDefined();
   });
 });

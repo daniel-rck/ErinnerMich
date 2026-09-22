@@ -48,11 +48,7 @@ describe("quickParse", () => {
     const fixed = new Date("2026-05-04T10:00:00"); // Monday
     const r = quickParse("Müll morgen 8 Uhr", fixed);
     expect(r!.title).toBe("Müll");
-    expect(r!.schedule.type).toBe("weekly");
-    if (r!.schedule.type === "weekly") {
-      expect(r!.schedule.days).toEqual(["TUE"]);
-      expect(r!.schedule.time).toBe("08:00");
-    }
+    expect(r!.schedule).toEqual({ type: "weekly", days: ["TUE"], time: "08:00" });
   });
 
   it('parses "in N Tagen" as elapsed', () => {
@@ -79,5 +75,37 @@ describe("quickParse", () => {
     const r = quickParse("Wasser trinken morgen 8 Uhr", fixed);
     expect(r!.title).toBe("Wasser trinken");
     expect(r!.schedule.type).toBe("weekly");
+  });
+});
+
+describe("quickParse edge cases", () => {
+  const monday = new Date("2026-05-04T10:00:00");
+
+  it('reads "morgen um 9" as tomorrow at 09:00', () => {
+    expect(quickParse("Arzt morgen um 9", monday)).toEqual({
+      title: "Arzt",
+      schedule: { type: "weekly", days: ["TUE"], time: "09:00" },
+    });
+  });
+
+  it('keeps "morgens" out of the tomorrow keyword', () => {
+    expect(quickParse("Tabletten morgens 8 Uhr", monday)?.schedule).toEqual({
+      type: "daily",
+      times: ["08:00"],
+    });
+  });
+
+  it("does not read ordinary words as two-letter weekdays", () => {
+    expect(quickParse("Mach das so bald wie möglich 8 Uhr", monday)?.schedule).toEqual({
+      type: "daily",
+      times: ["08:00"],
+    });
+  });
+
+  it('reads "jeden Do" and strips the prefix from the title', () => {
+    expect(quickParse("Gelbe Tonne jeden Do", monday)).toEqual({
+      title: "Gelbe Tonne",
+      schedule: { type: "weekly", days: ["THU"], time: "09:00" },
+    });
   });
 });

@@ -29,7 +29,7 @@ describe("pearson", () => {
   });
 
   it("wirft bei unterschiedlichen Längen", () => {
-    expect(() => pearson([1, 2], [1, 2, 3])).toThrow();
+    expect(() => pearson([1, 2], [1, 2, 3])).toThrow("equal length");
   });
 });
 

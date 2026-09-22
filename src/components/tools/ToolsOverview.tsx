@@ -10,7 +10,7 @@ const COLOR_BG: Record<string, string> = {
   emerald: "from-emerald-100 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40",
   amber: "from-amber-100 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/40",
   pink: "from-pink-100 to-rose-100 dark:from-pink-950/40 dark:to-rose-950/40",
-  slate: "from-slate-100 to-zinc-100 dark:from-slate-900/60 dark:to-zinc-900/60",
+  slate: "from-surface-sunken to-surface-muted",
   violet: "from-violet-100 to-purple-100 dark:from-violet-950/40 dark:to-purple-950/40",
 };
 
@@ -74,7 +74,7 @@ function ToolCard({ tool }: { tool: ToolDef }) {
     <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
       <Link
         to={`/tools/${tool.key}`}
-        className={`flex items-center gap-3 rounded-[1.25rem] bg-gradient-to-br p-[1rem] border border-[color:var(--color-border)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)] transition-shadow hover:shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)] ${bg}`}
+        className={`flex items-center gap-3 rounded-[1.25rem] bg-gradient-to-br p-[1rem] border border-[color:var(--color-border)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)] transition-shadow hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)] ${bg}`}
       >
         <span className="text-3xl" aria-hidden>
           {tool.icon}

@@ -69,7 +69,7 @@ let dbPromise: Promise<IDBPDatabase<ErinnermichDB>> | null = null;
 
 export function getDB(): Promise<IDBPDatabase<ErinnermichDB>> {
   if (!dbPromise) {
-    dbPromise = openDB<ErinnermichDB>(DB_NAME, DB_VERSION, {
+    const opening = openDB<ErinnermichDB>(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const reminders = db.createObjectStore("reminders", { keyPath: "id" });
@@ -103,7 +103,18 @@ export function getDB(): Promise<IDBPDatabase<ErinnermichDB>> {
         void getDB().then((db) => db.close());
         dbPromise = null;
       },
+      terminated() {
+        // The browser dropped the connection (e.g. storage cleared) — reopen
+        // on the next call instead of failing every operation from now on.
+        if (dbPromise === opening) dbPromise = null;
+      },
     });
+    // A failed open (quota, private mode, VersionError) must not stay cached
+    // until the page reloads.
+    opening.catch(() => {
+      if (dbPromise === opening) dbPromise = null;
+    });
+    dbPromise = opening;
   }
   return dbPromise;
 }

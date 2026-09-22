@@ -1,13 +1,12 @@
 import { motion } from "framer-motion";
-import { ChevronRight, Flame, Plus } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { Check, ChevronRight, Flame, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { dayKey } from "../lib/db";
-import { addEvent } from "../lib/db/events";
+import { habitTarget, logHabit, progressOnDay } from "../lib/habits/logHabit";
 import { useAllEvents } from "../lib/hooks/useAllEvents";
+import { useNow } from "../lib/hooks/useNow";
 import { useReminders } from "../lib/hooks/useReminders";
 import { dayKeyForDate } from "../lib/stats/dayKey";
-import { isMilestone } from "../lib/stats/streakMilestones";
 import { currentStreak, successfulDayKeys } from "../lib/stats/streaks";
 import type { Reminder, ReminderEvent } from "../lib/types";
 import { Celebration } from "./Celebration";
@@ -21,7 +20,8 @@ interface HabitRailProps {
 export function HabitRail({ limit = 6 }: HabitRailProps) {
   const { reminders } = useReminders({ kind: "habit", activeOnly: true });
   const { events } = useAllEvents();
-  const [today] = useState(() => dayKey(Date.now()));
+  const now = useNow();
+  const today = dayKeyForDate(now);
   const [celebrateStreak, setCelebrateStreak] = useState<number | null>(null);
 
   const eventsByReminder = useMemo(() => {
@@ -36,28 +36,17 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
 
   const items = useMemo(() => reminders.slice(0, limit), [reminders, limit]);
 
-  const bump = useCallback(
-    async (reminder: Reminder) => {
-      const habitEvents = eventsByReminder.get(reminder.id) ?? [];
-      const now = Date.now();
-      const todayKey = dayKeyForDate(new Date(now));
-      const wasTodayDone = successfulDayKeys(habitEvents).has(todayKey);
-      const streakBefore = currentStreak(habitEvents, new Date(now));
-      await addEvent({
-        reminderId: reminder.id,
-        action: "completed",
-        triggeredAt: now,
-      });
-      const newStreak = wasTodayDone ? streakBefore : streakBefore + 1;
-      if (!wasTodayDone && isMilestone(newStreak)) {
-        vibrate("milestone");
-        setCelebrateStreak(newStreak);
-      } else {
-        vibrate("tick");
-      }
-    },
-    [eventsByReminder],
-  );
+  async function bump(reminder: Reminder) {
+    // Same step as the habit card's primary button, so "+1" on a
+    // "8 Glas" habit adds one glass instead of closing out the day.
+    const plan = await logHabit(reminder, stepFor(reminder));
+    if (plan.milestone !== null) {
+      vibrate("milestone");
+      setCelebrateStreak(plan.milestone);
+    } else {
+      vibrate(plan.completesDay ? "success" : "tick");
+    }
+  }
 
   if (items.length === 0) return null;
 
@@ -86,12 +75,16 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
         {items.map((reminder) => {
           const habitEvents = eventsByReminder.get(reminder.id) ?? [];
           const todayDone = successfulDayKeys(habitEvents).has(today);
-          const streak = currentStreak(habitEvents, new Date());
+          const streak = currentStreak(habitEvents, now);
+          const target = habitTarget(reminder.goal);
           return (
             <li key={reminder.id} className="snap-start">
               <HabitMiniCard
                 reminder={reminder}
                 done={todayDone}
+                progress={
+                  target === null ? null : { sum: progressOnDay(habitEvents, today), target }
+                }
                 streak={streak}
                 onBump={() => void bump(reminder)}
               />
@@ -109,14 +102,28 @@ export function HabitRail({ limit = 6 }: HabitRailProps) {
   );
 }
 
-interface HabitMiniCardProps {
-  reminder: Reminder;
-  done: boolean;
-  streak: number;
-  onBump: () => void;
+function stepFor(reminder: Reminder): number {
+  return reminder.goal?.type === "duration" ? 15 : 1;
 }
 
-function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
+function stepLabel(reminder: Reminder): string {
+  if (reminder.goal?.type === "count") return `+1 ${reminder.goal.unit}`;
+  if (reminder.goal?.type === "duration") return "+15 min";
+  return "Abhaken";
+}
+
+type HabitMiniCardProps = {
+  reminder: Reminder;
+  done: boolean;
+  progress: { sum: number; target: number } | null;
+  streak: number;
+  onBump: () => void;
+};
+
+function HabitMiniCard({ reminder, done, progress, streak, onBump }: HabitMiniCardProps) {
+  // Binary habits are finished for the day once done; count/duration habits
+  // may keep logging past the target.
+  const locked = done && progress === null;
   return (
     <article
       className={[
@@ -124,7 +131,7 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
         "rounded-[1.25rem] p-[0.75rem]",
         "bg-[color:var(--color-surface)]",
         "border border-[color:var(--color-border)]",
-        "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+        "shadow-sm",
       ].join(" ")}
     >
       <div className="flex w-full items-center justify-between">
@@ -134,8 +141,8 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
         {streak > 0 && (
           <span
             role="img"
-            className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--color-warning-soft)] px-1.5 py-0.5 text-[length:0.6875rem] font-medium text-[color:var(--color-warning)]"
-            aria-label={`${streak} Tage Streak`}
+            className="inline-flex items-center gap-0.5 rounded-full bg-[color:var(--color-warning-soft)] px-1.5 py-0.5 text-[length:0.6875rem] font-medium text-warning-fg"
+            aria-label={`Serie: ${streak} ${streak === 1 ? "Tag" : "Tage"}`}
           >
             <Flame size={10} aria-hidden />
             {streak}
@@ -148,23 +155,32 @@ function HabitMiniCard({ reminder, done, streak, onBump }: HabitMiniCardProps) {
       >
         {reminder.title}
       </Link>
+      {progress && (
+        <span className="text-[length:0.75rem] tabular-nums text-fg-muted">
+          {progress.sum} / {progress.target}
+        </span>
+      )}
       <motion.button
         type="button"
         onClick={onBump}
-        whileTap={{ scale: 0.92 }}
-        aria-label={`${reminder.title} +1`}
+        disabled={locked}
+        whileTap={locked ? undefined : { scale: 0.92 }}
+        aria-label={
+          locked ? `${reminder.title}: heute erledigt` : `${reminder.title}: ${stepLabel(reminder)}`
+        }
         className={[
           "mt-auto inline-flex items-center justify-center gap-1",
-          "h-9 w-full rounded-[0.875rem]",
+          "h-11 w-full rounded-[0.875rem]",
           "text-[length:0.8125rem] font-medium",
           "transition-colors duration-[140ms]",
           done
-            ? "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]"
-            : "bg-[color:var(--color-accent-600)] text-[color:white] hover:bg-[color:var(--color-accent-700)]",
+            ? "bg-[color:var(--color-success-soft)] text-success-fg"
+            : "bg-[color:var(--color-accent-600)] text-fg-on-accent hover:bg-[color:var(--color-accent-700)]",
+          locked ? "cursor-default" : "",
         ].join(" ")}
       >
-        <Plus size={14} aria-hidden />
-        {done ? "Erledigt" : "+1"}
+        {locked ? <Check size={14} aria-hidden /> : <Plus size={14} aria-hidden />}
+        {locked ? "Erledigt" : stepLabel(reminder)}
       </motion.button>
     </article>
   );

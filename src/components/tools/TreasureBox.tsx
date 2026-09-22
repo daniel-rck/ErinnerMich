@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Image as ImageIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { addToolEntry } from "../../lib/db/toolEntries";
 import { useToolEntries } from "../../lib/hooks/useToolEntries";
 import { useToast } from "../ui/Toast";
+import { useDeleteEntryWithUndo } from "./useDeleteEntryWithUndo";
 
 const MAX_IMAGE_BYTES = 250_000;
 const MAX_TOTAL_BASE64 = 350_000;
@@ -14,6 +15,7 @@ export function TreasureBox() {
   const [adding, setAdding] = useState(false);
   const toast = useToast();
   const { entries } = useToolEntries({ toolKey: "treasure" });
+  const removeEntry = useDeleteEntryWithUndo("Schatz gelöscht");
 
   async function handleFile(file: File) {
     if (file.size > MAX_IMAGE_BYTES) {
@@ -66,9 +68,9 @@ export function TreasureBox() {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-pink-700"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-pink-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-pink-800"
         >
-          <Plus size={16} /> Neuer Schatz
+          <Plus size={16} aria-hidden /> Neuer Schatz
         </button>
       ) : (
         <form
@@ -84,6 +86,7 @@ export function TreasureBox() {
             maxLength={500}
             rows={3}
             placeholder="Was war heute schön?"
+            aria-label="Was war heute schön?"
             className="resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm"
           />
           {imageDataUrl ? (
@@ -92,22 +95,25 @@ export function TreasureBox() {
               <button
                 type="button"
                 onClick={() => setImageDataUrl(null)}
-                className="absolute right-2 top-2 rounded bg-zinc-900/80 px-2 py-1 text-xs text-fg-on-accent"
+                className="absolute right-2 top-2 rounded bg-[color:oklch(0.15_0_0/0.8)] px-2 py-1 text-xs text-fg-on-accent"
               >
                 Entfernen
               </button>
             </div>
           ) : (
-            <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken">
-              <ImageIcon size={14} />
+            <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-500">
+              <ImageIcon size={14} aria-hidden />
               Bild hinzufügen (optional, max. 250 KB)
+              {/* sr-only keeps it in the tab order (`hidden` removed it); the
+                  value reset lets the same file be picked again after "Entfernen". */}
               <input
                 type="file"
                 accept="image/*"
-                className="hidden"
+                className="sr-only"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) void handleFile(file);
+                  e.target.value = "";
                 }}
               />
             </label>
@@ -127,7 +133,7 @@ export function TreasureBox() {
             <button
               type="submit"
               disabled={!text.trim() && !imageDataUrl}
-              className="rounded-md bg-pink-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-pink-700 disabled:opacity-50"
+              className="rounded-md bg-pink-700 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-pink-800 disabled:opacity-50"
             >
               Speichern
             </button>
@@ -157,11 +163,11 @@ export function TreasureBox() {
               </span>
               <button
                 type="button"
-                onClick={() => void deleteToolEntry(e.id)}
-                className="rounded p-1 text-fg-subtle hover:bg-surface-sunken hover:text-danger"
+                onClick={() => void removeEntry(e)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-fg-muted hover:bg-surface-sunken hover:text-danger-fg no-min-tap"
                 aria-label="Schatz löschen"
               >
-                <Trash2 size={14} />
+                <Trash2 size={16} aria-hidden />
               </button>
             </div>
           </motion.article>

@@ -3,8 +3,9 @@ import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatTime } from "../lib/format";
 import { useAllEvents } from "../lib/hooks/useAllEvents";
-import { nextOccurrence } from "../lib/schedule/nextOccurrence";
-import type { Reminder, ReminderEvent } from "../lib/types";
+import { useNow } from "../lib/hooks/useNow";
+import { planToday, type TodayBucket, type TodayItem } from "../lib/schedule/todayPlan";
+import type { Reminder } from "../lib/types";
 import { ReminderCard } from "./ReminderCard";
 
 interface TodayTimelineProps {
@@ -13,26 +14,32 @@ interface TodayTimelineProps {
   onDelete?: (reminder: Reminder) => void;
 }
 
-interface TimelineItem {
-  reminder: Reminder;
-  scheduledFor: Date;
-}
+type BucketKey = TodayBucket;
 
-type BucketKey = "overdue" | "now" | "later" | "done";
-
-interface Bucket {
+type Bucket = {
   key: BucketKey;
   label: string;
-  items: TimelineItem[];
-}
+  items: TodayItem[];
+};
 
-const NOW_WINDOW_MS = 30 * 60_000;
+const BUCKETS: readonly { key: BucketKey; label: string }[] = [
+  { key: "overdue", label: "Überfällig" },
+  { key: "now", label: "Jetzt" },
+  { key: "later", label: "Später heute" },
+  { key: "done", label: "Erledigt heute" },
+];
 
 export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProps) {
   const { events } = useAllEvents();
   const [doneCollapsed, setDoneCollapsed] = useState(true);
 
-  const buckets = useMemo(() => buildBuckets(reminders, events), [reminders, events]);
+  // Ticks every minute, so "Später heute" moves to "Jetzt"/"Überfällig" on
+  // its own and the day rolls over at midnight.
+  const now = useNow();
+  const buckets = useMemo<Bucket[]>(() => {
+    const items = planToday(reminders, events, now);
+    return BUCKETS.map((b) => ({ ...b, items: items.filter((i) => i.bucket === b.key) }));
+  }, [reminders, events, now]);
   const totalItems = buckets.reduce((acc, b) => acc + b.items.length, 0);
 
   if (totalItems === 0) {
@@ -75,11 +82,13 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
             {!collapsed && (
               <div className="flex flex-col gap-3">
                 <AnimatePresence initial={false} mode="popLayout">
-                  {bucket.items.map(({ reminder, scheduledFor }) => (
+                  {bucket.items.map(({ reminder, scheduledFor, displayAt, snoozed }) => (
                     <CardRow
-                      key={reminder.id}
+                      key={`${reminder.id}-${scheduledFor.getTime()}`}
                       reminder={reminder}
                       scheduledFor={scheduledFor}
+                      displayAt={displayAt}
+                      snoozed={snoozed}
                       bucket={bucket.key}
                       onEdit={onEdit}
                       onDelete={onDelete}
@@ -98,19 +107,23 @@ export function TodayTimeline({ reminders, onEdit, onDelete }: TodayTimelineProp
 function CardRow({
   reminder,
   scheduledFor,
+  displayAt,
+  snoozed,
   bucket,
   onEdit,
   onDelete,
 }: {
   reminder: Reminder;
   scheduledFor: Date;
+  displayAt: Date;
+  snoozed: boolean;
   bucket: BucketKey;
   onEdit?: (r: Reminder) => void;
   onDelete?: (r: Reminder) => void;
 }) {
   const accent =
     bucket === "overdue"
-      ? "border-l-4 border-l-rose-500"
+      ? "border-l-4 border-l-danger"
       : bucket === "now"
         ? "border-l-4 border-l-accent-500"
         : bucket === "done"
@@ -120,15 +133,15 @@ function CardRow({
   return (
     <div className={`rounded-xl ${accent}`}>
       <div className="flex items-baseline gap-3 px-1 pb-1 text-xs text-fg-muted">
-        <span className="tabular-nums">{formatTime(scheduledFor)}</span>
-        {bucket === "overdue" && (
-          <span className="text-rose-600 dark:text-rose-400">überfällig</span>
-        )}
+        <span className="tabular-nums">{formatTime(displayAt)}</span>
+        {bucket === "overdue" && <span className="text-danger-fg">überfällig</span>}
         {bucket === "now" && <span className="text-accent-600 dark:text-accent-400">jetzt</span>}
+        {snoozed && <span>verschoben von {formatTime(scheduledFor)}</span>}
       </div>
       <ReminderCard
         reminder={reminder}
         scheduledFor={scheduledFor}
+        done={bucket === "done"}
         onEdit={onEdit}
         onDelete={onDelete}
       />
@@ -139,7 +152,7 @@ function CardRow({
 function bucketLabelClass(key: BucketKey): string {
   switch (key) {
     case "overdue":
-      return "text-rose-600 dark:text-rose-400";
+      return "text-danger-fg";
     case "now":
       return "text-accent-600 dark:text-accent-400";
     case "done":
@@ -147,55 +160,4 @@ function bucketLabelClass(key: BucketKey): string {
     default:
       return "text-fg-muted";
   }
-}
-
-function buildBuckets(reminders: Reminder[], events: readonly ReminderEvent[]): Bucket[] {
-  const now = new Date();
-  const dayStart = new Date(now);
-  dayStart.setHours(0, 0, 0, 0);
-  const dayEnd = new Date(now);
-  dayEnd.setHours(23, 59, 59, 999);
-
-  const completedToday = new Set<string>();
-  for (const e of events) {
-    if (e.action !== "completed") continue;
-    const ts = e.triggeredAt ?? e.scheduledFor;
-    if (ts == null) continue;
-    if (ts < dayStart.getTime() || ts > dayEnd.getTime()) continue;
-    completedToday.add(e.reminderId);
-  }
-
-  const items: TimelineItem[] = [];
-  for (const reminder of reminders) {
-    if (!reminder.active) continue;
-    if (reminder.archivedAt != null) continue;
-    const next = nextOccurrence(reminder.schedule, dayStart);
-    if (!next) continue;
-    if (next.getTime() > dayEnd.getTime()) continue;
-    items.push({ reminder, scheduledFor: next });
-  }
-  items.sort((a, b) => a.scheduledFor.getTime() - b.scheduledFor.getTime());
-
-  const overdue: TimelineItem[] = [];
-  const nowItems: TimelineItem[] = [];
-  const later: TimelineItem[] = [];
-  const done: TimelineItem[] = [];
-
-  for (const item of items) {
-    if (completedToday.has(item.reminder.id)) {
-      done.push(item);
-      continue;
-    }
-    const delta = item.scheduledFor.getTime() - now.getTime();
-    if (delta < -NOW_WINDOW_MS) overdue.push(item);
-    else if (delta <= NOW_WINDOW_MS) nowItems.push(item);
-    else later.push(item);
-  }
-
-  return [
-    { key: "overdue", label: "Überfällig", items: overdue },
-    { key: "now", label: "Jetzt", items: nowItems },
-    { key: "later", label: "Später heute", items: later },
-    { key: "done", label: "Erledigt heute", items: done },
-  ];
 }

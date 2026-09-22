@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { HABIT_TEMPLATES, REMINDER_TEMPLATES, type Template } from "../lib/templates";
 
+type Tab = "reminder" | "habit";
+
 interface TemplatePickerProps {
   onPick: (template: Template) => void;
   onPickBlank?: (kind: "reminder" | "habit") => void;
+  initialTab?: Tab;
 }
 
-type Tab = "reminder" | "habit";
-
-export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
-  const [tab, setTab] = useState<Tab>("reminder");
+export function TemplatePicker({
+  onPick,
+  onPickBlank,
+  initialTab = "reminder",
+}: TemplatePickerProps) {
+  const [tab, setTab] = useState<Tab>(initialTab);
   const list = tab === "reminder" ? REMINDER_TEMPLATES : HABIT_TEMPLATES;
 
   return (
     <div className="flex flex-col gap-4">
+      {/* A segmented toggle, not a tablist: there are no tab panels or arrow-key
+          navigation, so role="tablist" promised screen readers what wasn't there. */}
       <div
-        role="tablist"
+        role="group"
         aria-label="Vorlage-Kategorie"
         className="flex gap-1 rounded-lg bg-surface-sunken p-1"
       >
@@ -33,7 +40,7 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
             key={template.key}
             type="button"
             onClick={() => onPick(template)}
-            className="flex flex-col items-start gap-1 rounded-lg border border-border bg-surface p-3 text-left hover:border-accent-400 hover:bg-accent-50 dark:hover:border-accent-500 dark:hover:bg-accent-900/30"
+            className="flex flex-col items-start gap-1 rounded-lg border border-border bg-surface p-3 text-left hover:border-accent-400 hover:bg-accent-softer"
           >
             <span className="text-2xl" aria-hidden>
               {template.icon}
@@ -48,7 +55,7 @@ export function TemplatePicker({ onPick, onPickBlank }: TemplatePickerProps) {
           <button
             type="button"
             onClick={() => onPickBlank(tab)}
-            className="flex flex-col items-start gap-1 rounded-lg border border-dashed border-border p-3 text-left text-fg-muted hover:border-accent-400 hover:text-accent-700 dark:hover:text-accent-400"
+            className="flex flex-col items-start gap-1 rounded-lg border border-dashed border-border p-3 text-left text-fg-muted hover:border-accent-400 hover:text-accent-fg"
           >
             <span className="text-2xl" aria-hidden>
               ➕
@@ -73,8 +80,7 @@ function TabButton({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={
         "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors " +

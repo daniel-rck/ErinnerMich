@@ -1,5 +1,6 @@
 import { listExpiresTriggers } from "../schedule/expiresEngine";
 import { nextNOccurrences } from "../schedule/nextOccurrence";
+import type { PendingSnooze } from "../schedule/snooze";
 import type { Reminder } from "../types";
 import { buildDescriptor } from "./actions";
 
@@ -66,23 +67,34 @@ export function planTriggers(
       .slice(0, limit)
       .map((scheduledFor) => ({ reminder, scheduledFor }));
   }
-  return nextNOccurrences(reminder.schedule, from, limit).map((scheduledFor) => ({
-    reminder,
-    scheduledFor,
-  }));
+  // An overdue `elapsed` anchor is in the past — the UI shows it as
+  // "überfällig", but arming it would fire immediately on every re-arm.
+  return nextNOccurrences(reminder.schedule, from, limit)
+    .filter((scheduledFor) => scheduledFor.getTime() > from.getTime())
+    .map((scheduledFor) => ({ reminder, scheduledFor }));
 }
 
 export async function armReminderTriggers(
   registration: ServiceWorkerRegistration,
   reminder: Reminder,
   from: Date = new Date(),
+  snoozes: readonly PendingSnooze[] = [],
 ): Promise<number> {
   if (!supportsNotificationTriggers()) return 0;
   await clearReminderTriggers(registration, reminder.id);
 
-  const planned = planTriggers(reminder, from);
-  for (const { scheduledFor } of planned) {
-    const descriptor = buildDescriptor(reminder, scheduledFor);
+  const planned: { at: Date; occurrence?: number }[] = planTriggers(reminder, from).map(
+    ({ scheduledFor }) => ({ at: scheduledFor }),
+  );
+  if (reminder.active) {
+    for (const snooze of snoozes) {
+      if (snooze.until > from.getTime()) {
+        planned.push({ at: new Date(snooze.until), occurrence: snooze.slot });
+      }
+    }
+  }
+  for (const { at: scheduledFor, occurrence } of planned) {
+    const descriptor = buildDescriptor(reminder, scheduledFor, occurrence);
     const options: ShowTriggerOptions = {
       tag: descriptor.tag,
       body: descriptor.body,
@@ -96,13 +108,22 @@ export async function armReminderTriggers(
   return planned.length;
 }
 
+/**
+ * Closes a reminder's scheduled notifications. `includeLowStock` also closes
+ * its low-stock ping, which has its own tag so a plain re-arm leaves it be —
+ * but deleting or pausing the reminder must not leave it behind.
+ */
 export async function clearReminderTriggers(
   registration: ServiceWorkerRegistration,
   reminderId: string,
+  { includeLowStock = false }: { includeLowStock?: boolean } = {},
 ): Promise<void> {
   const all = await getRegisteredNotifications(registration);
   for (const n of all) {
-    if (n.tag.startsWith(`reminder-${reminderId}-`)) {
+    if (
+      n.tag.startsWith(`reminder-${reminderId}-`) ||
+      (includeLowStock && n.tag === `lowstock-${reminderId}`)
+    ) {
       n.close();
     }
   }
@@ -115,7 +136,7 @@ export async function clearReminderTriggers(
 export async function clearAllTriggers(registration: ServiceWorkerRegistration): Promise<void> {
   const all = await getRegisteredNotifications(registration);
   for (const n of all) {
-    if (n.tag.startsWith("reminder-")) {
+    if (n.tag.startsWith("reminder-") || n.tag.startsWith("lowstock-")) {
       n.close();
     }
   }

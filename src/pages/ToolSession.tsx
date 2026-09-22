@@ -1,6 +1,6 @@
 import { ChevronLeft } from "lucide-react";
 import type { ReactElement } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Affirmation } from "../components/tools/Affirmation";
 import { BreathingBubble } from "../components/tools/BreathingBubble";
 import { GratitudeJar } from "../components/tools/GratitudeJar";
@@ -8,6 +8,7 @@ import { Grounding } from "../components/tools/Grounding";
 import { TreasureBox } from "../components/tools/TreasureBox";
 import { WorryBox } from "../components/tools/WorryBox";
 import { IconButton } from "../components/ui/IconButton";
+import { useBack } from "../components/useBack";
 import { useSettings } from "../lib/hooks/useSettings";
 import { TOOL_BY_KEY } from "../lib/tools/registry";
 import type { ToolKey } from "../lib/types";
@@ -22,18 +23,18 @@ const COMPONENTS: Record<ToolKey, () => ReactElement> = {
 };
 
 const TOOL_GRADIENT: Record<string, string> = {
-  sky: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  emerald: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  amber: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  pink: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
+  sky: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  emerald: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  amber: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  pink: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
   slate: "from-[color:var(--color-surface-sunken)] to-[color:var(--color-surface)]",
-  violet: "from-[color:var(--color-accent-50)] to-[color:var(--color-accent-100)]",
+  violet: "from-[color:var(--color-accent-softer)] to-[color:var(--color-accent-soft)]",
 };
 
 export function ToolSessionPage() {
   const { wellnessToolsEnabled } = useSettings();
   const { toolKey } = useParams<{ toolKey: string }>();
-  const navigate = useNavigate();
+  const back = useBack("/library?tab=tools");
 
   if (!wellnessToolsEnabled) return <Navigate to="/" replace />;
 
@@ -61,7 +62,7 @@ export function ToolSessionPage() {
           tone="glass"
           shape="circle"
           size="md"
-          onClick={() => navigate(-1)}
+          onClick={back}
         />
         <div className="flex flex-1 items-center gap-[0.5rem]">
           <span className="text-3xl" aria-hidden>

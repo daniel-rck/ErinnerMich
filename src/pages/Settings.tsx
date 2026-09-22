@@ -76,7 +76,10 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-fg-muted uppercase">Erscheinungsbild</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <ChoiceButton active={theme === "system"} onClick={() => setTheme("system")}>
+            Wie System
+          </ChoiceButton>
           <ChoiceButton active={theme === "light"} onClick={() => setTheme("light")}>
             Hell
           </ChoiceButton>
@@ -96,7 +99,7 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
             Habits
           </ChoiceButton>
           <ChoiceButton active={landing === "mood"} onClick={() => pickLanding("mood")}>
-            Mood
+            Stimmung
           </ChoiceButton>
         </div>
       </section>
@@ -127,21 +130,18 @@ export function SettingsPage({ embedded = false }: SettingsPageProps = {}) {
       </section>
 
       {showIosHint && (
-        <section className="flex flex-col gap-2 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-700/60 dark:bg-amber-950/30">
-          <h2 className="font-medium text-amber-900 dark:text-amber-200">
-            iOS: Zum Homescreen hinzufügen
-          </h2>
-          <p className="text-amber-900/80 dark:text-amber-100/80">
-            Auf iPhone/iPad liefert der Browser nur dann Push-Benachrichtigungen, wenn ErinnerMich
-            als Web-App installiert ist. Tippe auf <em>Teilen</em>
+        <section className="flex flex-col gap-2 rounded-lg border border-[color:var(--color-warning)] bg-[color:var(--color-warning-soft)] p-4 text-sm text-fg">
+          <h2 className="font-medium text-warning-fg">iOS: Zum Homescreen hinzufügen</h2>
+          <p>
+            Auf iPhone/iPad liefert der Browser nur dann Benachrichtigungen, wenn ErinnerMich als
+            Web-App installiert ist. Tippe auf <em>Teilen</em>
             {" → "}
-            <em>Zum Home-Bildschirm</em>. Web Push wird in Phase 7 als verschlüsselter
-            Multi-Device-Sync nachgereicht.
+            <em>Zum Home-Bildschirm</em>.
           </p>
           <button
             type="button"
             onClick={() => setShowIosHint(false)}
-            className="self-start rounded-md border border-amber-400 px-2 py-1 text-xs hover:bg-amber-100 dark:border-amber-600 dark:hover:bg-amber-900/40"
+            className="self-start rounded-md border border-[color:var(--color-warning)] px-2 py-1 text-xs hover:bg-surface"
           >
             Ausblenden
           </button>
@@ -194,7 +194,7 @@ function DataIO() {
       const snap = await downloadExport();
       toast.show({
         variant: "success",
-        message: `Export: ${snap.reminders.length} Reminder, ${snap.events.length} Events, ${snap.toolEntries.length} Tool-Einträge.`,
+        message: `Export: ${snap.reminders.length} Einträge, ${snap.events.length} Ereignisse, ${snap.moodEntries.length} Stimmungen, ${snap.toolEntries.length} Tool-Einträge.`,
       });
     } catch (err) {
       toast.show({
@@ -227,12 +227,12 @@ function DataIO() {
       const summary = await importAll(data, { mode });
       toast.show({
         variant: "success",
-        message: `Import (${mode}): ${summary.reminders} Reminder, ${summary.events} Events, ${summary.moodEntries} Mood-Einträge, ${summary.toolEntries} Tool-Einträge.`,
+        message: `${mode === "replace" ? "Ersetzt" : "Zusammengeführt"}: ${summary.reminders} Einträge, ${summary.events} Ereignisse, ${summary.moodEntries} Stimmungen, ${summary.toolEntries} Tool-Einträge.`,
       });
     } catch (err) {
       const text =
         err instanceof ImportSchemaError
-          ? `Schema-Fehler: ${err.message}`
+          ? `Datei passt nicht: ${err.message}`
           : err instanceof Error
             ? err.message
             : "Import fehlgeschlagen.";
@@ -255,7 +255,7 @@ function DataIO() {
           Export (JSON)
         </button>
         <ImportButton mode="merge" onFile={handleFile} disabled={busy}>
-          Import (Merge)
+          Import (Zusammenführen)
         </ImportButton>
         <ImportButton mode="replace" onFile={handleFile} disabled={busy}>
           Import (Ersetzen)
@@ -279,14 +279,16 @@ function ImportButton({
   return (
     <label
       className={
-        "inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken " +
+        "inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-500 " +
         (disabled ? "pointer-events-none opacity-50" : "")
       }
     >
+      {/* sr-only, not hidden: `display:none` took the input out of the tab order. */}
       <input
         type="file"
         accept="application/json,.json"
-        className="hidden"
+        disabled={disabled}
+        className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void onFile(file, mode);
@@ -312,28 +314,26 @@ function NotificationStatus({
   }
   if (permission === "denied") {
     return (
-      <p className="text-sm text-rose-700 dark:text-rose-300">
-        Benachrichtigungen sind blockiert. Aktiviere sie in den Browser-Einstellungen, um Reminder
-        zu erhalten.
+      <p className="text-sm text-danger-fg">
+        Benachrichtigungen sind blockiert. Aktiviere sie in den Browser-Einstellungen, um
+        Erinnerungen zu erhalten.
       </p>
     );
   }
   if (permission === "default") {
     return (
       <p className="text-sm text-fg-muted">
-        Bitte erlaube Benachrichtigungen, damit deine Reminder rechtzeitig ausgelöst werden.
+        Bitte erlaube Benachrichtigungen, damit deine Erinnerungen rechtzeitig kommen.
       </p>
     );
   }
   const modeLabel =
     status.mode === "triggers"
-      ? "Notification Triggers (im Hintergrund)"
+      ? "auch im Hintergrund"
       : status.mode === "in-tab"
-        ? "setTimeout-Fallback (nur bei offenem Tab)"
+        ? "nur solange die App geöffnet ist"
         : "nicht verfügbar";
-  return (
-    <p className="text-sm text-emerald-700 dark:text-emerald-300">Aktiv · Modus: {modeLabel}</p>
-  );
+  return <p className="text-sm text-success-fg">Aktiv · Modus: {modeLabel}</p>;
 }
 
 function ChoiceButton({
@@ -349,10 +349,11 @@ function ChoiceButton({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={
         "rounded-md border px-3 py-1.5 text-sm " +
         (active
-          ? "border-accent-500 bg-accent-100 text-accent-900 dark:bg-accent-900/40 dark:text-accent-100"
+          ? "border-accent-500 bg-accent-soft text-fg"
           : "border-border hover:bg-surface-sunken")
       }
     >

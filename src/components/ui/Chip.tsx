@@ -17,31 +17,31 @@ export interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
 }
 
-const NEUTRAL_SELECTED = "bg-[color:var(--color-accent-600)] text-[color:white] border-transparent";
+const NEUTRAL_SELECTED = "bg-[color:var(--color-accent-600)] text-fg-on-accent border-transparent";
 const NEUTRAL_IDLE =
   "bg-[color:var(--color-surface)] text-[color:var(--color-fg)] border-[color:var(--color-border)] hover:bg-[color:var(--color-surface-sunken)]";
 
 const TONE: Record<ChipTone, { selected: string; idle: string }> = {
   neutral: { selected: NEUTRAL_SELECTED, idle: NEUTRAL_IDLE },
   brand: {
-    selected: "bg-[color:var(--color-accent-600)] text-[color:white] border-transparent",
-    idle: "bg-[color:var(--color-accent-50)] text-[color:var(--color-accent-700)] border-transparent hover:bg-[color:var(--color-accent-100)]",
+    selected: "bg-[color:var(--color-accent-600)] text-fg-on-accent border-transparent",
+    idle: "bg-[color:var(--color-accent-softer)] text-accent-fg border-transparent hover:bg-[color:var(--color-accent-soft)]",
   },
   success: {
-    selected: "bg-[color:var(--color-success)] text-[color:white] border-transparent",
-    idle: "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)] border-transparent",
+    selected: "bg-[color:var(--color-success)] text-fg-on-accent border-transparent",
+    idle: "bg-[color:var(--color-success-soft)] text-success-fg border-transparent",
   },
   warning: {
-    selected: "bg-[color:var(--color-warning)] text-[color:white] border-transparent",
-    idle: "bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)] border-transparent",
+    selected: "bg-[color:var(--color-warning)] text-[color:oklch(0.25_0.05_80)] border-transparent",
+    idle: "bg-[color:var(--color-warning-soft)] text-warning-fg border-transparent",
   },
   danger: {
-    selected: "bg-[color:var(--color-danger)] text-[color:white] border-transparent",
-    idle: "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)] border-transparent",
+    selected: "bg-[color:var(--color-danger)] text-fg-on-accent border-transparent",
+    idle: "bg-[color:var(--color-danger-soft)] text-danger-fg border-transparent",
   },
   info: {
-    selected: "bg-[color:var(--color-info)] text-[color:white] border-transparent",
-    idle: "bg-[color:var(--color-info-soft)] text-[color:var(--color-info)] border-transparent",
+    selected: "bg-[color:var(--color-info)] text-fg-on-accent border-transparent",
+    idle: "bg-[color:var(--color-info-soft)] text-[color:var(--color-fg)] border-transparent",
   },
 };
 

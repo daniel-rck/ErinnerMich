@@ -40,8 +40,8 @@ export interface WeekdayMoodPoint {
 }
 
 export function moodByWeekday(entries: readonly MoodEntry[]): WeekdayMoodPoint[] {
-  const sums = new Array<number>(7).fill(0);
-  const counts = new Array<number>(7).fill(0);
+  const sums = Array.from<number>({ length: 7 }).fill(0);
+  const counts = Array.from<number>({ length: 7 }).fill(0);
   for (const entry of entries) {
     const wd = new Date(entry.loggedAt).getDay();
     sums[wd] = at(sums, wd) + entry.mood;

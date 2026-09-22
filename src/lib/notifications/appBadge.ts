@@ -2,6 +2,7 @@ import { dayKey } from "../db";
 import { listEventsForDay } from "../db/events";
 import { listLowStock } from "../db/inventories";
 import { listReminders } from "../db/reminders";
+import { startOfDay } from "../schedule/helpers";
 import { nextOccurrence } from "../schedule/nextOccurrence";
 
 type BadgeApi = {
@@ -39,14 +40,20 @@ export async function refreshAppBadge(): Promise<void> {
       todayEvents.filter((e) => e.action === "completed").map((e) => e.reminderId),
     );
 
+    // An occurrence is overdue once it passed today without a completion.
+    // Looking from the start of the day (not just the last minute) keeps a
+    // 08:00 pill counted at 10:00.
+    const dayStart = startOfDay(now);
     let overdue = 0;
     for (const r of active) {
       if (r.kind !== "reminder") continue;
       if (completedToday.has(r.id)) continue;
-      const earlier = new Date(now.getTime() - 60_000);
-      const next = nextOccurrence(r.schedule, earlier);
-      if (!next) continue;
-      if (next.getTime() <= now.getTime()) overdue += 1;
+      try {
+        const next = nextOccurrence(r.schedule, dayStart);
+        if (next && next.getTime() <= now.getTime()) overdue += 1;
+      } catch {
+        // An invalid schedule shouldn't zero the whole badge.
+      }
     }
 
     const total = overdue + lowStock.length;

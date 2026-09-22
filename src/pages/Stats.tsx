@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Heatmap } from "../components/charts/Heatmap";
 import { Sparkline } from "../components/charts/Sparkline";
 import { WeekdayBar } from "../components/charts/WeekdayBar";
@@ -34,8 +35,16 @@ interface StatsPageProps {
   embedded?: boolean;
 }
 
+const STATS_TABS: readonly StatsTab[] = ["habits", "reminders", "mood", "tools"];
+
 export function StatsPage({ embedded = false }: StatsPageProps = {}) {
-  const [tab, setTab] = useState<StatsTab>("habits");
+  // `?stat=mood` lets links open a specific area (the mood page's
+  // "Statistik" link used to land on Habits).
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<StatsTab>(() => {
+    const requested = params.get("stat") as StatsTab | null;
+    return requested && STATS_TABS.includes(requested) ? requested : "habits";
+  });
   const { wellnessToolsEnabled } = useSettings();
   const effectiveTab: StatsTab =
     !wellnessToolsEnabled && (tab === "mood" || tab === "tools") ? "habits" : tab;
@@ -56,8 +65,8 @@ export function StatsPage({ embedded = false }: StatsPageProps = {}) {
       <Tabs value={effectiveTab} onChange={(v) => setTab(v as StatsTab)}>
         <Tabs.List ariaLabel="Statistik-Bereiche">
           <Tabs.Trigger value="habits">Habits</Tabs.Trigger>
-          <Tabs.Trigger value="reminders">Reminder</Tabs.Trigger>
-          {wellnessToolsEnabled && <Tabs.Trigger value="mood">Mood</Tabs.Trigger>}
+          <Tabs.Trigger value="reminders">Erinnerungen</Tabs.Trigger>
+          {wellnessToolsEnabled && <Tabs.Trigger value="mood">Stimmung</Tabs.Trigger>}
           {wellnessToolsEnabled && <Tabs.Trigger value="tools">Tools</Tabs.Trigger>}
         </Tabs.List>
         <div className="mt-[1rem]">
@@ -174,18 +183,16 @@ function HabitStats() {
               </h2>
             </header>
             <div className="mb-[1rem] grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
-              <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
+              <StatTile label="Serie (Tage)" value={streak.current} accent="glow" size="sm" />
               <StatTile
-                label="Mit Freeze"
+                label="Mit Freeze (Tage)"
                 value={
-                  freeze.freezesUsed > 0
-                    ? `${freeze.length}d ❄${freeze.freezesUsed}`
-                    : `${freeze.length}d`
+                  freeze.freezesUsed > 0 ? `${freeze.length} ❄${freeze.freezesUsed}` : freeze.length
                 }
                 accent="calm"
                 size="sm"
               />
-              <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
+              <StatTile label="Längste (Tage)" value={streak.longest} accent="brand" size="sm" />
               <StatTile
                 label="30-Tage"
                 value={`${Math.round(summary.last30.rate * 100)}%`}
@@ -207,7 +214,7 @@ function ReminderStats() {
   const eventsByReminder = useMemo(() => groupByReminder(events), [events]);
 
   if (loading) return <Loading />;
-  if (reminders.length === 0) return <Empty>Noch keine Reminder.</Empty>;
+  if (reminders.length === 0) return <Empty>Noch keine Erinnerungen.</Empty>;
 
   return (
     <div className="flex flex-col gap-[0.75rem]">
@@ -235,8 +242,12 @@ function ReminderStats() {
                 size="sm"
               />
               <StatTile
-                label="Ø Abstand"
-                value={avgGap === null ? "—" : `${avgGap.toFixed(1)}d`}
+                label="Ø Abstand (Tage)"
+                value={
+                  avgGap === null
+                    ? "—"
+                    : avgGap.toLocaleString("de-DE", { maximumFractionDigits: 1 })
+                }
                 accent="calm"
                 size="sm"
               />
@@ -259,7 +270,7 @@ const MOOD_WINDOW_DAYS = 30;
 function MoodStats() {
   const [now] = useState(() => Date.now());
   const fromMs = now - MOOD_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-  const { entries, loading } = useMoodEntriesInRange(fromMs, now);
+  const { entries, loading } = useMoodEntriesInRange(fromMs);
   const { reminders: habits } = useReminders({ kind: "habit" });
   const { events } = useAllEvents();
 
@@ -274,7 +285,7 @@ function MoodStats() {
 
   if (loading) return <Loading />;
   if (entries.length === 0) {
-    return <Empty>Noch keine Mood-Einträge in den letzten {MOOD_WINDOW_DAYS} Tagen.</Empty>;
+    return <Empty>Noch keine Stimmungs-Einträge in den letzten {MOOD_WINDOW_DAYS} Tagen.</Empty>;
   }
 
   return (
@@ -282,8 +293,13 @@ function MoodStats() {
       <section className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
         <StatTile label="Einträge" value={overview.count} accent="brand" size="sm" />
         <StatTile
-          label="Ø Mood"
-          value={overview.avgMood?.toFixed(2) ?? "—"}
+          label="Ø Stimmung"
+          value={
+            overview.avgMood?.toLocaleString("de-DE", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }) ?? "—"
+          }
           accent="mood"
           size="sm"
         />
@@ -313,13 +329,13 @@ function MoodStats() {
         </h2>
         <Sparkline
           data={series.map((p) => ({ label: p.day, value: p.avgMood }))}
-          ariaLabel="Mood-Verlauf"
+          ariaLabel="Stimmungsverlauf"
         />
       </Card>
 
       <Card variant="raised" radius="lg" padding="md">
         <h2 className="mb-[0.5rem] text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
-          Ø Mood pro Wochentag
+          Ø Stimmung pro Wochentag
         </h2>
         <WeekdayBar
           data={weekday.map((p) => ({ label: p.label, value: p.avgMood, count: p.count }))}

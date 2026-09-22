@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import { addToolEntry, deleteToolEntry } from "../../lib/db/toolEntries";
+import { addToolEntry } from "../../lib/db/toolEntries";
 import { useToolEntries } from "../../lib/hooks/useToolEntries";
 import { useToast } from "../ui/Toast";
+import { useDeleteEntryWithUndo } from "./useDeleteEntryWithUndo";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -13,6 +14,7 @@ export function WorryBox() {
   const [submitting, setSubmitting] = useState(false);
   const toast = useToast();
   const { entries } = useToolEntries({ toolKey: "worry" });
+  const removeEntry = useDeleteEntryWithUndo("Sorge gelöscht");
 
   async function submit() {
     const value = text.trim();
@@ -60,6 +62,7 @@ export function WorryBox() {
           maxLength={1000}
           rows={4}
           placeholder="Was beschäftigt dich gerade?"
+          aria-label="Deine Sorge"
           className="resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm"
         />
         <label className="flex items-center gap-2 text-sm text-fg-muted">
@@ -74,7 +77,7 @@ export function WorryBox() {
         <button
           type="submit"
           disabled={!text.trim() || submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-slate-800 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-accent-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
         >
           In die Box ablegen
         </button>
@@ -104,17 +107,17 @@ export function WorryBox() {
                   <p className="mt-1 text-xs text-fg-muted">
                     {new Date(e.loggedAt).toLocaleDateString("de-DE")}
                     {e.expiresAt
-                      ? ` · läuft ${new Date(e.expiresAt).toLocaleDateString("de-DE")} ab`
+                      ? ` · wird am ${new Date(e.expiresAt).toLocaleDateString("de-DE")} gelöscht`
                       : ""}
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => void deleteToolEntry(e.id)}
-                  className="rounded p-1 text-fg-subtle hover:bg-surface-sunken hover:text-danger"
+                  onClick={() => void removeEntry(e)}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-fg-muted hover:bg-surface-sunken hover:text-danger-fg no-min-tap"
                   aria-label="Sorge löschen"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={16} aria-hidden />
                 </button>
               </motion.li>
             ))}

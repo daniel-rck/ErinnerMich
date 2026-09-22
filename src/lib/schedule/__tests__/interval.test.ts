@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextIntervalOccurrence } from "../intervalEngine";
 
 describe("intervalEngine", () => {
@@ -64,6 +64,29 @@ describe("intervalEngine", () => {
   });
 
   it("verlangt minutes > 0", () => {
-    expect(() => nextIntervalOccurrence({ type: "interval", minutes: 0 }, new Date())).toThrow();
+    expect(() => nextIntervalOccurrence({ type: "interval", minutes: 0 }, new Date())).toThrow(
+      "interval.minutes muss > 0 sein",
+    );
+  });
+});
+
+describe("intervalEngine across DST", () => {
+  beforeAll(() => {
+    vi.stubEnv("TZ", "Europe/Berlin");
+  });
+  afterAll(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("jumps to the next calendar day's window on the day clocks go back", () => {
+    // 2026-10-25: CEST → CET, the day has 25 hours.
+    const from = new Date(2026, 9, 25, 22, 0);
+    const next = nextIntervalOccurrence(
+      { type: "interval", minutes: 90, activeWindow: { start: "08:00", end: "21:00" } },
+      from,
+    );
+    expect(next.getDate()).toBe(26);
+    expect(next.getHours()).toBe(8);
+    expect(next.getTime()).toBeGreaterThan(from.getTime());
   });
 });

@@ -18,7 +18,7 @@ export interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
 const VARIANT: Record<SurfaceVariant, string> = {
   flat: "bg-[color:var(--color-surface)]",
   raised:
-    "bg-[color:var(--color-surface)] shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)] border border-[color:var(--color-border)]",
+    "bg-[color:var(--color-surface)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)] border border-[color:var(--color-border)]",
   glass: "surface-glass",
   sunken: "bg-[color:var(--color-surface-sunken)] border border-[color:var(--color-border)]",
   outline: "bg-transparent border border-[color:var(--color-border)]",

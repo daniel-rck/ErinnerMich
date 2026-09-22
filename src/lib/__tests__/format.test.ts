@@ -61,3 +61,11 @@ describe("formatRelativeDate", () => {
     expect(formatRelativeDate(new Date("2026-05-09T12:00:00"), now)).toBe("in 5 Tagen");
   });
 });
+
+describe("formatRelativeDate across midnight", () => {
+  it("calls tomorrow morning 'morgen' even when it is less than 24h away", () => {
+    const now = new Date(2026, 4, 4, 22, 0);
+    expect(formatRelativeDate(new Date(2026, 4, 5, 8, 0), now)).toBe("morgen");
+    expect(formatRelativeDate(new Date(2026, 4, 4, 1, 0), now)).toBe("heute");
+  });
+});

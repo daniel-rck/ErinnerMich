@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { Modal } from "./ui/Modal";
 
 interface CelebrationProps {
@@ -14,8 +14,9 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function fireConfetti() {
-  if (prefersReducedMotion()) return;
+/** Fires the bursts; returns a cancel for the delayed second one. */
+function fireConfetti(): () => void {
+  if (prefersReducedMotion()) return () => {};
   const colors = ["#7c3aed", "#a78bfa", "#c4b5fd", "#fbbf24"];
   confetti({
     particleCount: 80,
@@ -24,7 +25,7 @@ function fireConfetti() {
     origin: { y: 0.5 },
     colors,
   });
-  setTimeout(() => {
+  const timer = setTimeout(() => {
     confetti({
       particleCount: 50,
       spread: 90,
@@ -38,10 +39,12 @@ function fireConfetti() {
       colors,
     });
   }, 200);
+  return () => clearTimeout(timer);
 }
 
 export function Celebration({ open, streak, onClose }: CelebrationProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
 
   // Focus the dismiss button when the celebration opens. Done in an effect
   // rather than with autoFocus: the attribute steals focus whenever the node
@@ -50,12 +53,11 @@ export function Celebration({ open, streak, onClose }: CelebrationProps) {
     if (open) closeRef.current?.focus();
   }, [open]);
 
-  useEffect(() => {
-    if (open) fireConfetti();
-  }, [open]);
+  // The second burst must not fire after the dialog already closed.
+  useEffect(() => (open ? fireConfetti() : undefined), [open]);
 
   return (
-    <Modal open={open} onClose={onClose} hideClose size="sm">
+    <Modal open={open} onClose={onClose} hideClose size="sm" labelledBy={titleId}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -69,7 +71,9 @@ export function Celebration({ open, streak, onClose }: CelebrationProps) {
             <span className="text-6xl" aria-hidden>
               🎉
             </span>
-            <h2 className="text-2xl font-semibold">{streak} Tage in Folge!</h2>
+            <h2 id={titleId} className="text-2xl font-semibold">
+              {streak} Tage in Folge!
+            </h2>
             <p className="text-sm text-fg-muted">{messageForStreak(streak)}</p>
             <button
               type="button"
@@ -88,7 +92,7 @@ export function Celebration({ open, streak, onClose }: CelebrationProps) {
 
 function messageForStreak(streak: number): string {
   if (streak >= 365) return "Ein ganzes Jahr. Das ist außergewöhnlich.";
-  if (streak >= 100) return "Hundert Tage. Mit weniger gibt sich keiner zufrieden.";
+  if (streak >= 100) return "Hundert Tage. Das ist beeindruckend.";
   if (streak >= 30) return "Ein Monat ohne Lücke. Das ist solide.";
   return "Eine Woche dran geblieben. Stark.";
 }

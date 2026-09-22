@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LONG_PRESS_MS } from "../lib/design/gestures";
 import { useSettings } from "../lib/hooks/useSettings";
 import { useMoodLog } from "./MoodLog/MoodLogProvider";
@@ -21,6 +21,14 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressFired = useRef(false);
+
+  // A pending long-press must not open the mood sheet after unmount.
+  useEffect(
+    () => () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    },
+    [],
+  );
 
   function startLongPress() {
     if (!wellnessToolsEnabled) return;
@@ -61,7 +69,7 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
             "flex w-full items-center justify-center gap-2",
             "h-11 rounded-[0.875rem]",
             "bg-[color:var(--color-accent-600)] text-[color:white]",
-            "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+            "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
             "transition-[background-color] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
             "hover:bg-[color:var(--color-accent-700)] active:bg-[color:var(--color-accent-800)]",
           ].join(" ")}
@@ -84,13 +92,13 @@ export function CenterFab({ variant = "circle" }: CenterFabProps) {
         onPointerLeave={cancelLongPress}
         onPointerCancel={cancelLongPress}
         whileTap={{ scale: 0.92 }}
-        aria-label="Neu anlegen (lang drücken: Stimmung)"
+        aria-label={wellnessToolsEnabled ? "Neu anlegen (lang drücken: Stimmung)" : "Neu anlegen"}
         className={[
           "inline-flex items-center justify-center",
           "h-14 w-14 -mt-3 rounded-full",
           "bg-gradient-to-br from-[color:var(--color-accent-500)] to-[color:var(--color-accent-700)]",
           "text-[color:white]",
-          "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+          "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
           "transition-colors duration-[140ms]",
           "hover:brightness-110 active:brightness-95",
         ].join(" ")}

@@ -1,6 +1,6 @@
 import { HeartPulse, type LucideIcon, Sparkles, Sun, User as UserIcon } from "lucide-react";
-import { useMemo } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useNow } from "../lib/hooks/useNow";
 import { useSettings } from "../lib/hooks/useSettings";
 import { InstallButton } from "../lib/ui/InstallButton";
 import { CenterFab } from "./CenterFab";
@@ -35,7 +35,7 @@ const DATE_FMT = new Intl.DateTimeFormat("de-DE", {
 });
 
 export function AppShell() {
-  const now = useMemo(() => new Date(), []);
+  const now = useNow();
   const greeting = greetingFor(now);
   const dateLabel = DATE_FMT.format(now);
   const { wellnessToolsEnabled } = useSettings();
@@ -203,7 +203,7 @@ function MobileNavLink({ item }: { item: NavEntry }) {
             className={[
               "flex h-7 w-12 items-center justify-center rounded-full",
               "transition-colors",
-              isActive ? "bg-[color:var(--color-accent-50)]" : "",
+              isActive ? "bg-[color:var(--color-accent-softer)]" : "",
             ].join(" ")}
           >
             <Icon size={20} strokeWidth={isActive ? 2.4 : 2} />
@@ -227,7 +227,7 @@ function DesktopNavLink({ item }: { item: NavEntry }) {
           "text-[length:0.9375rem] font-medium",
           "transition-[background-color,color] duration-[140ms]",
           isActive
-            ? "bg-[color:var(--color-accent-50)] text-[color:var(--color-accent-700)]"
+            ? "bg-[color:var(--color-accent-softer)] text-accent-fg"
             : "text-[color:var(--color-fg-muted)] hover:bg-[color:var(--color-surface-sunken)] hover:text-[color:var(--color-fg)]",
         ].join(" ")
       }

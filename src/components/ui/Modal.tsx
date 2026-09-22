@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { type ReactNode, useEffect, useId, useRef } from "react";
+import { type ReactNode, useId, useRef } from "react";
+import { useOverlay } from "./useOverlay";
 
 interface ModalProps {
   open: boolean;
@@ -32,21 +33,7 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const titleId = useId();
 
-  useEffect(() => {
-    if (!open) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKey);
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    dialogRef.current?.focus();
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-      previouslyFocused?.focus?.();
-    };
-  }, [open, onClose]);
+  useOverlay(open, onClose, dialogRef);
 
   return (
     <AnimatePresence>
@@ -59,7 +46,7 @@ export function Modal({
           transition={{ duration: 0.15 }}
         >
           <div
-            className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-[color:oklch(0.15_0_0/0.5)] backdrop-blur-sm"
             aria-hidden
             onClick={onClose}
           />
@@ -91,7 +78,7 @@ export function Modal({
                     aria-label="Schließen"
                     className="-my-1 rounded-md p-1.5 text-fg-muted hover:bg-surface-sunken hover:text-fg"
                   >
-                    <X size={18} />
+                    <X size={18} aria-hidden />
                   </button>
                 )}
               </header>

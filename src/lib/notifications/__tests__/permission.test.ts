@@ -27,7 +27,7 @@ describe("getNotificationSupport", () => {
   it("liefert supported + permission, wenn vorhanden", () => {
     setNotification({
       permission: "default",
-      requestPermission: vi.fn(),
+      requestPermission: vi.fn<() => Promise<NotificationPermission>>(),
     });
     const support = getNotificationSupport();
     expect(support).toEqual({ state: "supported", permission: "default" });
@@ -41,7 +41,7 @@ describe("ensureNotificationPermission", () => {
   });
 
   it("fordert nichts an, wenn bereits granted", async () => {
-    const requestPermission = vi.fn();
+    const requestPermission = vi.fn<() => Promise<NotificationPermission>>();
     setNotification({
       permission: "granted",
       requestPermission,
@@ -52,7 +52,9 @@ describe("ensureNotificationPermission", () => {
   });
 
   it("fordert Berechtigung an, wenn default", async () => {
-    const requestPermission = vi.fn().mockResolvedValue("granted");
+    const requestPermission = vi
+      .fn<() => Promise<NotificationPermission>>()
+      .mockResolvedValue("granted");
     setNotification({
       permission: "default",
       requestPermission,
@@ -65,7 +67,9 @@ describe("ensureNotificationPermission", () => {
   it("reagiert robust auf abgelehnten requestPermission-Call", async () => {
     setNotification({
       permission: "denied",
-      requestPermission: vi.fn().mockRejectedValue(new Error("nope")),
+      requestPermission: vi
+        .fn<() => Promise<NotificationPermission>>()
+        .mockRejectedValue(new Error("nope")),
     });
     const result = await ensureNotificationPermission();
     expect(result).toBe("denied");

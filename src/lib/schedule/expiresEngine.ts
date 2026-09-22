@@ -1,8 +1,8 @@
+import { dayKeyForDate, diffDays } from "../stats/dayKey";
 import type { PreWarning, Schedule } from "../types";
+import { clampDayInMonth } from "./helpers";
 
 type ExpiresSchedule = Extract<Schedule, { type: "expires" }>;
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Returns the next reminder timestamp for an `expires` schedule.
@@ -40,10 +40,13 @@ function buildTriggers(expiresAt: number, preWarnings: PreWarning[]): number[] {
     const trigger = new Date(expiry);
     if (warning.kind === "days") {
       trigger.setDate(trigger.getDate() - warning.value);
-    } else if (warning.kind === "months") {
-      trigger.setMonth(trigger.getMonth() - warning.value);
     } else {
-      trigger.setFullYear(trigger.getFullYear() - warning.value);
+      // Step back on day 1, then clamp — `setMonth` on Mar 31 would overflow
+      // Feb and land on Mar 3, a month-warning arriving 28 days late.
+      const months = warning.kind === "months" ? warning.value : warning.value * 12;
+      trigger.setDate(1);
+      trigger.setMonth(trigger.getMonth() - months);
+      trigger.setDate(clampDayInMonth(trigger.getFullYear(), trigger.getMonth(), expiry.getDate()));
     }
     set.add(trigger.getTime());
   }
@@ -51,5 +54,6 @@ function buildTriggers(expiresAt: number, preWarnings: PreWarning[]): number[] {
 }
 
 export function daysUntilExpiry(schedule: ExpiresSchedule, from: Date): number {
-  return Math.ceil((schedule.expiresAt - from.getTime()) / DAY_MS);
+  // Calendar days, so a DST weekend doesn't round up to an extra day.
+  return diffDays(dayKeyForDate(new Date(schedule.expiresAt)), dayKeyForDate(from));
 }

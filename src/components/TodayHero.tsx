@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Clock, Flame } from "lucide-react";
 import { useMemo } from "react";
 import { useAllEvents } from "../lib/hooks/useAllEvents";
+import { useNow } from "../lib/hooks/useNow";
 import { useReminders } from "../lib/hooks/useReminders";
-import { nextOccurrence } from "../lib/schedule/nextOccurrence";
+import { planToday } from "../lib/schedule/todayPlan";
 import { dayKeyForDate } from "../lib/stats/dayKey";
 import { streakStats } from "../lib/stats/streaks";
 import type { Reminder, ReminderEvent } from "../lib/types";
@@ -14,17 +15,6 @@ interface HeroStats {
   dueTotal: number;
   doneTotal: number;
   bestStreak: number;
-}
-
-function startOfDay(d: Date): Date {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
-}
-function endOfDay(d: Date): Date {
-  const x = new Date(d);
-  x.setHours(23, 59, 59, 999);
-  return x;
 }
 
 function microcopy(ratio: number, due: number): string {
@@ -42,33 +32,27 @@ function computeStats(
   now: Date,
 ): HeroStats {
   const todayKey = dayKeyForDate(now);
-  const dayStart = startOfDay(now);
-  const dayEnd = endOfDay(now);
+  // Reminders count per slot (a 08:00 + 20:00 reminder is two items), so the
+  // hero matches the timeline below it. Habits count once per day.
+  const plan = planToday(
+    reminders.filter((r) => r.kind === "reminder"),
+    events,
+    now,
+  );
+  let dueTotal = plan.length;
+  let doneTotal = plan.filter((i) => i.bucket === "done").length;
 
-  const eventsToday = events.filter((e) => {
-    const ts = e.triggeredAt ?? e.scheduledFor;
-    return (
-      e.action === "completed" && ts != null && ts >= dayStart.getTime() && ts <= dayEnd.getTime()
-    );
-  });
-  const completedReminderIds = new Set(eventsToday.map((e) => e.reminderId));
-
-  let dueTotal = 0;
-  let doneTotal = 0;
   for (const r of reminders) {
-    if (!r.active) continue;
-    if (r.archivedAt != null) continue;
-    if (r.kind === "mood") continue;
-    let dueToday: boolean;
-    if (r.kind === "habit") {
-      dueToday = true;
-    } else {
-      const next = nextOccurrence(r.schedule, dayStart);
-      dueToday = next !== null && next.getTime() <= dayEnd.getTime();
-    }
-    if (!dueToday) continue;
+    if (r.kind !== "habit" || !r.active || r.archivedAt != null) continue;
     dueTotal += 1;
-    if (completedReminderIds.has(r.id)) doneTotal += 1;
+    const doneToday = events.some(
+      (e) =>
+        e.reminderId === r.id &&
+        e.action === "completed" &&
+        e.triggeredAt !== undefined &&
+        dayKeyForDate(new Date(e.triggeredAt)) === todayKey,
+    );
+    if (doneToday) doneTotal += 1;
   }
 
   const eventsByReminder = new Map<string, ReminderEvent[]>();
@@ -85,14 +69,13 @@ function computeStats(
     if (stats.current > bestStreak) bestStreak = stats.current;
   }
 
-  void todayKey;
   return { dueTotal, doneTotal, bestStreak };
 }
 
 export function TodayHero() {
   const { reminders } = useReminders({ activeOnly: true });
   const { events } = useAllEvents();
-  const now = useMemo(() => new Date(), []);
+  const now = useNow();
 
   const stats = useMemo(() => computeStats(reminders, events, now), [reminders, events, now]);
   const ratio = stats.dueTotal === 0 ? 0 : Math.min(1, stats.doneTotal / stats.dueTotal);
@@ -112,11 +95,13 @@ export function TodayHero() {
       />
       <div className="relative flex items-center gap-5">
         <ProgressRing ratio={ratio} done={stats.doneTotal} due={stats.dueTotal} />
-        <div className="flex flex-1 flex-col gap-1">
-          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
+        {/* min-w-0: without it the flex child refused to shrink and long
+            headlines ("Bereit, durchzustarten?") were cut off on phones. */}
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-muted)]">
             {stats.dueTotal === 0 ? "Heute" : `${stats.doneTotal} / ${stats.dueTotal} erledigt`}
           </p>
-          <h2 className="text-[length:1.625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-[color:var(--color-fg)]">
+          <h2 className="text-[length:clamp(1.125rem,4.6vw,1.625rem)] font-semibold leading-[1.25] tracking-[-0.02em] text-balance hyphens-auto text-[color:var(--color-fg)]">
             {microcopy(ratio, stats.dueTotal)}
           </h2>
         </div>
@@ -138,8 +123,8 @@ export function TodayHero() {
           size="sm"
         />
         <StatTile
-          label="Streak"
-          value={`${stats.bestStreak}d`}
+          label="Serie (Tage)"
+          value={stats.bestStreak}
           icon={Flame}
           accent="glow"
           size="sm"

@@ -79,10 +79,31 @@ export async function setReminderActive(id: string, active: boolean): Promise<vo
   await updateReminder(id, { active });
 }
 
-export async function archiveReminder(id: string): Promise<void> {
+/**
+ * Archiving is the grace period of a delete: the reminder disappears from
+ * every view and stops notifying, and is hard-deleted once the undo window
+ * closes. Returns the previous `active` flag so an undo can restore it.
+ */
+export async function archiveReminder(id: string): Promise<boolean> {
+  const before = await getReminder(id);
   await updateReminder(id, { archivedAt: Date.now(), active: false });
+  return before?.active ?? true;
 }
 
-export async function restoreReminder(id: string): Promise<void> {
-  await updateReminder(id, { archivedAt: undefined, active: true });
+/** Undo for `archiveReminder`; `active` defaults to on for older callers. */
+export async function restoreReminder(id: string, active = true): Promise<void> {
+  await updateReminder(id, { archivedAt: undefined, active });
+}
+
+/**
+ * Hard-deletes reminders archived before `cutoff`. A delete whose grace
+ * timer never ran (tab closed within the undo window) would otherwise leave
+ * a record no view can show.
+ */
+export async function purgeArchivedReminders(cutoff: number): Promise<number> {
+  const stale = (await listReminders({ includeArchived: true })).filter(
+    (r) => r.archivedAt != null && r.archivedAt < cutoff,
+  );
+  for (const r of stale) await deleteReminder(r.id);
+  return stale.length;
 }

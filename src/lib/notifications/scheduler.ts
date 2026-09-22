@@ -1,5 +1,7 @@
-import { subscribe } from "../db/broadcast";
+import { type BroadcastMessage, subscribe } from "../db/broadcast";
+import { listEventsForReminder } from "../db/events";
 import { getReminder, listReminders } from "../db/reminders";
+import { pendingSnoozes } from "../schedule/snooze";
 import type { Reminder } from "../types";
 import { armInTabTimers, clearAllInTabTimers, clearInTabTimers } from "./inTab";
 import {
@@ -44,24 +46,62 @@ async function getRegistration(): Promise<ServiceWorkerRegistration | null> {
   }
 }
 
-export async function rearmReminder(reminder: Reminder): Promise<void> {
+// Re-arms of one reminder run one after another. Each clears and recreates
+// all of its notifications, so two overlapping ones (a snooze, then a quick
+// completion) could otherwise finish in the wrong order and bring back the
+// snooze the completion had just cancelled.
+const queues = new Map<string, Promise<void>>();
+
+function serialized(reminderId: string, job: () => Promise<void>): Promise<void> {
+  const previous = queues.get(reminderId) ?? Promise.resolve();
+  const next = previous.catch(() => {}).then(job);
+  queues.set(reminderId, next);
+  void next
+    .catch(() => {})
+    .finally(() => {
+      if (queues.get(reminderId) === next) queues.delete(reminderId);
+    });
+  return next;
+}
+
+async function armNow(reminder: Reminder): Promise<void> {
   const status = schedulerStatus();
   if (status.mode === "unsupported" || !status.hasPermission) return;
 
+  const now = Date.now();
+  // Read inside the queue, so each run sees the events of everything before it.
+  const snoozes = pendingSnoozes(await listEventsForReminder(reminder.id), now);
   const registration = await getRegistration();
   if (status.mode === "triggers" && registration) {
-    await armReminderTriggers(registration, reminder);
+    await armReminderTriggers(registration, reminder, new Date(now), snoozes);
   } else {
-    armInTabTimers(registration, reminder);
+    armInTabTimers(registration, reminder, now, snoozes);
   }
 }
 
-export async function clearReminder(reminderId: string): Promise<void> {
+async function clearNow(reminderId: string): Promise<void> {
   clearInTabTimers(reminderId);
   const registration = await getRegistration();
   if (registration) {
-    await clearReminderTriggers(registration, reminderId);
+    await clearReminderTriggers(registration, reminderId, { includeLowStock: true });
   }
+}
+
+export function rearmReminder(reminder: Reminder): Promise<void> {
+  return serialized(reminder.id, () => armNow(reminder));
+}
+
+export function clearReminder(reminderId: string): Promise<void> {
+  return serialized(reminderId, () => clearNow(reminderId));
+}
+
+/** Re-arms from the current DB state (or clears when inactive/gone), queued per reminder. */
+function syncReminder(reminderId: string): Promise<void> {
+  return serialized(reminderId, async () => {
+    const reminder = await getReminder(reminderId);
+    if (reminder?.active) await armNow(reminder);
+    else await clearNow(reminderId);
+  });
 }
 
 export async function rearmAll(): Promise<void> {
@@ -69,7 +109,13 @@ export async function rearmAll(): Promise<void> {
   if (status.mode === "unsupported" || !status.hasPermission) return;
   const reminders = await listReminders({ activeOnly: true });
   for (const reminder of reminders) {
-    await rearmReminder(reminder);
+    // One reminder with a schedule the engines reject (e.g. an imported
+    // `times: []`) must not keep every reminder after it from being armed.
+    try {
+      await rearmReminder(reminder);
+    } catch (err) {
+      console.error(`[notifications] Re-Arm für ${reminder.id} fehlgeschlagen:`, err);
+    }
   }
 }
 
@@ -115,18 +161,19 @@ export function stopScheduler(): void {
   started = false;
 }
 
-async function handleMessage(message: { type: string }): Promise<void> {
-  if (message.type === "reminder-changed" && "id" in message) {
-    const reminder = await getReminder(message.id as string);
-    if (!reminder || !reminder.active) {
-      await clearReminder(message.id as string);
-      return;
-    }
-    await rearmReminder(reminder);
+async function handleMessage(message: BroadcastMessage): Promise<void> {
+  if (message.type === "reminder-changed") {
+    await syncReminder(message.id);
     return;
   }
-  if (message.type === "reminder-deleted" && "id" in message) {
-    await clearReminder(message.id as string);
+  // A snooze (or a completion that cancels one) arrives as an event —
+  // re-arm so the snoozed notification actually comes back.
+  if (message.type === "event-added") {
+    await syncReminder(message.reminderId);
+    return;
+  }
+  if (message.type === "reminder-deleted") {
+    await clearReminder(message.id);
     return;
   }
   if (message.type === "db-cleared") {
@@ -187,6 +234,7 @@ export async function showTestNotification(delayMs = 10_000): Promise<boolean> {
 }
 
 export function _resetSchedulerForTests(): void {
+  queues.clear();
   unsubscribe?.();
   unsubscribe = null;
   if (rearmInterval !== null) {

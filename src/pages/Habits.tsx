@@ -1,11 +1,11 @@
 import autoAnimate from "@formkit/auto-animate";
 import { Flame, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { HabitCard } from "../components/HabitCard";
 import { CardSkeleton } from "../components/ui/CardSkeleton";
 import { EmptyState } from "../components/ui/EmptyState";
-import { dayKey } from "../lib/db";
+import { useTodayKey } from "../lib/hooks/useNow";
 import { useReminders } from "../lib/hooks/useReminders";
 import { HABIT_TEMPLATES } from "../lib/templates";
 
@@ -20,7 +20,7 @@ interface HabitsPageProps {
 
 export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
   const navigate = useNavigate();
-  const [today] = useState(() => dayKey(Date.now()));
+  const today = useTodayKey();
   const { reminders, loading } = useReminders({
     kind: "habit",
     activeOnly: true,
@@ -51,7 +51,7 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
       ) : reminders.length === 0 ? (
         <EmptyState
           icon={Flame}
-          title="Erste Habit anlegen"
+          title="Erstes Habit anlegen"
           description="Wähle eine Vorlage oder lege selbst etwas an."
           primaryAction={{
             label: "Aus Vorlage",
@@ -59,8 +59,8 @@ export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
             icon: Plus,
           }}
           secondaryAction={{
-            label: "Eigener Habit",
-            onClick: () => navigate("/new?kind=habit"),
+            label: "Eigenes Habit",
+            onClick: () => navigate("/new?kind=habit&blank=1"),
           }}
         />
       ) : (
@@ -89,13 +89,14 @@ function SuggestedFooter() {
         <button
           key={t.key}
           type="button"
-          onClick={() => navigate(`/new?kind=habit&title=${encodeURIComponent(t.title)}`)}
+          // The whole template, not just its title — "💧 Wasser" keeps its goal and icon.
+          onClick={() => navigate(`/new?template=${encodeURIComponent(t.key)}`)}
           className={[
             "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5",
             "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",
             "border border-[color:var(--color-border)]",
             "text-[length:0.8125rem] font-medium",
-            "hover:bg-[color:var(--color-accent-50)] hover:border-[color:var(--color-accent-400)]",
+            "hover:bg-[color:var(--color-accent-softer)] hover:border-[color:var(--color-accent-400)]",
           ].join(" ")}
         >
           <span aria-hidden>{t.icon}</span>

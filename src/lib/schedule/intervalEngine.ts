@@ -1,5 +1,5 @@
 import type { Schedule } from "../types";
-import { addMinutes, parseHM, startOfDay, withTime } from "./helpers";
+import { addDays, addMinutes, parseHM, startOfDay, withTime } from "./helpers";
 
 type IntervalSchedule = Extract<Schedule, { type: "interval" }>;
 
@@ -45,6 +45,7 @@ export function nextIntervalOccurrence(schedule: IntervalSchedule, from: Date): 
     return next;
   }
 
-  const nextDayWindowStart = withTime(addMinutes(today, 24 * 60), schedule.activeWindow.start);
-  return nextDayWindowStart;
+  // Calendar day, not +24h: on the day clocks go back, midnight + 24h is still
+  // the same date and would hand back this morning's (past) window start.
+  return withTime(addDays(today, 1), schedule.activeWindow.start);
 }

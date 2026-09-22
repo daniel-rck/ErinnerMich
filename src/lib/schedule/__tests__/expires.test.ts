@@ -52,3 +52,36 @@ describe("expiresEngine", () => {
     ).toBeLessThanOrEqual(-1);
   });
 });
+
+describe("expiresEngine month-end pre-warnings", () => {
+  it("clamps a 1-month warning for Mar 31 to Feb 28 instead of overflowing to Mar 3", () => {
+    const expiresAt = new Date(2027, 2, 31, 9, 0).getTime();
+    const triggers = listExpiresTriggers(
+      { type: "expires", expiresAt, preWarnings: [{ kind: "months", value: 1 }] },
+      new Date(2027, 0, 1),
+    );
+    expect(triggers.map((d) => [d.getMonth(), d.getDate()])).toEqual([
+      [1, 28],
+      [2, 31],
+    ]);
+  });
+
+  it("clamps a 1-year warning for Feb 29 to Feb 28", () => {
+    const expiresAt = new Date(2028, 1, 29, 9, 0).getTime();
+    const [first] = listExpiresTriggers(
+      { type: "expires", expiresAt, preWarnings: [{ kind: "years", value: 1 }] },
+      new Date(2026, 0, 1),
+    );
+    expect([first?.getFullYear(), first?.getMonth(), first?.getDate()]).toEqual([2027, 1, 28]);
+  });
+
+  it("counts days until expiry in calendar days", () => {
+    const schedule = {
+      type: "expires" as const,
+      expiresAt: new Date(2027, 5, 15, 8, 0).getTime(),
+      preWarnings: [],
+    };
+    expect(daysUntilExpiry(schedule, new Date(2027, 5, 14, 22, 0))).toBe(1);
+    expect(daysUntilExpiry(schedule, new Date(2027, 5, 15, 7, 0))).toBe(0);
+  });
+});

@@ -41,7 +41,7 @@ describe("IconPicker", () => {
   });
 
   it("ruft onChange beim Klick auf ein Symbol", async () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<(next: string) => void>();
     render(<Harness onChange={onChange} />);
     await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
     await userEvent.click(screen.getByRole("button", { name: "Symbol 💧" }));
@@ -49,7 +49,7 @@ describe("IconPicker", () => {
   });
 
   it("akzeptiert ein eigenes Emoji aus dem Custom-Feld", async () => {
-    const onChange = vi.fn();
+    const onChange = vi.fn<(next: string) => void>();
     render(<Harness onChange={onChange} />);
     await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
     const customInput = screen.getByLabelText(/Eigenes Emoji/);
@@ -63,5 +63,19 @@ describe("IconPicker", () => {
     await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
     await userEvent.type(screen.getByRole("searchbox"), "xyz123nichtgefunden");
     expect(screen.getByText(/Keine Symbole/)).toBeInTheDocument();
+  });
+});
+
+describe("IconPicker custom emoji", () => {
+  it("keeps a ZWJ family emoji whole", async () => {
+    const onChange = vi.fn<(next: string) => void>();
+    render(<Harness onChange={onChange} />);
+    await userEvent.click(screen.getByRole("button", { name: "Symbol wählen" }));
+    // Emoji keyboards insert the whole sequence at once — `type` would split it
+    // into UTF-16 units.
+    await userEvent.click(screen.getByLabelText(/Eigenes Emoji/));
+    await userEvent.paste("👨‍👩‍👧");
+    await userEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+    expect(onChange).toHaveBeenCalledWith("👨‍👩‍👧");
   });
 });

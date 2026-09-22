@@ -6,7 +6,7 @@ import { Button } from "../Button";
 
 describe("Button", () => {
   it("renders children and handles click", async () => {
-    const onClick = vi.fn();
+    const onClick = vi.fn<() => void>();
     render(<Button onClick={onClick}>Speichern</Button>);
     const btn = screen.getByRole("button", { name: "Speichern" });
     await userEvent.click(btn);

@@ -43,7 +43,7 @@ export function ReminderDetailPage() {
     return (
       <div className="flex flex-col gap-[1rem]">
         <p className="text-[length:0.9375rem] text-[color:var(--color-fg-subtle)]">
-          Reminder nicht gefunden.
+          Eintrag nicht gefunden.
         </p>
         <Button variant="secondary" onClick={() => navigate("/")}>
           Zurück
@@ -80,7 +80,11 @@ export function ReminderDetailPage() {
           </span>
           <div className="flex flex-1 flex-col">
             <p className="text-[length:0.6875rem] tracking-[0.06em] uppercase font-medium text-[color:var(--color-fg-subtle)]">
-              {reminder.kind === "habit" ? "Habit" : reminder.kind === "mood" ? "Mood" : "Reminder"}
+              {reminder.kind === "habit"
+                ? "Habit"
+                : reminder.kind === "mood"
+                  ? "Stimmungs-Check-in"
+                  : "Erinnerung"}
             </p>
             <h1 className="text-[length:1.625rem] font-semibold leading-[1.25] tracking-[-0.02em] text-[color:var(--color-fg)]">
               {reminder.title}
@@ -94,6 +98,8 @@ export function ReminderDetailPage() {
             size="sm"
             leadingIcon={Pencil}
             onClick={() => navigate(`/edit/${reminder.id}`)}
+            // The text is hidden below `sm`, which left an unnamed icon button.
+            aria-label="Bearbeiten"
           >
             <span className="hidden sm:inline">Bearbeiten</span>
           </Button>
@@ -111,8 +117,8 @@ export function ReminderDetailPage() {
       <section className="grid grid-cols-2 gap-[0.5rem] sm:grid-cols-4">
         {reminder.kind === "habit" && (
           <>
-            <StatTile label="Streak" value={`${streak.current}d`} accent="glow" size="sm" />
-            <StatTile label="Längste" value={`${streak.longest}d`} accent="brand" size="sm" />
+            <StatTile label="Serie (Tage)" value={streak.current} accent="glow" size="sm" />
+            <StatTile label="Längste (Tage)" value={streak.longest} accent="brand" size="sm" />
           </>
         )}
         <StatTile
@@ -128,7 +134,12 @@ export function ReminderDetailPage() {
           size="sm"
         />
         {avgGap !== null && (
-          <StatTile label="Ø Abstand" value={`${avgGap.toFixed(1)}d`} accent="mood" size="sm" />
+          <StatTile
+            label="Ø Abstand (Tage)"
+            value={avgGap.toLocaleString("de-DE", { maximumFractionDigits: 1 })}
+            accent="mood"
+            size="sm"
+          />
         )}
       </section>
 
@@ -198,7 +209,7 @@ function EventRow({ event }: { event: ReminderEvent }) {
 
 const ACTION_LABELS: Record<ReminderEvent["action"], string> = {
   completed: "Erledigt",
-  snoozed: "Snooze",
+  snoozed: "Verschoben",
   skipped: "Übersprungen",
   missed: "Verpasst",
   progress: "Fortschritt",
@@ -206,11 +217,11 @@ const ACTION_LABELS: Record<ReminderEvent["action"], string> = {
 };
 
 const ACTION_CLASSES: Record<ReminderEvent["action"], string> = {
-  completed: "bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]",
-  snoozed: "bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]",
+  completed: "bg-[color:var(--color-success-soft)] text-success-fg",
+  snoozed: "bg-[color:var(--color-warning-soft)] text-warning-fg",
   skipped: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg-muted)]",
-  missed: "bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]",
-  progress: "bg-[color:var(--color-info-soft)] text-[color:var(--color-info)]",
+  missed: "bg-[color:var(--color-danger-soft)] text-danger-fg",
+  progress: "bg-[color:var(--color-info-soft)] text-[color:var(--color-fg)]",
   dismissed: "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg-muted)]",
 };
 

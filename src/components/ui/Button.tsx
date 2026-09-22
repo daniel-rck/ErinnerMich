@@ -27,7 +27,7 @@ const ICON_SIZE: Record<ButtonSize, number> = { sm: 14, md: 16, lg: 18 };
 const VARIANT: Record<ButtonVariant, string> = {
   primary: [
     "bg-[color:var(--color-accent-600)] text-[color:white]",
-    "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
+    "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
     "hover:bg-[color:var(--color-accent-700)]",
     "active:bg-[color:var(--color-accent-800)]",
     "disabled:bg-[color:var(--color-accent-300)] disabled:shadow-none",
@@ -35,7 +35,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   secondary: [
     "bg-[color:var(--color-surface)] text-[color:var(--color-fg)]",
     "border border-[color:var(--color-border)]",
-    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+    "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
     "hover:bg-[color:var(--color-surface-sunken)]",
     "active:bg-[color:var(--color-surface-sunken)]",
   ].join(" "),
@@ -51,7 +51,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   ].join(" "),
   danger: [
     "bg-[color:var(--color-danger)] text-[color:white]",
-    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+    "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
     "hover:brightness-95 active:brightness-90",
   ].join(" "),
 };

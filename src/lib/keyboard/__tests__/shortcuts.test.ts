@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import { emptyShortcutState, isTextInputTarget, matchShortcut, type Shortcut } from "../shortcuts";
 
 const SHORTCUTS: Shortcut[] = [
-  { combo: "n", description: "Neuer Reminder", action: vi.fn() },
-  { combo: "g t", description: "Heute", action: vi.fn() },
-  { combo: "g h", description: "Habits", action: vi.fn() },
-  { combo: "?", description: "Hilfe", action: vi.fn() },
+  { combo: "n", description: "Neuer Reminder", action: vi.fn<() => void>() },
+  { combo: "g t", description: "Heute", action: vi.fn<() => void>() },
+  { combo: "g h", description: "Habits", action: vi.fn<() => void>() },
+  { combo: "?", description: "Hilfe", action: vi.fn<() => void>() },
 ];
 
 describe("matchShortcut", () => {

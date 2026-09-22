@@ -29,6 +29,8 @@ describe("dailyEngine", () => {
   });
 
   it("verlangt nicht-leeres times-Array", () => {
-    expect(() => nextDailyOccurrence({ type: "daily", times: [] }, new Date())).toThrow();
+    expect(() => nextDailyOccurrence({ type: "daily", times: [] }, new Date())).toThrow(
+      "daily.times darf nicht leer sein",
+    );
   });
 });

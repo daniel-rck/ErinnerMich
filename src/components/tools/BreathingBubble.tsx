@@ -29,19 +29,35 @@ const PHASES: Record<Mode, PhaseStep[]> = {
 
 const TOTAL_SECONDS = 60;
 
+/** Which phase `elapsedSec` of active breathing falls into, and how far into it. */
+export function phaseAt(
+  steps: readonly PhaseStep[],
+  elapsedSec: number,
+): { stepIndex: number; phaseElapsed: number } {
+  const cycle = steps.reduce((acc, s) => acc + s.seconds, 0);
+  let t = cycle > 0 ? elapsedSec % cycle : 0;
+  for (let i = 0; i < steps.length; i++) {
+    const seconds = steps[i]?.seconds ?? 0;
+    if (t < seconds) return { stepIndex: i, phaseElapsed: t };
+    t -= seconds;
+  }
+  return { stepIndex: 0, phaseElapsed: 0 };
+}
+
 export function BreathingBubble() {
   const [mode, setMode] = useState<Mode>("4-7-8");
   const [running, setRunning] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
-  const [phaseElapsed, setPhaseElapsed] = useState(0);
+  // Active (unpaused) seconds. The phase is derived from it rather than
+  // stepped inside state updaters — those ran twice under Strict Mode and
+  // skipped phases, and a 100 ms interval rebuilt per phase drifted.
   const [totalElapsed, setTotalElapsed] = useState(0);
-  const sessionStartRef = useRef<number | null>(null);
   const finishingRef = useRef(false);
   const reducedMotion = useReducedMotion();
   const toast = useToast();
 
   const steps = PHASES[mode];
-  const currentStep = steps[stepIndex];
+  const { stepIndex, phaseElapsed } = phaseAt(steps, totalElapsed);
+  const currentStep = totalElapsed > 0 || running ? steps[stepIndex] : undefined;
   const phaseProgress = currentStep ? Math.min(1, phaseElapsed / currentStep.seconds) : 0;
   const totalRemaining = Math.max(0, TOTAL_SECONDS - totalElapsed);
 
@@ -54,31 +70,25 @@ export function BreathingBubble() {
 
   useEffect(() => {
     if (!running) return;
+    const base = totalElapsed;
+    const startedAt = performance.now();
     const id = window.setInterval(() => {
-      setPhaseElapsed((p) => {
-        const next = p + 0.1;
-        const seconds = steps[stepIndex]?.seconds ?? 0;
-        if (next >= seconds) {
-          setStepIndex((idx) => (idx + 1) % steps.length);
-          return 0;
-        }
-        return next;
-      });
-      setTotalElapsed((t) => {
-        const next = t + 0.1;
-        if (next >= TOTAL_SECONDS && !finishingRef.current) {
-          finishingRef.current = true;
-          void finish();
-        }
-        return next;
-      });
+      setTotalElapsed(Math.min(TOTAL_SECONDS, base + (performance.now() - startedAt) / 1000));
     }, 100);
     return () => window.clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, stepIndex, steps]);
+    // Restart only on run/pause — `totalElapsed` is the base captured at start.
+    // oxlint-disable-next-line react/exhaustive-deps -- see above
+  }, [running]);
+
+  useEffect(() => {
+    if (running && totalElapsed >= TOTAL_SECONDS && !finishingRef.current) {
+      finishingRef.current = true;
+      void finish();
+    }
+    // oxlint-disable-next-line react/exhaustive-deps -- `finish` is stable enough; re-run on time only
+  }, [running, totalElapsed]);
 
   function start() {
-    sessionStartRef.current = Date.now();
     finishingRef.current = false;
     setRunning(true);
   }
@@ -89,22 +99,19 @@ export function BreathingBubble() {
 
   function reset() {
     setRunning(false);
-    setStepIndex(0);
-    setPhaseElapsed(0);
     setTotalElapsed(0);
-    sessionStartRef.current = null;
     finishingRef.current = false;
   }
 
   async function finish() {
     setRunning(false);
-    const start = sessionStartRef.current;
-    if (!start) {
+    // The active time — the same clock as "Restzeit", so the saved duration
+    // matches what the screen showed even if the tab was throttled.
+    const durationSec = Math.round(totalElapsed);
+    if (durationSec < 1) {
       finishingRef.current = false;
       return;
     }
-    const durationSec = Math.round((Date.now() - start) / 1000);
-    sessionStartRef.current = null;
     try {
       await addToolEntry({
         toolKey: "breathing",
@@ -113,7 +120,7 @@ export function BreathingBubble() {
       });
       toast.show({
         variant: "success",
-        message: `Atemübung abgeschlossen (${durationSec}s).`,
+        message: `Atemübung abgeschlossen (${durationSec} s).`,
       });
     } catch {
       toast.show({
@@ -143,10 +150,14 @@ export function BreathingBubble() {
           aria-hidden
         />
         <div className="relative z-10 flex flex-col items-center gap-1 text-center">
-          <span className="text-xl font-semibold text-sky-950 dark:text-sky-50">
+          {/* Announced on each phase change — the bubble itself is silent. */}
+          <span className="text-xl font-semibold text-sky-950 dark:text-sky-50" aria-live="polite">
             {currentStep?.label ?? "Bereit"}
           </span>
-          <span className="text-3xl font-bold tabular-nums text-sky-950 dark:text-sky-50">
+          <span
+            className="text-3xl font-bold tabular-nums text-sky-950 dark:text-sky-50"
+            aria-hidden
+          >
             {Math.max(0, Math.ceil((currentStep?.seconds ?? 0) - phaseElapsed))}
           </span>
         </div>
@@ -161,17 +172,17 @@ export function BreathingBubble() {
           <button
             type="button"
             onClick={start}
-            className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-sky-700"
+            className="inline-flex items-center gap-2 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-sky-800"
           >
-            <Play size={16} /> Start
+            <Play size={16} aria-hidden /> Start
           </button>
         ) : (
           <button
             type="button"
             onClick={pause}
-            className="inline-flex items-center gap-2 rounded-md bg-surface-sunken px-4 py-2 text-sm font-medium text-fg hover:bg-surface-sunken"
+            className="inline-flex items-center gap-2 rounded-md bg-surface-sunken px-4 py-2 text-sm font-medium text-fg hover:bg-border"
           >
-            <Pause size={16} /> Pause
+            <Pause size={16} aria-hidden /> Pause
           </button>
         )}
         <button
@@ -179,7 +190,7 @@ export function BreathingBubble() {
           onClick={reset}
           className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm hover:bg-surface-sunken"
         >
-          <RotateCcw size={16} /> Reset
+          <RotateCcw size={16} aria-hidden /> Neu starten
         </button>
         <button
           type="button"
@@ -207,6 +218,7 @@ function ModeButton({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={
         "rounded-md border px-3 py-1.5 text-sm " +
         (active

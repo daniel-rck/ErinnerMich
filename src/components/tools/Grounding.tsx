@@ -139,7 +139,7 @@ export function Grounding() {
         >
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <StepIcon size={22} />
+              <StepIcon size={22} aria-hidden />
             </div>
             <div>
               <h2 className="text-lg font-semibold">{step.prompt}</h2>
@@ -149,14 +149,17 @@ export function Grounding() {
 
           <ul className="flex flex-col gap-2">
             {Array.from({ length: step.count }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
+              // oxlint-disable-next-line react/no-array-index-key -- fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
               <li key={i} className="flex items-center gap-2">
-                <span className="w-6 text-sm font-medium text-fg-subtle">{i + 1}.</span>
+                <span className="w-6 text-sm font-medium text-fg-muted" aria-hidden>
+                  {i + 1}.
+                </span>
                 <input
                   type="text"
                   value={at(inputs, stepIndex)[i] ?? ""}
                   onChange={(e) => updateInput(i, e.target.value)}
                   placeholder="optional"
+                  aria-label={`${step.prompt} – ${i + 1}`}
                   className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm"
                 />
               </li>
@@ -178,7 +181,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1))}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-700 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-800"
           >
             Weiter <ChevronRight size={16} />
           </button>
@@ -186,7 +189,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => void finish()}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-700 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-800"
           >
             <Check size={16} /> Abschließen
           </button>

@@ -110,7 +110,7 @@ export function EmptyState({
           (() => {
             const Icon = icon;
             return (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-accent-50)] text-[color:var(--color-accent-600)]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-accent-softer)] text-[color:var(--color-accent-600)]">
                 <Icon size={28} aria-hidden />
               </div>
             );

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useCallback, useState } from "react";
-import { dayKey } from "../lib/db";
 import { addMoodEntry } from "../lib/db/moodEntries";
 import { useDailyMoodAverage } from "../lib/hooks/useMoodEntries";
+import { useTodayKey } from "../lib/hooks/useNow";
 import type { MoodValue } from "../lib/types";
 import { useMoodLog } from "./MoodLog/MoodLogProvider";
 import { Chip } from "./ui/Chip";
@@ -39,7 +39,7 @@ interface MoodStripProps {
  * tappable to expand and add another entry.
  */
 export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
-  const [today] = useState(() => dayKey(Date.now()));
+  const today = useTodayKey();
   const { avgMood, count, loading } = useDailyMoodAverage(today);
   const { open } = useMoodLog();
   const toast = useToast();
@@ -51,7 +51,7 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
       setPulse(value);
       await addMoodEntry({ loggedAt: Date.now(), mood: value });
       vibrate("success");
-      toast.show({ variant: "success", message: "Mood gespeichert" });
+      toast.show({ variant: "success", message: "Stimmung gespeichert" });
       setTimeout(() => setPulse(null), 300);
       setForceExpand(false);
     },
@@ -112,9 +112,9 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
               "bg-[color:var(--color-surface)]",
               "border border-[color:var(--color-border)]",
               "text-3xl",
-              "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+              "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
               "transition-colors duration-[140ms]",
-              "hover:border-[color:var(--color-accent-400)] hover:bg-[color:var(--color-accent-50)]",
+              "hover:border-[color:var(--color-accent-400)] hover:bg-[color:var(--color-accent-softer)]",
             ].join(" ")}
           >
             <span aria-hidden>{MOOD_EMOJI[v]}</span>

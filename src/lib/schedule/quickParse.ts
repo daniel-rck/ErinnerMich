@@ -58,6 +58,12 @@ function parseTime(input: string): ParsedTime | null {
     const m = uhr[2] ? parseInt(uhr[2], 10) : 0;
     if (h <= 23 && m <= 59) return { hour: h, minute: m };
   }
+  const um = input.match(/(?:^|\s)um\s+(\d{1,2})(?:\.(\d{2}))?(?=\s|$)/i);
+  if (um) {
+    const h = parseInt(at(um, 1), 10);
+    const m = um[2] ? parseInt(um[2], 10) : 0;
+    if (h <= 23 && m <= 59) return { hour: h, minute: m };
+  }
   return null;
 }
 
@@ -67,7 +73,15 @@ function findWeekday(input: string): { weekday: Weekday; match: string } | null 
   // rather than keys keeps the value typed — a keyed lookup would widen it.
   const byLength = Object.entries(WEEKDAY_MAP).sort(([a], [b]) => b.length - a.length);
   for (const [key, weekday] of byLength) {
-    const re = new RegExp(`(?:^|\\s)${key}(?:\\s|$)`, "i");
+    // Two-letter keys ("so", "do", "mi") are ordinary German words too — only
+    // read them as a weekday after "am"/"jeden" or right before a time.
+    const re =
+      key.length <= 2
+        ? new RegExp(
+            `(?:^|\\s)(?:(?:am|jeden)\\s+${key}(?=\\s|$)|${key}(?=\\s+(?:um\\s+)?\\d))`,
+            "i",
+          )
+        : new RegExp(`(?:^|\\s)${key}(?:\\s|$)`, "i");
     if (re.test(lower)) {
       return { weekday, match: key };
     }
@@ -78,7 +92,8 @@ function findWeekday(input: string): { weekday: Weekday; match: string } | null 
 function relativeKeyword(input: string): "today" | "tomorrow" | "in-days" | null {
   const lower = input.toLowerCase();
   if (/\bheute\b/.test(lower)) return "today";
-  if (/\bmorgen\b/.test(lower) && !/\b(?:morgens|morgen[s]?\s+um)\b/.test(lower)) return "tomorrow";
+  // `\b` already keeps "morgens" out; "morgen um 9" is still tomorrow.
+  if (/\bmorgen\b/.test(lower)) return "tomorrow";
   if (/\bin\s+\d+\s+tag(?:e|en)?\b/.test(lower)) return "in-days";
   return null;
 }
@@ -91,7 +106,7 @@ function inDays(input: string): number | null {
 
 function stripWeekdayWord(input: string, match: string): string {
   return input
-    .replace(new RegExp(`(?:^|\\s)${match}(?=\\s|$)`, "i"), " ")
+    .replace(new RegExp(`(?:^|\\s)(?:(?:am|jeden)\\s+)?${match}(?=\\s|$)`, "i"), " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -100,6 +115,7 @@ function stripTime(input: string): string {
   return input
     .replace(/(?:^|\s)[0-2]?\d:[0-5]\d(?=\s|$)/g, " ")
     .replace(/(?:^|\s)\d{1,2}\s*uhr(?:\s*\d{1,2})?/gi, " ")
+    .replace(/(?:^|\s)um\s+\d{1,2}(?:\.\d{2})?(?=\s|$)/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

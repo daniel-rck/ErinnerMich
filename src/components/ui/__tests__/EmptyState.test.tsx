@@ -12,8 +12,8 @@ describe("EmptyState", () => {
   });
 
   it("renders primary and secondary actions and fires callbacks", async () => {
-    const onPrimary = vi.fn();
-    const onSecondary = vi.fn();
+    const onPrimary = vi.fn<() => void>();
+    const onSecondary = vi.fn<() => void>();
     render(
       <EmptyState
         title="Leer"

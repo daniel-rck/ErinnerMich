@@ -17,6 +17,13 @@ export async function addToolEntry(input: NewToolEntry): Promise<ToolEntry> {
   return entry;
 }
 
+/** Puts a previously deleted entry back unchanged (undo). */
+export async function restoreToolEntry(entry: ToolEntry): Promise<void> {
+  const db = await getDB();
+  await db.put("tool_entries", { ...entry, loggedAtDay: dayKey(entry.loggedAt) });
+  broadcast({ type: "tool-added", id: entry.id, toolKey: entry.toolKey });
+}
+
 export async function deleteToolEntry(id: string): Promise<void> {
   const db = await getDB();
   await db.delete("tool_entries", id);

@@ -39,6 +39,6 @@ describe("monthlyEngine", () => {
   it("lehnt ungültigen dayOfMonth ab", () => {
     expect(() =>
       nextMonthlyOccurrence({ type: "monthly", dayOfMonth: 32, time: "09:00" }, new Date()),
-    ).toThrow();
+    ).toThrow("monthly.dayOfMonth muss 1..31 sein");
   });
 });
