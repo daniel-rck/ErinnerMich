@@ -2,11 +2,10 @@ import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useMemo, useState } from "react";
 import { categoryClasses } from "../lib/categoryColors";
-import { addEvent } from "../lib/db/events";
+import { logHabit } from "../lib/habits/logHabit";
 import { useDailyProgress, useEvents } from "../lib/hooks/useEvents";
 import { dayKeyAddDays, dayKeyForDate } from "../lib/stats/dayKey";
-import { isMilestone } from "../lib/stats/streakMilestones";
-import { currentStreak, currentStreakWithFreeze, successfulDayKeys } from "../lib/stats/streaks";
+import { currentStreakWithFreeze, successfulDayKeys } from "../lib/stats/streaks";
 import type { Reminder, ReminderEvent } from "../lib/types";
 import { Celebration } from "./Celebration";
 import { vibrate } from "./ui/Haptic";
@@ -27,32 +26,15 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
   const last7 = useMemo(() => buildLast7(events), [events]);
   const [celebrateStreak, setCelebrateStreak] = useState<number | null>(null);
 
-  async function bump(value: number, action: "completed" | "progress") {
-    const now = Date.now();
-    if (action === "completed") {
-      const todayKey = dayKeyForDate(new Date(now));
-      const wasTodayDone = successfulDayKeys(events).has(todayKey);
-      const streakBefore = currentStreak(events, new Date(now));
-      await addEvent({
-        reminderId: reminder.id,
-        action: "completed",
-        triggeredAt: now,
-      });
-      const newStreak = wasTodayDone ? streakBefore : streakBefore + 1;
-      if (!wasTodayDone && isMilestone(newStreak)) {
-        vibrate("milestone");
-        setCelebrateStreak(newStreak);
-      } else {
-        vibrate("success");
-      }
+  const doneToday = useMemo(() => successfulDayKeys(events).has(today), [events, today]);
+
+  async function bump(value: number) {
+    const plan = await logHabit(reminder, events, value);
+    if (plan.milestone !== null) {
+      vibrate("milestone");
+      setCelebrateStreak(plan.milestone);
     } else {
-      await addEvent({
-        reminderId: reminder.id,
-        action: "progress",
-        triggeredAt: now,
-        progress: { value, unit: unit ?? "" },
-      });
-      vibrate("tick");
+      vibrate(plan.completesDay ? "success" : "tick");
     }
   }
 
@@ -65,11 +47,11 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
       {streak > 0 && (
         <div
           role="img"
-          className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
-          aria-label={`Streak ${streak} Tage${freezesUsed > 0 ? `, davon ${freezesUsed} Freezes` : ""}`}
+          className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-[color:var(--color-warning-soft)] px-2 py-0.5 text-xs font-medium text-warning-fg"
+          aria-label={`Serie: ${streak} ${streak === 1 ? "Tag" : "Tage"}${freezesUsed > 0 ? `, davon ${freezesUsed} überbrückt` : ""}`}
         >
-          <Flame size={12} />
-          <span className="tabular-nums">{streak} d</span>
+          <Flame size={12} aria-hidden />
+          <span className="tabular-nums">{streak}</span>
           {freezesUsed > 0 && <span className="text-[10px] opacity-80">❄{freezesUsed}</span>}
         </div>
       )}
@@ -79,9 +61,9 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
         <div className="flex flex-1 flex-col gap-1.5">
           <h3 className="font-medium leading-tight">{reminder.title}</h3>
           <p className="text-xs text-fg-muted">
-            {target !== undefined
-              ? `${current} / ${target} ${unit ?? ""}`.trim()
-              : current > 0
+            {target !== undefined && goal && goal.type !== "binary"
+              ? `${current} / ${target} ${unit ?? ""}${doneToday ? " · geschafft" : ""}`.trim()
+              : doneToday
                 ? "Heute erledigt"
                 : "Noch nicht heute"}
           </p>
@@ -90,28 +72,28 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
       </header>
 
       <div className="flex flex-wrap gap-2">
-        {goal?.type === "binary" && (
+        {(!goal || goal.type === "binary") && (
           <button
             type="button"
-            onClick={() => bump(1, "completed")}
+            onClick={() => void bump(1)}
             className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700 disabled:opacity-50"
-            disabled={completions > 0}
+            disabled={doneToday}
           >
-            {completions > 0 ? "Erledigt" : "Erledigt markieren"}
+            {doneToday ? "Erledigt" : "Erledigt markieren"}
           </button>
         )}
         {goal?.type === "count" && (
           <>
             <button
               type="button"
-              onClick={() => bump(1, "progress")}
+              onClick={() => void bump(1)}
               className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               +1 {goal.unit}
             </button>
             <button
               type="button"
-              onClick={() => bump(5, "progress")}
+              onClick={() => void bump(5)}
               className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken"
             >
               +5
@@ -122,14 +104,14 @@ export function HabitCard({ reminder, today }: HabitCardProps) {
           <>
             <button
               type="button"
-              onClick={() => bump(15, "progress")}
+              onClick={() => void bump(15)}
               className="rounded-md bg-accent-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-accent-700"
             >
               +15 min
             </button>
             <button
               type="button"
-              onClick={() => bump(5, "progress")}
+              onClick={() => void bump(5)}
               className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface-sunken"
             >
               +5 min

@@ -1,11 +1,11 @@
 import autoAnimate from "@formkit/auto-animate";
 import { Flame, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { HabitCard } from "../components/HabitCard";
 import { CardSkeleton } from "../components/ui/CardSkeleton";
 import { EmptyState } from "../components/ui/EmptyState";
-import { dayKey } from "../lib/db";
+import { useTodayKey } from "../lib/hooks/useNow";
 import { useReminders } from "../lib/hooks/useReminders";
 import { HABIT_TEMPLATES } from "../lib/templates";
 
@@ -20,7 +20,7 @@ interface HabitsPageProps {
 
 export function HabitsPage({ embedded = false }: HabitsPageProps = {}) {
   const navigate = useNavigate();
-  const [today] = useState(() => dayKey(Date.now()));
+  const today = useTodayKey();
   const { reminders, loading } = useReminders({
     kind: "habit",
     activeOnly: true,

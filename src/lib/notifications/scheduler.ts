@@ -1,9 +1,9 @@
 import { type BroadcastMessage, subscribe } from "../db/broadcast";
 import { listEventsForReminder } from "../db/events";
 import { getReminder, listReminders } from "../db/reminders";
+import { pendingSnoozeUntil } from "../schedule/snooze";
 import type { Reminder } from "../types";
 import { armInTabTimers, clearAllInTabTimers, clearInTabTimers } from "./inTab";
-import { pendingSnoozeUntil } from "./snooze";
 import {
   armReminderTriggers,
   clearAllTriggers,

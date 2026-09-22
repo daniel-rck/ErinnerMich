@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useCallback, useState } from "react";
-import { dayKey } from "../lib/db";
 import { addMoodEntry } from "../lib/db/moodEntries";
 import { useDailyMoodAverage } from "../lib/hooks/useMoodEntries";
+import { useTodayKey } from "../lib/hooks/useNow";
 import type { MoodValue } from "../lib/types";
 import { useMoodLog } from "./MoodLog/MoodLogProvider";
 import { Chip } from "./ui/Chip";
@@ -39,7 +39,7 @@ interface MoodStripProps {
  * tappable to expand and add another entry.
  */
 export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
-  const [today] = useState(() => dayKey(Date.now()));
+  const today = useTodayKey();
   const { avgMood, count, loading } = useDailyMoodAverage(today);
   const { open } = useMoodLog();
   const toast = useToast();

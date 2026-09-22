@@ -1,6 +1,6 @@
 import { HeartPulse, type LucideIcon, Sparkles, Sun, User as UserIcon } from "lucide-react";
-import { useMemo } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useNow } from "../lib/hooks/useNow";
 import { useSettings } from "../lib/hooks/useSettings";
 import { InstallButton } from "../lib/ui/InstallButton";
 import { CenterFab } from "./CenterFab";
@@ -35,7 +35,7 @@ const DATE_FMT = new Intl.DateTimeFormat("de-DE", {
 });
 
 export function AppShell() {
-  const now = useMemo(() => new Date(), []);
+  const now = useNow();
   const greeting = greetingFor(now);
   const dateLabel = DATE_FMT.format(now);
   const { wellnessToolsEnabled } = useSettings();

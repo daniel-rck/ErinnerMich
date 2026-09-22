@@ -16,11 +16,19 @@ import { useToast } from "./ui/Toast";
 interface ReminderCardProps {
   reminder: Reminder;
   scheduledFor?: Date;
+  /** This slot is already handled — hide the actions that would log it again. */
+  done?: boolean;
   onEdit?: (reminder: Reminder) => void;
   onDelete?: (reminder: Reminder) => void;
 }
 
-export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: ReminderCardProps) {
+export function ReminderCard({
+  reminder,
+  scheduledFor,
+  done = false,
+  onEdit,
+  onDelete,
+}: ReminderCardProps) {
   const toast = useToast();
   const { inventory } = useInventory(reminder.id);
   const tone = categoryClasses(reminder.category);
@@ -29,6 +37,9 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
   const lowStock = inventory != null && inventory.remaining <= inventory.refillThreshold;
 
   async function complete() {
+    // A second "Erledigt" on a handled slot would log it again and take
+    // another item off the inventory.
+    if (done) return;
     const now = Date.now();
     vibrate("success");
     await addEvent({
@@ -58,7 +69,7 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
       scheduledFor: scheduledFor?.getTime(),
       snoozeUntil: at.getTime(),
     });
-    toast.show({ message: `Erneut ${label}` });
+    toast.show({ message: `Verschoben: ${label}` });
   }
 
   const swipe = useSwipeActions({
@@ -88,7 +99,7 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
             {formatSchedule(reminder.schedule)}
           </p>
           {lowStock && inventory && (
-            <p className="mt-1 inline-flex items-center gap-1 text-[length:0.8125rem] text-[color:var(--color-warning)]">
+            <p className="mt-1 inline-flex items-center gap-1 text-[length:0.8125rem] text-warning-fg">
               <AlertTriangle size={12} aria-hidden />
               Nur noch {inventory.remaining} {inventory.unit}
             </p>
@@ -97,23 +108,32 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
       </header>
 
       <div className="flex flex-wrap items-center gap-[0.5rem]">
-        <motion.button
-          type="button"
-          onClick={() => void complete()}
-          whileTap={{ scale: 0.94 }}
-          className={[
-            "inline-flex items-center gap-1.5",
-            "h-9 px-3 rounded-[0.875rem]",
-            "bg-[color:var(--color-accent-600)] text-[color:white]",
-            "shadow-[0 8px 24px oklch(54% 0.22 285 / 0.32)]",
-            "text-[length:0.8125rem] font-semibold",
-            "hover:bg-[color:var(--color-accent-700)]",
-          ].join(" ")}
-        >
-          <Check size={14} aria-hidden />
-          Erledigt
-        </motion.button>
-        <SnoozeMenu onPick={(at, label) => void snoozeAt(at, label)} />
+        {done ? (
+          <span className="inline-flex h-9 items-center gap-1.5 rounded-[0.875rem] bg-[color:var(--color-success-soft)] px-3 text-[length:0.8125rem] font-semibold text-success-fg">
+            <Check size={14} aria-hidden />
+            Erledigt
+          </span>
+        ) : (
+          <>
+            <motion.button
+              type="button"
+              onClick={() => void complete()}
+              whileTap={{ scale: 0.94 }}
+              className={[
+                "inline-flex items-center gap-1.5",
+                "h-9 px-3 rounded-[0.875rem]",
+                "bg-[color:var(--color-accent-600)] text-fg-on-accent",
+                "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
+                "text-[length:0.8125rem] font-semibold",
+                "hover:bg-[color:var(--color-accent-700)]",
+              ].join(" ")}
+            >
+              <Check size={14} aria-hidden />
+              Erledigt
+            </motion.button>
+            <SnoozeMenu onPick={(at, label) => void snoozeAt(at, label)} />
+          </>
+        )}
         {onEdit && (
           <button
             type="button"
@@ -156,7 +176,7 @@ export function ReminderCard({ reminder, scheduledFor, onEdit, onDelete }: Remin
     "bg-[color:var(--color-surface)]",
     "border border-[color:var(--color-border)] border-l-4",
     tone.borderL,
-    "shadow-[0 1px 2px oklch(20% 0.01 285 / 0.06), 0 1px 1px oklch(20% 0.01 285 / 0.04)]",
+    "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
   ].join(" ");
 
   if (reducedMotion) {
@@ -245,18 +265,18 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
         ].join(" ")}
       >
         <Clock size={14} aria-hidden />
-        Snooze
+        Später
       </button>
       {open && (
         <fieldset
           id={popoverId}
-          aria-label="Snooze-Optionen"
+          aria-label="Später erinnern"
           className={[
             "absolute z-10 mt-1 flex min-w-[14rem] flex-col py-1",
             "rounded-[0.875rem]",
             "bg-[color:var(--color-surface)]",
             "border border-[color:var(--color-border)]",
-            "shadow-[0 4px 12px oklch(20% 0.01 285 / 0.08), 0 2px 4px oklch(20% 0.01 285 / 0.04)]",
+            "shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
           ].join(" ")}
         >
           {options.map(({ key, label, at }) => (
