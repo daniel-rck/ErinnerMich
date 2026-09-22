@@ -8,7 +8,7 @@ Architektur-Doku gehört laut web-base-Konvention #6 ins Repo (`docs/specs/`).
 
 | Baustein | Quelle in web-base | Stand in ErinnerMich |
 |---|---|---|
-| **Linting/Formatting** | `cli/templates/biome/biome.json` | `biome.json` (Abweichungen unten); ersetzt ESLint |
+| **Linting/Formatting** | `cli/templates/oxc/*` | `oxlint.base.json` + `.oxfmtrc.json` (owned), `.oxlintrc.json` + `.prettierignore` (app); ersetzt Biome (web-base 0.4.0) |
 | **Package Manager** | `bun@1.3.11` | `package.json` → `"packageManager"` |
 | **Reusable CI** | `.github/workflows/web-app-ci.yml@main` | `.github/workflows/ci.yml` |
 | **Layout-Foundation** | `cli/templates/layout/*` | `src/lib/ui/` (AppShell, AppHeader, AppNav, PageHeader, primitives, InstallButton, useInstallPrompt, ThemeToggle, useTheme, theme.css, index.ts) |
@@ -45,16 +45,12 @@ in `index.html`. ErinnerMichs altes `.dark`-Klassen-Theme-System (`ThemeProvider
 > Hinweis: Der localStorage-Key wechselte von `erinnermich:theme` auf web-bases `theme`.
 > Bestehende Nutzer starten daher einmalig im `system`-Modus.
 
-## biome.json – Abweichungen von der Vorlage
+## .oxlintrc.json – Abweichungen von der Vorlage
 
-- **`!**/*.css` ausgeschlossen:** Biomes CSS-Parser versteht Tailwind-v4-`@theme` nicht.
-- **Inkrementelle Lint-Adoption:** `a11y/noSvgWithoutTitle`, `a11y/useButtonType`, `a11y/noAutofocus`,
-  `a11y/useAriaPropsSupportedByRole`, `a11y/useSemanticElements`, `a11y/noLabelWithoutControl`,
-  `a11y/useKeyWithClickEvents`, `suspicious/noArrayIndexKey` laufen vorerst als `warn`
-  (plus `noNonNullAssertion` / `useExhaustiveDependencies` wie in der Vorlage).
+- **Tests:** `typescript/no-non-null-assertion` ist in `__tests__` und `*.test.ts(x)` aus.
+- **`scripts/**`:** `no-console` aus.
 
 ## Offene Foundation-Schritte (Roadmap)
 
 - `noUncheckedIndexedAccess` app-weit aktivieren (`07-conventions.md`).
-- a11y-/`noArrayIndexKey`-Warnungen schrittweise auf `error` hochziehen.
 - Ggf. Mood/Wellness-Farbcodierung als web-base-Erweiterung neu konzipieren (statt eingeebnetem Accent).

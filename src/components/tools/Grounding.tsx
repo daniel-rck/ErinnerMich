@@ -149,7 +149,7 @@ export function Grounding() {
 
           <ul className="flex flex-col gap-2">
             {Array.from({ length: step.count }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
+              // oxlint-disable-next-line react/no-array-index-key -- fixed-length slot list — the position *is* the slot's identity, and its value lives in `inputs[stepIndex][i]`.
               <li key={i} className="flex items-center gap-2">
                 <span className="w-6 text-sm font-medium text-fg-subtle">{i + 1}.</span>
                 <input

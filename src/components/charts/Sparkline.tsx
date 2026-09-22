@@ -33,7 +33,7 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
     >
       {segments.map((segment, i) => (
         <polyline
-          // biome-ignore lint/suspicious/noArrayIndexKey: segments are derived fresh from `points` on every render and hold no state — the index is their only identity.
+          // oxlint-disable-next-line react/no-array-index-key -- segments are derived fresh from `points` on every render and hold no state — the index is their only identity.
           key={i}
           fill="none"
           stroke="#10b981"

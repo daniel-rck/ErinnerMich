@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # lint (Biome) → typecheck (App + SW) → test (Vitest) → build (SPA + PWA).
+  # lint (oxlint + oxfmt) → typecheck (App + SW) → test (Vitest) → build (SPA + PWA).
   ci:
     uses: daniel-rck/web-base/.github/workflows/web-app-ci.yml@main
 

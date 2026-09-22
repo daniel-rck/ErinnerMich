@@ -219,7 +219,7 @@ function FieldGroup({
   className?: string;
 }) {
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: the control arrives as `children`, so the label wraps it — an association the rule cannot follow.
+    // oxlint-disable-next-line jsx-a11y/label-has-associated-control -- the control arrives as `children`, so the label wraps it — an association the rule cannot follow.
     <label className={`flex flex-col gap-1 ${className ?? ""}`}>
       <span className="text-xs font-medium text-fg-muted">{label}</span>
       {children}
@@ -305,7 +305,7 @@ function DailyEditor({
     <div className="flex flex-wrap gap-2">
       {schedule.times.map((time, idx) => (
         <span
-          // biome-ignore lint/suspicious/noArrayIndexKey: keying on `time` would remount the input on every keystroke (and collide on duplicate times). The slot index is the stable identity here; the inputs are fully controlled, so nothing stale survives a removal.
+          // oxlint-disable-next-line react/no-array-index-key -- keying on `time` would remount the input on every keystroke (and collide on duplicate times). The slot index is the stable identity here; the inputs are fully controlled, so nothing stale survives a removal.
           key={idx}
           className="inline-flex items-center gap-1 rounded-full border border-border bg-surface pl-2 pr-1"
         >

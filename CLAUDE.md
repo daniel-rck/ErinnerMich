@@ -18,7 +18,7 @@ Drift-Guard `web-base-check` — wer eine *owned* Datei anfasst, bricht die CI.
 Vor jedem Commit grün halten:
 
 ```bash
-bun run lint        # Biome (check)
+bun run lint        # oxlint + oxfmt --check
 bun run typecheck   # tsc (App + SW)
 bun run test        # Vitest
 bun run build       # SPA + PWA
@@ -27,8 +27,9 @@ bun run build       # SPA + PWA
 ## Konventionen (gemäß web-base)
 
 - **Bun** als Runtime & Package-Manager (kein npm/yarn-Lockfile).
-- **Biome** für Lint + Format — `biome.base.json` kommt aus web-base und wird
-  überschrieben, app-eigene Regeln gehören in `biome.json` (`extends`).
+- **oxlint + oxfmt** für Lint + Format — `oxlint.base.json` und `.oxfmtrc.json`
+  kommen aus web-base und werden überschrieben; app-eigene Regeln gehören in
+  `.oxlintrc.json` (`overrides`), Format-Ausnahmen in `.prettierignore`.
 - **TypeScript strict** inkl. `noUncheckedIndexedAccess`;
   `verbatimModuleSyntax` (→ `import type`); `type` statt `interface`.
 - **Deutsche UI + README, englischer Quellcode** (Bezeichner, Kommentare,

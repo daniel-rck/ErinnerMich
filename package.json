@@ -29,8 +29,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "biome check .",
-    "format": "biome format --write .",
+    "lint": "oxlint && oxfmt --check",
+    "format": "oxfmt",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -39,40 +39,41 @@
     "worker:deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@formkit/auto-animate": "^0.9.0",
+    "@formkit/auto-animate": "^0.10.0",
     "canvas-confetti": "^1.9.4",
-    "framer-motion": "^12.38.0",
+    "framer-motion": "^13.4.1",
     "idb": "^8.0.3",
-    "lucide-react": "^1.39.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.3",
+    "lucide-react": "^1.47.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4",
     "ulid": "^3.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.11",
-    "@cloudflare/workers-types": "^5.20260902.1",
+    "@cloudflare/workers-types": "^5.20260922.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/node": "^26.4.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.0.1",
     "fake-indexeddb": "^6.2.5",
-    "jsdom": "^30.0.1",
+    "jsdom": "^30.1.1",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~7.0.2",
-    "vite": "^8.2.2",
+    "vite": "^8.3.0",
     "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.1",
     "workbox-precaching": "^7.4.1",
-    "wrangler": "^4.128.0"
+    "wrangler": "^4.136.3"
   },
   "webBase": {
-    "version": "0.3.1"
+    "version": "0.5.0"
   }
 }

@@ -77,8 +77,8 @@ bun run build        # Production Build nach dist/
 bun run preview      # gebauten Stand lokal ausliefern
 bun run test         # Vitest einmalig
 bun run test:watch   # Vitest watch mode
-bun run lint         # Biome (Lint + Format-Check)
-bun run format       # Biome Format (write)
+bun run lint         # oxlint + oxfmt --check
+bun run format       # oxfmt (write)
 bun run typecheck    # tsc -b --noEmit
 ```
 
