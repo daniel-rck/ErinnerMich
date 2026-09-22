@@ -161,7 +161,7 @@ export function BreathingBubble() {
           <button
             type="button"
             onClick={start}
-            className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-sky-700"
+            className="inline-flex items-center gap-2 rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-sky-800"
           >
             <Play size={16} /> Start
           </button>

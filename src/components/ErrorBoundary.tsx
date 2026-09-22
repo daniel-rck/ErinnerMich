@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </button>
         </div>
         {this.state.exportFailed && (
-          <p className="text-sm text-red-600 dark:text-red-400">
+          <p className="text-sm text-danger-fg">
             Export fehlgeschlagen — Details in der Browser-Konsole.
           </p>
         )}

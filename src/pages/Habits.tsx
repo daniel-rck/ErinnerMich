@@ -95,7 +95,7 @@ function SuggestedFooter() {
             "bg-[color:var(--color-surface-sunken)] text-[color:var(--color-fg)]",
             "border border-[color:var(--color-border)]",
             "text-[length:0.8125rem] font-medium",
-            "hover:bg-[color:var(--color-accent-50)] hover:border-[color:var(--color-accent-400)]",
+            "hover:bg-[color:var(--color-accent-softer)] hover:border-[color:var(--color-accent-400)]",
           ].join(" ")}
         >
           <span aria-hidden>{t.icon}</span>

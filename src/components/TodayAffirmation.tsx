@@ -12,7 +12,7 @@ export function TodayAffirmation() {
       className={[
         "group relative flex items-center gap-3 overflow-hidden",
         "rounded-[1.25rem] p-[1rem]",
-        "bg-gradient-to-br from-[color:var(--color-accent-100)] via-[color:var(--color-surface)] to-[color:var(--color-accent-100)]",
+        "bg-gradient-to-br from-[color:var(--color-accent-soft)] via-[color:var(--color-surface)] to-[color:var(--color-accent-soft)]",
         "border border-[color:var(--color-border)]",
         "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
         "transition-shadow duration-[240ms]",

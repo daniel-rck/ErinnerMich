@@ -333,7 +333,7 @@ export function IconPicker({
                             "text-2xl leading-none",
                             "transition-[background-color,box-shadow] duration-[140ms]",
                             selected
-                              ? "bg-[color:var(--color-accent-50)] ring-2 ring-[color:var(--color-accent-500)]"
+                              ? "bg-[color:var(--color-accent-softer)] ring-2 ring-[color:var(--color-accent-500)]"
                               : "hover:bg-[color:var(--color-surface-sunken)]",
                           ].join(" ")}
                         >

@@ -271,7 +271,7 @@ function RowMenu({
             type="button"
             role="menuitem"
             onClick={pick(onDelete)}
-            className="px-3 py-1.5 text-left text-sm text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+            className="px-3 py-1.5 text-left text-sm text-danger-fg hover:bg-[color:var(--color-danger-soft)]"
           >
             Löschen
           </button>

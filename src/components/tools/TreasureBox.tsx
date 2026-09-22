@@ -66,7 +66,7 @@ export function TreasureBox() {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-pink-700"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-pink-700 px-4 py-2 text-sm font-medium text-fg-on-accent hover:bg-pink-800"
         >
           <Plus size={16} /> Neuer Schatz
         </button>
@@ -92,7 +92,7 @@ export function TreasureBox() {
               <button
                 type="button"
                 onClick={() => setImageDataUrl(null)}
-                className="absolute right-2 top-2 rounded bg-zinc-900/80 px-2 py-1 text-xs text-fg-on-accent"
+                className="absolute right-2 top-2 rounded bg-[color:oklch(0.15_0_0/0.8)] px-2 py-1 text-xs text-fg-on-accent"
               >
                 Entfernen
               </button>
@@ -127,7 +127,7 @@ export function TreasureBox() {
             <button
               type="submit"
               disabled={!text.trim() && !imageDataUrl}
-              className="rounded-md bg-pink-600 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-pink-700 disabled:opacity-50"
+              className="rounded-md bg-pink-700 px-3 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-pink-800 disabled:opacity-50"
             >
               Speichern
             </button>

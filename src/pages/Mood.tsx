@@ -18,8 +18,8 @@ import type { ToolCategory, ToolDef } from "../lib/tools/registry";
 import { TOOLS } from "../lib/tools/registry";
 
 const ACCENT_GRADIENT: Record<ToolCategory, string> = {
-  acute: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  reflection: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
+  acute: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  reflection: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
 };
 
 export function MoodPage() {
@@ -148,7 +148,7 @@ export function MoodPage() {
               className={[
                 "group flex w-full items-center gap-[1rem]",
                 "rounded-[1.25rem] p-[1rem]",
-                "bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-100)]",
+                "bg-gradient-to-br from-[color:var(--color-danger-soft)] to-[color:var(--color-accent-soft)]",
                 "border border-[color:var(--color-danger)]/30",
                 "transition-shadow duration-[240ms]",
                 "hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",

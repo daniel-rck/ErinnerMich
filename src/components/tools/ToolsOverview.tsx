@@ -10,7 +10,7 @@ const COLOR_BG: Record<string, string> = {
   emerald: "from-emerald-100 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40",
   amber: "from-amber-100 to-yellow-100 dark:from-amber-950/40 dark:to-yellow-950/40",
   pink: "from-pink-100 to-rose-100 dark:from-pink-950/40 dark:to-rose-950/40",
-  slate: "from-slate-100 to-zinc-100 dark:from-slate-900/60 dark:to-zinc-900/60",
+  slate: "from-surface-sunken to-surface-muted",
   violet: "from-violet-100 to-purple-100 dark:from-violet-950/40 dark:to-purple-950/40",
 };
 

@@ -62,9 +62,9 @@ function chooseCue(latest: MoodEntry | null, hour: number): Cue | null {
 const TWO_HOURS = 2 * 60 * 60 * 1000;
 
 const ACCENT_BG: Record<Cue["accent"], string> = {
-  mood: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  calm: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  glow: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
+  mood: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  calm: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  glow: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
 };
 
 const ACCENT_ICON: Record<Cue["accent"], string> = {

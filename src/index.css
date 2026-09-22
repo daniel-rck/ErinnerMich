@@ -22,6 +22,7 @@
   --color-danger-fg: oklch(0.5 0.19 25);
   --color-accent-soft: var(--color-accent-100);
   --color-accent-softer: var(--color-accent-50);
+  --color-accent-fg: var(--color-accent-700);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,6 +32,7 @@
     --color-danger-fg: oklch(0.75 0.15 25);
     --color-accent-soft: color-mix(in oklab, var(--color-accent-900) 55%, var(--color-surface));
     --color-accent-softer: color-mix(in oklab, var(--color-accent-900) 35%, var(--color-surface));
+    --color-accent-fg: var(--color-accent-300);
   }
 }
 
@@ -40,6 +42,7 @@
   --color-danger-fg: oklch(0.75 0.15 25);
   --color-accent-soft: color-mix(in oklab, var(--color-accent-900) 55%, var(--color-surface));
   --color-accent-softer: color-mix(in oklab, var(--color-accent-900) 35%, var(--color-surface));
+  --color-accent-fg: var(--color-accent-300);
 }
 
 /* Soft semantic tints derived from the base colors, auto-adapting to light/dark. */

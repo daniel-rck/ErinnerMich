@@ -22,12 +22,12 @@ const COMPONENTS: Record<ToolKey, () => ReactElement> = {
 };
 
 const TOOL_GRADIENT: Record<string, string> = {
-  sky: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  emerald: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  amber: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
-  pink: "from-[color:var(--color-accent-100)] to-[color:var(--color-accent-100)]",
+  sky: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  emerald: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  amber: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
+  pink: "from-[color:var(--color-accent-soft)] to-[color:var(--color-accent-soft)]",
   slate: "from-[color:var(--color-surface-sunken)] to-[color:var(--color-surface)]",
-  violet: "from-[color:var(--color-accent-50)] to-[color:var(--color-accent-100)]",
+  violet: "from-[color:var(--color-accent-softer)] to-[color:var(--color-accent-soft)]",
 };
 
 export function ToolSessionPage() {

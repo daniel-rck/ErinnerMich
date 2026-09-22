@@ -178,7 +178,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1))}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-700 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-800"
           >
             Weiter <ChevronRight size={16} />
           </button>
@@ -186,7 +186,7 @@ export function Grounding() {
           <button
             type="button"
             onClick={() => void finish()}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-700"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-700 px-4 py-1.5 text-sm font-medium text-fg-on-accent hover:bg-emerald-800"
           >
             <Check size={16} /> Abschließen
           </button>

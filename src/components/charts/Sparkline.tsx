@@ -14,20 +14,27 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
   const innerH = height - padY * 2;
   const stepX = data.length > 1 ? innerW / (data.length - 1) : 0;
 
+  const range = max - min || 1; // flat scale: avoid dividing by zero
   const points = data.map((p, i) => {
     if (p.value === null) return null;
-    const t = (p.value - min) / (max - min);
+    const t = (p.value - min) / range;
     const x = padX + i * stepX;
     const y = padY + (1 - t) * innerH;
     return { x, y, label: p.label, value: p.value };
   });
 
   const segments = collectSegments(points);
+  const known = data.flatMap((p) => (p.value === null ? [] : [p.value]));
+  const avg = known.length > 0 ? known.reduce((a, b) => a + b, 0) / known.length : null;
+  const summary =
+    avg === null
+      ? `${ariaLabel}: keine Daten`
+      : `${ariaLabel}: Durchschnitt ${avg.toLocaleString("de-DE", { maximumFractionDigits: 1 })} an ${known.length} Tagen`;
 
   return (
     <svg
       role="img"
-      aria-label={ariaLabel}
+      aria-label={summary}
       viewBox={`0 0 ${width} ${height}`}
       className="block w-full"
     >
@@ -36,7 +43,7 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
           // oxlint-disable-next-line react/no-array-index-key -- segments are derived fresh from `points` on every render and hold no state — the index is their only identity.
           key={i}
           fill="none"
-          stroke="#10b981"
+          style={{ stroke: "var(--color-accent-500)" }}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -45,8 +52,14 @@ export function Sparkline({ data, min = 1, max = 5, ariaLabel = "Verlauf" }: Spa
       ))}
       {points.map((p) =>
         p === null ? null : (
-          <circle key={p.label} cx={p.x} cy={p.y} r={2.5} fill="#10b981">
-            <title>{`${p.label}: ${p.value.toFixed(2)}`}</title>
+          <circle
+            key={p.label}
+            cx={p.x}
+            cy={p.y}
+            r={2.5}
+            style={{ fill: "var(--color-accent-500)" }}
+          >
+            <title>{`${p.label}: ${p.value.toLocaleString("de-DE", { maximumFractionDigits: 1 })}`}</title>
           </circle>
         ),
       )}
