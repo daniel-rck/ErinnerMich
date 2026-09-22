@@ -30,20 +30,23 @@ export function armInTabTimers(
   registration: ServiceWorkerRegistration | null,
   reminder: Reminder,
   now: number = Date.now(),
+  snoozeUntil: number | null = null,
 ): number {
   clearInTabTimers(reminder.id);
   if (!reminder.active) return 0;
-  if (reminder.schedule.type === "inventory_based") return 0;
 
   const horizon = now + INTAB_HORIZON_MS;
   const planned = planTriggers(reminder, new Date(now), MAX_TIMERS_PER_REMINDER);
-  const due = planned.filter(
-    ({ scheduledFor }) => scheduledFor.getTime() > now && scheduledFor.getTime() <= horizon,
-  );
+  const due = planned
+    .map(({ scheduledFor }) => scheduledFor)
+    .filter((at) => at.getTime() > now && at.getTime() <= horizon);
+  if (snoozeUntil !== null && snoozeUntil > now && snoozeUntil <= horizon) {
+    due.push(new Date(snoozeUntil));
+  }
   if (due.length === 0) return 0;
 
   const timers: number[] = [];
-  for (const { scheduledFor } of due) {
+  for (const scheduledFor of due) {
     const delay = scheduledFor.getTime() - now;
     const id = setTimeout(() => {
       void fireInTab(registration, reminder, scheduledFor);

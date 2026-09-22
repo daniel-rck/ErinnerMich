@@ -77,12 +77,16 @@ export async function armReminderTriggers(
   registration: ServiceWorkerRegistration,
   reminder: Reminder,
   from: Date = new Date(),
+  snoozeUntil: number | null = null,
 ): Promise<number> {
   if (!supportsNotificationTriggers()) return 0;
   await clearReminderTriggers(registration, reminder.id);
 
-  const planned = planTriggers(reminder, from);
-  for (const { scheduledFor } of planned) {
+  const planned = planTriggers(reminder, from).map(({ scheduledFor }) => scheduledFor);
+  if (reminder.active && snoozeUntil !== null && snoozeUntil > from.getTime()) {
+    planned.push(new Date(snoozeUntil));
+  }
+  for (const scheduledFor of planned) {
     const descriptor = buildDescriptor(reminder, scheduledFor);
     const options: ShowTriggerOptions = {
       tag: descriptor.tag,

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextIntervalOccurrence } from "../intervalEngine";
 
 describe("intervalEngine", () => {
@@ -71,12 +71,11 @@ describe("intervalEngine", () => {
 });
 
 describe("intervalEngine across DST", () => {
-  const originalTz = process.env.TZ;
   beforeAll(() => {
-    process.env.TZ = "Europe/Berlin";
+    vi.stubEnv("TZ", "Europe/Berlin");
   });
   afterAll(() => {
-    process.env.TZ = originalTz;
+    vi.unstubAllEnvs();
   });
 
   it("jumps to the next calendar day's window on the day clocks go back", () => {
