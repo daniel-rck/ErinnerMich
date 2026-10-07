@@ -22,7 +22,7 @@ export default defineConfig({
         description:
           "Erinnern. Reflektieren. Durchatmen. Reminder, Habits, Mood und Wellness-Tools — ohne Account, alles lokal im Browser.",
         // Matches <meta name="theme-color"> in index.html (accent-600).
-        theme_color: "#5b50d6",
+        theme_color: "#793bb0",
         background_color: "#0b0b10",
         display: "standalone",
         start_url: "/",

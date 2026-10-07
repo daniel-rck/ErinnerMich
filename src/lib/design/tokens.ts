@@ -20,10 +20,10 @@ export const TEXT = {
 
 export const ELEV = {
   0: "shadow-[0_0_0_1px_var(--color-border)]",
-  1: "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
-  2: "shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
-  3: "shadow-[0_12px_32px_oklch(20%_0.01_285/0.14),0_4px_8px_oklch(20%_0.01_285/0.06)]",
-  brand: "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
+  1: "shadow-[0_1px_2px_oklch(20%_0.01_var(--accent-h)/0.06),0_1px_1px_oklch(20%_0.01_var(--accent-h)/0.04)]",
+  2: "shadow-[0_4px_12px_oklch(20%_0.01_var(--accent-h)/0.08),0_2px_4px_oklch(20%_0.01_var(--accent-h)/0.04)]",
+  3: "shadow-[0_12px_32px_oklch(20%_0.01_var(--accent-h)/0.14),0_4px_8px_oklch(20%_0.01_var(--accent-h)/0.06)]",
+  brand: "shadow-[0_8px_24px_oklch(54%_0.22_var(--accent-h)/0.32)]",
 } as const;
 
 export const RADIUS = {

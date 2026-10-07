@@ -112,7 +112,7 @@ export function MoodStrip({ alwaysExpanded = false }: MoodStripProps) {
               "bg-[color:var(--color-surface)]",
               "border border-[color:var(--color-border)]",
               "text-3xl",
-              "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
+              "shadow-[0_1px_2px_oklch(20%_0.01_var(--accent-h)/0.06),0_1px_1px_oklch(20%_0.01_var(--accent-h)/0.04)]",
               "transition-colors duration-[140ms]",
               "hover:border-[color:var(--color-accent-400)] hover:bg-[color:var(--color-accent-softer)]",
             ].join(" ")}
