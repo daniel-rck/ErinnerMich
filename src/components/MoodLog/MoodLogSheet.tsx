@@ -141,7 +141,7 @@ export function MoodLogSheet({ open, onClose }: MoodLogSheetProps) {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={2}
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500"
+                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500"
                 placeholder="Was beschäftigt dich gerade?"
               />
             </label>

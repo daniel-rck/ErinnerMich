@@ -215,7 +215,7 @@ export function ReminderForm({
 }
 
 const inputClass =
-  "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500";
+  "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm focus:border-accent-500";
 
 function FieldGroup({
   label,
@@ -330,7 +330,7 @@ function DailyEditor({
         <span
           // oxlint-disable-next-line react/no-array-index-key -- keying on `time` would remount the input on every keystroke (and collide on duplicate times). The slot index is the stable identity here; the inputs are fully controlled, so nothing stale survives a removal.
           key={idx}
-          className="inline-flex items-center gap-1 rounded-full border border-border bg-surface pl-2 pr-1"
+          className="inline-flex items-center gap-1 rounded-full border border-border bg-surface pl-2 pr-1 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-500"
         >
           <input
             type="time"
