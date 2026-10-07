@@ -33,7 +33,7 @@ Stats-Aggregation unterscheiden zwischen den Modi.
 | Lokaler Storage | `localStorage` (Settings) + IndexedDB via `idb` |
 | State | React Context + Hooks |
 | Tests | Vitest + Testing Library |
-| Linting | Biome (Lint + Format, web-base-Baseline; ursprünglich ESLint) |
+| Linting | oxlint + oxfmt (web-base-Baseline; davor Biome, ursprünglich ESLint) |
 | CI | GitHub Actions (Lint + Typecheck + Test + Build) |
 | Optional Sync | Cloudflare Workers + R2 + KV, AES-GCM/HKDF (Phase 7) |
 
