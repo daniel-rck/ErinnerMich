@@ -15,11 +15,11 @@ concurrency:
 jobs:
   # lint (oxlint + oxfmt) → typecheck (App + SW) → test (Vitest) → build (SPA + PWA).
   ci:
-    uses: daniel-rck/web-base/.github/workflows/web-app-ci.yml@main
+    uses: daniel-rck/web-base/.github/workflows/web-app-ci.yml@v0.6.0
 
   # Fails the build when an owned web-base building block has drifted from the
-  # base. Scaffold seams (theme.css accent, db schema, routes) are ignored.
-  # Pinned to @main rather than a version tag until v0.3.0 is tagged on
-  # web-base's main; swap `@main` for `@v0.3.0` then.
+  # base. Scaffold seams (theme.css accent, db schema, routes) are ignored. The
+  # @ tag selects the workflow YAML; the CLI version comes from the app's
+  # `webBase.version` stamp in package.json.
   web-base-check:
-    uses: daniel-rck/web-base/.github/workflows/web-base-check.yml@main
+    uses: daniel-rck/web-base/.github/workflows/web-base-check.yml@v0.6.0
