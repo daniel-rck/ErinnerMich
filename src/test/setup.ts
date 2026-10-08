@@ -1,35 +1,31 @@
-import "@testing-library/jest-dom/vitest";
+// Shared test setup, loaded through `setupFiles` in vitest.config.ts.
+// BroadcastChannel needs no polyfill: Node's built-in one delivers between
+// instances, so notifyMutation → useLiveQuery works as in the browser.
+// oxlint-disable-next-line import/no-unassigned-import -- installs indexedDB, IDBKeyRange & co. as globals
 import "fake-indexeddb/auto";
+// oxlint-disable-next-line import/no-unassigned-import -- registers the jest-dom matchers (and their types) on vitest's expect
+import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach, vi } from "vitest";
-import { _resetDBForTests } from "../lib/db";
+import { afterEach } from "vitest";
 
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  configurable: true,
-  value: vi.fn<(query: string) => MediaQueryList>().mockImplementation(
-    (query: string) =>
-      ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: vi.fn<() => void>(),
-        removeListener: vi.fn<() => void>(),
-        addEventListener: vi.fn<() => void>(),
-        removeEventListener: vi.fn<() => void>(),
-        dispatchEvent: vi.fn<() => boolean>(),
-      }) as unknown as MediaQueryList,
-  ),
-});
-
-afterEach(async () => {
+// Testing Library only unmounts after each test by itself when `afterEach` is
+// a global (vitest's `globals: true`); without this, trees leak between tests.
+afterEach(() => {
   cleanup();
-  await _resetDBForTests();
-  await new Promise<void>((resolve, reject) => {
-    const req = indexedDB.deleteDatabase("erinnermich");
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error ?? new Error("deleteDatabase failed"));
-    req.onblocked = () => resolve();
-  });
-  window.localStorage.clear();
 });
+
+// jsdom has no matchMedia, which the theme and install-prompt hooks call.
+// Every query reports "no match"; override per test with
+// `vi.spyOn(window, "matchMedia").mockReturnValue(…)`.
+if (typeof window.matchMedia !== "function") {
+  window.matchMedia = (query: string): MediaQueryList => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener() {},
+    removeEventListener() {},
+    addListener() {},
+    removeListener() {},
+    dispatchEvent: () => false,
+  });
+}

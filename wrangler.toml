@@ -1,11 +1,19 @@
 name = "erinnermich"
 main = "worker/index.ts"
+# Raise deliberately, one deploy-checked PR at a time (>= 2025-04-01 is needed
+# for SPA navigation serving).
 compatibility_date = "2025-10-01"
+# nodejs_compat stays as before: dropping it changes the Workers runtime, so it
+# goes in its own deploy-checked PR (08-app-migrations.md, "Deferred").
 compatibility_flags = ["nodejs_compat"]
 
 [assets]
 directory = "./dist"
 binding = "ASSETS"
+# Navigations without a matching file get index.html with a 200, so reloading a
+# client route such as /detail/123 works. Every other unmatched request runs
+# the Worker (worker/base.ts). No run_worker_first: the app has no API a
+# browser must navigate to.
 not_found_handling = "single-page-application"
 
 [observability]

@@ -123,7 +123,7 @@ export function ReminderCard({
                 "inline-flex items-center gap-1.5",
                 "h-9 px-3 rounded-[0.875rem]",
                 "bg-[color:var(--color-accent-600)] text-fg-on-accent",
-                "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
+                "shadow-[0_8px_24px_oklch(54%_0.22_var(--accent-h)/0.32)]",
                 "text-[length:0.8125rem] font-semibold",
                 "hover:bg-[color:var(--color-accent-700)]",
               ].join(" ")}
@@ -176,7 +176,7 @@ export function ReminderCard({
     "bg-[color:var(--color-surface)]",
     "border border-[color:var(--color-border)] border-l-4",
     tone.borderL,
-    "shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
+    "shadow-[0_1px_2px_oklch(20%_0.01_var(--accent-h)/0.06),0_1px_1px_oklch(20%_0.01_var(--accent-h)/0.04)]",
   ].join(" ");
 
   if (reducedMotion) {
@@ -276,7 +276,7 @@ function SnoozeMenu({ onPick }: { onPick: (at: Date, label: string) => void }) {
             "rounded-[0.875rem]",
             "bg-[color:var(--color-surface)]",
             "border border-[color:var(--color-border)]",
-            "shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)]",
+            "shadow-[0_4px_12px_oklch(20%_0.01_var(--accent-h)/0.08),0_2px_4px_oklch(20%_0.01_var(--accent-h)/0.04)]",
           ].join(" ")}
         >
           {options.map(({ key, label, at }) => (

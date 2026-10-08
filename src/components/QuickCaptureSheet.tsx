@@ -91,6 +91,9 @@ export function QuickCaptureSheet({ open, onClose }: QuickCaptureSheetProps) {
             "rounded-full bg-[color:var(--color-surface-sunken)]",
             "border border-[color:var(--color-border)]",
             "focus-within:border-[color:var(--color-accent-500)]",
+            // The input itself draws no outline; the pill does, so keyboard focus
+            // also shows in forced-colors mode (a border color change doesn't).
+            "focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-500",
           ].join(" ")}
         >
           <Sparkles

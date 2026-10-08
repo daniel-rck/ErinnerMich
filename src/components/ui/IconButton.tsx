@@ -26,7 +26,7 @@ const TONE: Record<IconButtonTone, string> = {
   ].join(" "),
   brand: [
     "bg-[color:var(--color-accent-600)] text-[color:white]",
-    "shadow-[0_8px_24px_oklch(54%_0.22_285/0.32)]",
+    "shadow-[0_8px_24px_oklch(54%_0.22_var(--accent-h)/0.32)]",
     "hover:bg-[color:var(--color-accent-700)] active:bg-[color:var(--color-accent-800)]",
   ].join(" "),
   danger: [

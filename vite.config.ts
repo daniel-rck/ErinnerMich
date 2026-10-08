@@ -1,8 +1,9 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import { defineConfig } from "vitest/config";
 
+// A plain object, not the function form: vitest.config.ts merges it.
 export default defineConfig({
   plugins: [
     react(),
@@ -10,8 +11,9 @@ export default defineConfig({
     VitePWA({
       strategies: "injectManifest",
       srcDir: "src/sw",
-      filename: "sw.ts",
-      registerType: "autoUpdate",
+      filename: "index.ts",
+      // A new version waits for the user's go (UpdatePrompt); see src/sw/base.ts.
+      registerType: "prompt",
       injectRegister: "auto",
       injectManifest: {
         globPatterns: ["**/*.{js,css,html,svg,png,webmanifest}"],
@@ -22,7 +24,7 @@ export default defineConfig({
         description:
           "Erinnern. Reflektieren. Durchatmen. Reminder, Habits, Mood und Wellness-Tools — ohne Account, alles lokal im Browser.",
         // Matches <meta name="theme-color"> in index.html (accent-600).
-        theme_color: "#5b50d6",
+        theme_color: "#793bb0",
         background_color: "#0b0b10",
         display: "standalone",
         start_url: "/",
@@ -76,10 +78,4 @@ export default defineConfig({
       },
     }),
   ],
-  test: {
-    environment: "jsdom",
-    globals: true,
-    setupFiles: ["./src/test/setup.ts"],
-    css: true,
-  },
 });

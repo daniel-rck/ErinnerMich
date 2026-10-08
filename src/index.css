@@ -1,71 +1,17 @@
 /*
  * ErinnerMich global stylesheet.
- * Design tokens come from the shared web-base foundation (src/lib/ui/theme.css):
- * accent (--accent-h: 285), surface/fg/border, semantic, radii, shadows, and the
- * data-theme dark mode. Only app-level globals and a couple of derived tokens live here.
+ * Design tokens come from the shared web-base foundation: src/lib/ui/tokens.css
+ * (owned — surface/fg/border, semantic + `*-fg`, radii, shadows, motion, the
+ * data-theme dark mode and the prefers-reduced-motion reset) via the
+ * src/lib/ui/theme.css seam (accent hue 305 + the app's own tokens). Only
+ * app-level globals live here.
  */
 @import "./lib/ui/theme.css";
-
-/*
- * App tokens on top of web-base (theme.css stays owned):
- * - `*-fg`: semantic colors as *text*. `--color-warning` (L 0.75) and
- *   `--color-success` on white/soft tints sit far below 4.5:1, so text uses
- *   these darker (light) / lighter (dark) variants; fills keep the base color.
- * - `accent-soft`: the pastel accent surface. `accent-50/100` have no dark
- *   override, so under near-white dark-mode text they were unreadable.
- * Registered in `@theme` for utilities (`text-warning-fg`, `bg-accent-soft`);
- * dark values are plain overrides, mirroring theme.css (keep both blocks in sync).
- */
-@theme {
-  --color-warning-fg: oklch(0.48 0.11 70);
-  --color-success-fg: oklch(0.45 0.13 150);
-  --color-danger-fg: oklch(0.5 0.19 25);
-  --color-accent-soft: var(--color-accent-100);
-  --color-accent-softer: var(--color-accent-50);
-  --color-accent-fg: var(--color-accent-700);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-warning-fg: oklch(0.82 0.13 80);
-    --color-success-fg: oklch(0.8 0.14 150);
-    --color-danger-fg: oklch(0.75 0.15 25);
-    --color-accent-soft: color-mix(in oklab, var(--color-accent-900) 55%, var(--color-surface));
-    --color-accent-softer: color-mix(in oklab, var(--color-accent-900) 35%, var(--color-surface));
-    --color-accent-fg: var(--color-accent-300);
-  }
-}
-
-:root[data-theme="dark"] {
-  --color-warning-fg: oklch(0.82 0.13 80);
-  --color-success-fg: oklch(0.8 0.14 150);
-  --color-danger-fg: oklch(0.75 0.15 25);
-  --color-accent-soft: color-mix(in oklab, var(--color-accent-900) 55%, var(--color-surface));
-  --color-accent-softer: color-mix(in oklab, var(--color-accent-900) 35%, var(--color-surface));
-  --color-accent-fg: var(--color-accent-300);
-}
-
-/* Soft semantic tints derived from the base colors, auto-adapting to light/dark. */
-:root {
-  --color-success-soft: color-mix(in oklab, var(--color-success) 16%, var(--color-surface));
-  --color-warning-soft: color-mix(in oklab, var(--color-warning) 18%, var(--color-surface));
-  --color-danger-soft: color-mix(in oklab, var(--color-danger) 16%, var(--color-surface));
-  --color-info-soft: color-mix(in oklab, var(--color-info) 16%, var(--color-surface));
-}
 
 html,
 body,
 #root {
   height: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
 }
 
 :where(button, a, [role="button"], [role="menuitem"], input, select, textarea):focus-visible {

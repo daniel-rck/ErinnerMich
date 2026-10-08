@@ -60,7 +60,7 @@ Einfach im Browser öffnen. Über das Browser-Menü („Zum Startbildschirm hinz
 | Bereich | Wahl |
 |---|---|
 | Framework | React 19 + TypeScript (strict) |
-| Build | Vite 7 |
+| Build | Vite 8 |
 | Styling | Tailwind CSS 4 |
 | PWA | `vite-plugin-pwa` (`injectManifest`, eigener Service Worker) |
 | Tests | Vitest + Testing Library |
@@ -94,24 +94,30 @@ bun run worker:deploy   # Deployment
 
 ```
 src/
-├── App.tsx              # Routing + Provider
-├── main.tsx             # Entry Point (inkl. Top-Level ErrorBoundary)
-├── index.css            # Tailwind 4 Entry
+├── App.tsx              # Root-Layout-Route: Provider, Bootstraps, App-Shell
+├── main.tsx             # Entry Point (RouterProvider, Update-Hinweis, ErrorBoundary)
+├── index.css            # Tailwind 4 Entry + App-Globals
 ├── components/          # UI-Komponenten (AppShell, Forms, Toast, …)
 │   └── tools/           # Wellness-Tools (Atem, Erden, Dankbarkeit, …)
-├── pages/               # Routen (Today, Mood, Library, You, Stats, Tools, …)
+├── pages/               # Seiten (Today, Mood, Library, You, Stats, Tools, …)
 ├── lib/
-│   ├── db/              # IndexedDB-Layer (idb)
+│   ├── router.tsx       # Routen (createBrowserRouter), routes.ts = Pfade
+│   ├── routing/         # web-base: Fehlerseite, 404, Ladeanzeige
+│   ├── db/              # IndexedDB-Layer (idb, web-base createDBOpener)
 │   ├── schedule/        # Schedule-Engine (Recurring-Logik)
 │   ├── notifications/   # Notifications API + In-Tab-Fallback
+│   ├── pwa/             # web-base: Update-Hinweis („Update verfügbar“)
 │   ├── stats/           # Stats-Aggregation
 │   ├── tools/           # Wellness-Tool-Registry
-│   ├── ui/              # web-base-Foundation (Theme, Tokens, Install)
+│   ├── ui/              # web-base-Foundation (Tokens, Theme, Primitives, Install)
 │   └── …
-└── sw/sw.ts             # Service Worker (Workbox precache)
+└── sw/
+    ├── base.ts          # web-base: Precache, Offline-Navigation, Updates auf Zuruf
+    └── index.ts         # Service Worker der App (Notification-Klicks)
 
 worker/
-└── index.ts             # Cloudflare Worker (SPA-Routing + /healthz)
+├── base.ts              # web-base: SPA-Fallback, /healthz, Security-Header
+└── index.ts             # Cloudflare Worker (nur statische Assets, keine API)
 ```
 
 ### Mitmachen

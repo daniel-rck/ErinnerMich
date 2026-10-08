@@ -74,7 +74,7 @@ function ToolCard({ tool }: { tool: ToolDef }) {
     <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
       <Link
         to={`/tools/${tool.key}`}
-        className={`flex items-center gap-3 rounded-[1.25rem] bg-gradient-to-br p-[1rem] border border-[color:var(--color-border)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)] transition-shadow hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)] ${bg}`}
+        className={`flex items-center gap-3 rounded-[1.25rem] bg-gradient-to-br p-[1rem] border border-[color:var(--color-border)] shadow-[0_1px_2px_oklch(20%_0.01_var(--accent-h)/0.06),0_1px_1px_oklch(20%_0.01_var(--accent-h)/0.04)] transition-shadow hover:shadow-[0_4px_12px_oklch(20%_0.01_var(--accent-h)/0.08),0_2px_4px_oklch(20%_0.01_var(--accent-h)/0.04)] ${bg}`}
       >
         <span className="text-3xl" aria-hidden>
           {tool.icon}

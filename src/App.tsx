@@ -1,6 +1,6 @@
 import { MotionConfig } from "framer-motion";
-import { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { MoodLogProvider } from "./components/MoodLog/MoodLogProvider";
 import { Onboarding } from "./components/Onboarding";
@@ -9,34 +9,14 @@ import { ToastProvider } from "./components/ui/Toast";
 import { purgeArchivedReminders } from "./lib/db/reminders";
 import { readSettings } from "./lib/db/settings";
 import { NotificationsBootstrap } from "./lib/notifications/NotificationsBootstrap";
+import { ROUTES } from "./lib/routes.ts";
 import { ToolsBootstrap } from "./lib/tools/ToolsBootstrap";
-import { AllPage } from "./pages/All";
-import { EditReminderPage } from "./pages/EditReminder";
-import { HabitsPage } from "./pages/Habits";
-import { LibraryPage } from "./pages/Library";
-import { MoodPage } from "./pages/Mood";
-import { NewReminderPage } from "./pages/NewReminder";
-import { NotFoundPage } from "./pages/NotFound";
-import { ReminderDetailPage } from "./pages/ReminderDetail";
-import { SettingsPage } from "./pages/Settings";
-import { StatsPage } from "./pages/Stats";
-import { TodayPage } from "./pages/Today";
-import { YouPage } from "./pages/You";
 
-const ToolsPage = lazy(() => import("./pages/Tools").then((m) => ({ default: m.ToolsPage })));
-const ToolSessionPage = lazy(() =>
-  import("./pages/ToolSession").then((m) => ({ default: m.ToolSessionPage })),
-);
-
-function ToolsFallback() {
-  return (
-    <div className="flex min-h-[40vh] items-center justify-center text-sm text-fg-muted">
-      Lade …
-    </div>
-  );
-}
-
-const LANDING_PATH = { today: "/", habits: "/library", mood: "/mood" } as const;
+const LANDING_PATH = {
+  today: ROUTES.home,
+  habits: ROUTES.library,
+  mood: ROUTES.mood,
+} as const;
 
 /**
  * Applies the "Standard-Startseite" setting once per app start: a plain launch
@@ -46,11 +26,11 @@ function LandingRedirect() {
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    if (location.pathname !== "/" || location.search !== "") return;
+    if (location.pathname !== ROUTES.home || location.search !== "") return;
     const settings = readSettings();
     const target = LANDING_PATH[settings.defaultLandingTab];
-    if (target === "/mood" && !settings.wellnessToolsEnabled) return;
-    if (target !== "/") navigate(target, { replace: true });
+    if (target === ROUTES.mood && !settings.wellnessToolsEnabled) return;
+    if (target !== ROUTES.home) void navigate(target, { replace: true });
     // Only on mount — later visits to "/" are the user's own navigation.
     // oxlint-disable-next-line react/exhaustive-deps -- run once at app start
   }, []);
@@ -61,6 +41,11 @@ function LandingRedirect() {
 // isn't purged from under it.
 const ARCHIVE_PURGE_AFTER_MS = 60_000;
 
+/**
+ * The root layout route (src/lib/router.tsx): app-wide providers, the
+ * notification/tool bootstraps and ErinnerMich's own shell, which renders the
+ * page through its <Outlet />.
+ */
 export function App() {
   useEffect(() => {
     purgeArchivedReminders(Date.now() - ARCHIVE_PURGE_AFTER_MS).catch((err) => {
@@ -69,58 +54,21 @@ export function App() {
   }, []);
 
   // `reducedMotion="user"`: framer-motion's JS springs ignore the CSS
-  // prefers-reduced-motion rule in index.css; this turns transform/layout
+  // prefers-reduced-motion rule in tokens.css; this turns transform/layout
   // animations off for those users app-wide (opacity fades stay).
   return (
     <MotionConfig reducedMotion="user">
       <ToastProvider>
         <ConfirmProvider>
-          <BrowserRouter>
-            <MoodLogProvider>
-              <NotificationsBootstrap />
-              <ToolsBootstrap />
-              <Onboarding />
-              <LandingRedirect />
-              <Routes>
-                <Route element={<AppShell />}>
-                  <Route index element={<TodayPage />} />
-                  {/* New IA destinations */}
-                  <Route path="mood" element={<MoodPage />} />
-                  <Route path="library" element={<LibraryPage />} />
-                  <Route path="you" element={<YouPage />} />
-                  {/* Legacy routes — kept for back-compat, also reachable */}
-                  <Route path="habits" element={<HabitsPage />} />
-                  <Route path="all" element={<AllPage />} />
-                  <Route path="stats" element={<StatsPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="new" element={<NewReminderPage />} />
-                  <Route path="edit/:id" element={<EditReminderPage />} />
-                  <Route path="detail/:id" element={<ReminderDetailPage />} />
-                  <Route
-                    path="tools"
-                    element={
-                      <Suspense fallback={<ToolsFallback />}>
-                        <ToolsPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="tools/:toolKey"
-                    element={
-                      <Suspense fallback={<ToolsFallback />}>
-                        <ToolSessionPage />
-                      </Suspense>
-                    }
-                  />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Route>
-              </Routes>
-            </MoodLogProvider>
-          </BrowserRouter>
+          <MoodLogProvider>
+            <NotificationsBootstrap />
+            <ToolsBootstrap />
+            <Onboarding />
+            <LandingRedirect />
+            <AppShell />
+          </MoodLogProvider>
         </ConfirmProvider>
       </ToastProvider>
     </MotionConfig>
   );
 }
-
-export default App;

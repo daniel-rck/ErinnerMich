@@ -104,10 +104,10 @@ export const StatTile = forwardRef<HTMLDivElement, StatTileProps>(function StatT
         aria-label={ariaLabel}
         className={[
           "block w-full text-left rounded-[1.25rem]",
-          "bg-[color:var(--color-surface)] border border-[color:var(--color-border)] shadow-[0_1px_2px_oklch(20%_0.01_285/0.06),0_1px_1px_oklch(20%_0.01_285/0.04)]",
+          "bg-[color:var(--color-surface)] border border-[color:var(--color-border)] shadow-[0_1px_2px_oklch(20%_0.01_var(--accent-h)/0.06),0_1px_1px_oklch(20%_0.01_var(--accent-h)/0.04)]",
           "p-[1rem]",
           "transition-[transform,box-shadow] duration-[140ms] ease-[cubic-bezier(0.2,0,0,1)]",
-          "hover:shadow-[0_4px_12px_oklch(20%_0.01_285/0.08),0_2px_4px_oklch(20%_0.01_285/0.04)] active:scale-[0.98]",
+          "hover:shadow-[0_4px_12px_oklch(20%_0.01_var(--accent-h)/0.08),0_2px_4px_oklch(20%_0.01_var(--accent-h)/0.04)] active:scale-[0.98]",
           className,
         ].join(" ")}
       >

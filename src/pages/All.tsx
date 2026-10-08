@@ -78,7 +78,7 @@ export function AllPage({ embedded = false, defaultFilter }: AllPageProps = {}) 
         </header>
       )}
 
-      <div className="flex items-center gap-2 rounded-[0.875rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-[0.75rem]">
+      <div className="flex items-center gap-2 rounded-[0.875rem] border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-[0.75rem] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-500">
         <Search size={16} className="text-fg-subtle" aria-hidden />
         <input
           type="search"
